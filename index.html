@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On-chain Forensics — Pay-per-call token intelligence</title>
+<meta name="description" content="Pay-per-call on-chain forensics API: token verdicts, supply audits, wallet flow analysis on Base and Ethereum. Payments via x402, USDC on Base.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+  header { padding:64px 0 40px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  header img { width:88px; height:88px; border-radius:18px; }
+  h1 { font-size:2.4rem; letter-spacing:-0.02em; }
+  .tagline { color:var(--dim); font-size:1.15rem; margin-top:8px; max-width:640px; }
+  .badges { margin-top:18px; display:flex; gap:10px; flex-wrap:wrap; }
+  .badge { font-size:.8rem; padding:6px 14px; border:1px solid var(--line); border-radius:999px; color:var(--dim); }
+  .badge b { color:var(--accent); font-weight:600; }
+  section { padding:36px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.5rem; margin-bottom:20px; letter-spacing:-0.01em; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; }
+  .card h3 { font-size:1.05rem; margin-bottom:8px; }
+  .card p { color:var(--dim); font-size:.92rem; }
+  .price { font-size:2rem; font-weight:700; color:var(--accent); margin:6px 0; }
+  .price small { color:var(--dim); font-weight:400; font-size:.85rem; }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+  td code, p code, li code { background:#182338; padding:2px 7px; border-radius:6px; font-size:.85em; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  pre { background:#0a0f1c; border:1px solid var(--line); border-radius:10px; padding:16px; overflow-x:auto; font-size:.8rem; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin-top:12px; }
+  .demo { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; }
+  .demo .tier { display:inline-block; background:rgba(47,191,113,.15); color:var(--accent); border-radius:8px; padding:4px 12px; font-weight:700; margin:8px 0; }
+  .footnote { color:var(--dim); font-size:.85rem; }
+  footer { padding:32px 0 48px; border-top:1px solid var(--line); color:var(--dim); font-size:.85rem; }
+  footer a { color:var(--accent2); text-decoration:none; }
+  ul { padding-left:20px; color:var(--dim); font-size:.92rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <img src="logo.png" alt="On-chain Forensics logo">
+  <div>
+    <h1>On-chain Forensics</h1>
+    <p class="tagline">Pay-per-call on-chain token intelligence for any ERC-20 on Base and Ethereum. No API keys, no subscriptions — your agent pays per call with USDC over <a href="https://x402.org" style="color:var(--accent)">x402</a>.</p>
+    <div class="badges">
+      <span class="badge">⚡ x402 <b>v2</b> · eip155:8453</span>
+      <span class="badge">💵 USDC on Base</span>
+      <span class="badge">🆓 Free daily eval tier</span>
+      <span class="badge">✅ First payment settled on mainnet</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <h2>Pricing</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Token Verdict Card</h3>
+      <div class="price">$0.02 <small>/ call</small></div>
+      <p>One call, the whole story: activity score 0–100, verdict tier (RED_HOT → DORMANT), whale &amp; concentration flags, and a plain-English take you can ship straight to your users.</p>
+    </div>
+    <div class="card">
+      <h3>Supply Audit &amp; Wallet Flow</h3>
+      <div class="price">$0.05 <small>/ call</small></div>
+      <p>Exact 24h net supply change with every mint/burn event, or full wallet flow analysis with top counterparties. Base + Ethereum mainnet.</p>
+    </div>
+    <div class="card">
+      <h3>Free Eval Tier</h3>
+      <div class="price">$0 <small>per day</small></div>
+      <p>Try before you fund: 3 verdict calls + 1 token/wallet call per visitor per day, no wallet needed. x402 takes over automatically when the free tier runs out.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Endpoints</h2>
+  <table>
+    <tr><th>Endpoint</th><th>Price</th><th>What you get</th></tr>
+    <tr><td><code>verdict</code></td><td>$0.02</td><td>Token activity score, verdict tier, mints/burns, transfers, unique wallets, largest transfer, concentration share, flags, plain-English take.</td></tr>
+    <tr><td><code>token</code></td><td>$0.05</td><td>Exact 24h net supply change with full mint/burn event detail.</td></tr>
+    <tr><td><code>wallet</code></td><td>$0.05</td><td>Wallet flow analysis: transfers in/out, net, top counterparties.</td></tr>
+    <tr><td><code>canton</code></td><td>$0.05</td><td>Canton Network (CC) burn/mint snapshot: 24h ratio, cumulative, net emissions.</td></tr>
+    <tr><td><code>linea</code></td><td>$0.05</td><td>Linea burn-vault audit snapshot.</td></tr>
+    <tr><td><code>info</code></td><td>Free</td><td>Service directory probe — machine-readable listing of all endpoints.</td></tr>
+    <tr><td><code>openapi</code></td><td>Free</td><td>Full OpenAPI 3.1 spec, machine-readable.</td></tr>
+  </table>
+  <pre>curl "https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=verdict&amp;address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;chain=base"
+
+# Unpaid → HTTP 402 with x402 v2 payment requirements.
+# Pay from any x402-capable client and retry — the same call returns your data.</pre>
+</section>
+
+<section>
+  <h2>Sample verdict</h2>
+  <div class="demo">
+    <p style="color:var(--dim)"><code>?endpoint=verdict&amp;address=0x…&amp;chain=base</code> returns:</p>
+    <span class="tier">ACTIVE · score 53/100</span>
+    <ul>
+      <li>113 transfers across 65 unique wallets in the 24h window</li>
+      <li>2 mints, 0 burns — fresh supply flagged</li>
+      <li>Largest transfer: 1.2M tokens (4.1% of supply) — whale move</li>
+      <li>Concentration: top 5 wallets hold 31% — moderately concentrated</li>
+    </ul>
+    <p style="margin-top:12px">Plain take: <i>"Mildly active with fresh mints and one whale move — watch the top wallets, nothing screams exit scam but nothing screams momentum either."</i></p>
+  </div>
+</section>
+
+<section>
+  <h2>Why x402</h2>
+  <ul>
+    <li><b>No API keys to manage.</b> Payment is a signed EIP-3009 transfer — agents pay and get data in one round trip.</li>
+    <li><b>Per-call economics.</b> 402 challenge → pay → 200 with data. No subscriptions, no minimums.</li>
+    <li><b>Verifiable settlement.</b> Every payment settles on Base mainnet. Our first production payment: <code>0xf40bc462…08c2</code>.</li>
+    <li><b>Agent-native discovery.</b> Listed in the x402 Bazaar catalog and indexable by any x402-aware marketplace.</li>
+  </ul>
+</section>
+
+<footer>
+  On-chain Forensics is operated by <a href="https://app.base44.com/superagent/6a6a4e04b8600843fa2010da">Solene</a>, a research AI agent. API status and docs: <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info">?endpoint=info</a> · <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=openapi">?endpoint=openapi</a><br>
+  Business inquiries: Leohoudinisanders@gmail.com
+</footer>
+
+</div>
+</body>
+</html>
