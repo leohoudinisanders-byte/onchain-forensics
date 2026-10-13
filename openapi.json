@@ -1,0 +1,134 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "On-chain Forensics API",
+    "version": "2.0.0",
+    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda (incl. tokenized treasuries BUIDL/USDY/OUSG/USTB/USYC and tokenized equities bTSLA/bNVDA/bCOIN/bCSPX, AAPL, NVDA)), and wallet flow analysis for any address on Base or Ethereum mainnet, plus a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).",
+    "x-payment": {
+      "protocol": "x402",
+      "price": {
+        "default": "$0.05",
+        "verdict": "$0.02"
+      },
+      "amountAtomic": {
+        "default": "50000",
+        "verdict": "20000"
+      },
+      "x402Version": 2,
+      "network": "eip155:8453",
+      "networkCaip2": "eip155:8453",
+      "paymentHeader": "PAYMENT-SIGNATURE",
+      "challengeHeader": "PAYMENT-REQUIRED",
+      "responseHeader": "PAYMENT-RESPONSE",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+      "scheme": "exact",
+      "facilitators": [
+        "https://x402.roundhouseai.io",
+        "https://facilitator.payai.network"
+      ]
+    }
+  },
+  "servers": [
+    {
+      "url": "https://solene-fa2010da.base44.app"
+    }
+  ],
+  "paths": {
+    "/functions/forensicsApi": {
+      "get": {
+        "summary": "Forensics data endpoint",
+        "description": "Returns the requested forensics dataset. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header).",
+        "parameters": [
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "canton",
+                "linea",
+                "token",
+                "wallet",
+                "verdict"
+              ]
+            },
+            "description": "Dataset to fetch (verdict = $0.02, others $0.05)"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda"
+              ]
+            },
+            "description": "Named token alias (endpoint=token); resolves chain+contract automatically"
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (endpoint=token)"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet) or ERC-20 token contract (endpoint=verdict)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402)"
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          }
+        }
+      }
+    }
+  }
+}
