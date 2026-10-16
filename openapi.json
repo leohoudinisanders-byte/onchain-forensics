@@ -910,7 +910,7 @@
   },
   "x-classification-logic": {
     "settlesafe": {
-      "asset": "KNOWN_CANONICAL requires an exact match (contract+chain) against the verified tokenized-asset registry (21 aliases) AND a readable ERC-20 interface. UNVERIFIED assets pass settle_safe=true with risk flag NOT_IN_VERIFIED_REGISTRY (confirm issuer independently). Fail-closed: NOT_A_CONTRACT, NOT_ERC20_READABLE, SYMBOL_MISMATCH and VERIFICATION_UNAVAILABLE all return settle_safe=false.",
+      "asset": "KNOWN_CANONICAL requires an exact match (contract+chain) against the verified tokenized-asset registry (20 aliases) AND a readable ERC-20 interface. UNVERIFIED assets pass settle_safe=true with risk flag NOT_IN_VERIFIED_REGISTRY (confirm issuer independently). Fail-closed: NOT_A_CONTRACT, NOT_ERC20_READABLE, SYMBOL_MISMATCH and VERIFICATION_UNAVAILABLE all return settle_safe=false.",
       "counterparty": "Same trust-tier heuristic as endpoint=wallet (see TrustTier description). SUSPICIOUS (funded, never acted) additionally raises risk flag COUNTERPARTY_SUSPICIOUS.",
       "verification_guarantee": "Decisive negatives are confirmed across independent public RPCs before being issued: eth_getCode is read from the freshest of 3 nodes; a totalSupply revert is only accepted when a healthy node (verified via a control USDC read on the same node) confirms it; when the public RPC network itself is degraded the endpoint returns VERIFICATION_UNAVAILABLE instead of a false negative, and the client should retry."
     },
