@@ -60,6 +60,11 @@
   <h2>Pricing</h2>
   <div class="grid">
     <div class="card">
+      <h3>Due Diligence Memo</h3>
+      <div class="price">$0.25 <small>/ call</small></div>
+      <p>The composed tier: verdict + 24h supply forensics + wallet flows + settle-safe screen in one reproducible analyst memo, with a red-flag table and a bottom-line settlement recommendation. No LLM calls — same block, same memo.</p>
+    </div>
+    <div class="card">
       <h3>Token Verdict Card</h3>
       <div class="price">$0.02 <small>/ call</small></div>
       <p>One call, the whole story: activity score 0–100, verdict tier (RED_HOT → DORMANT), whale &amp; concentration flags, and a plain-English take you can ship straight to your users.</p>
@@ -81,6 +86,7 @@
   <h2>Endpoints</h2>
   <table>
     <tr><th>Endpoint</th><th>Price</th><th>What you get</th></tr>
+<tr><td><code>memo</code></td><td>$0.25</td><td>Composed due-diligence memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, bottom-line settlement recommendation. Optional counterparty trust screen.</td></tr>
     <tr><td><code>verdict</code></td><td>$0.02</td><td>Token activity score, verdict tier, mints/burns, transfers, unique wallets, largest transfer, concentration share, flags, plain-English take.</td></tr>
     <tr><td><code>token</code></td><td>$0.05</td><td>Exact 24h net supply change with full mint/burn event detail.</td></tr>
     <tr><td><code>wallet</code></td><td>$0.05</td><td>Wallet flow analysis: transfers in/out, net, top counterparties.</td></tr>
@@ -107,6 +113,24 @@
       <li>Concentration: top 5 wallets hold 31% — moderately concentrated</li>
     </ul>
     <p style="margin-top:12px">Plain take: <i>"Mildly active with fresh mints and one whale move — watch the top wallets, nothing screams exit scam but nothing screams momentum either."</i></p>
+  </div>
+</section>
+
+<section>
+  <h2>The composed tier: Due Diligence Memo</h2>
+  <div class="demo">
+    <p style="color:var(--dim)"><code>?endpoint=memo&amp;address=0x…&amp;chain=base</code> ($0.25) returns one memo:</p>
+    <span class="tier">KNOWN_CANONICAL · THIN · settle-safe: true</span>
+    <ul>
+      <li><b>Header</b> — token, chain, block, generation time (citable decision record)</li>
+      <li><b>Executive summary</b> — verdict tier, activity score, plain-English take</li>
+      <li><b>Supply forensics</b> — 24h net supply delta, every mint/burn event</li>
+      <li><b>Wallet flows</b> — transfers, unique wallets, largest transfer, concentration</li>
+      <li><b>Settle-safe screen</b> — canonical-asset registry check + optional counterparty trust tier</li>
+      <li><b>Red-flag table</b> — deduplicated, severity-ranked (CRITICAL &rarr; INFO) with sources</li>
+      <li><b>Bottom line</b> — deterministic settlement recommendation</li>
+    </ul>
+    <p style="margin-top:12px">Deterministic composition — <b>no LLM calls</b>: the same block data yields the same memo, so an agent can cite it as a reproducible decision record. The three source sections would cost $0.09 separately; the memo is the synthesis.</p>
   </div>
 </section>
 
