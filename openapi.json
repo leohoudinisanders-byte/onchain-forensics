@@ -1,943 +1,943 @@
 {
- "openapi": "3.1.0",
- "info": {
-  "title": "On-chain Forensics API",
-  "version": "2.3.2",
-  "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).",
-  "x-payment": {
-   "protocol": "x402",
-   "price": {
-    "default": "$0.05",
-    "verdict": "$0.02",
-    "settlesafe": "$0.02"
-   },
-   "amountAtomic": {
-    "default": "50000",
-    "verdict": "20000",
-    "settlesafe": "20000"
-   },
-   "x402Version": 2,
-   "network": "eip155:8453",
-   "networkCaip2": "eip155:8453",
-   "paymentHeader": "PAYMENT-SIGNATURE",
-   "challengeHeader": "PAYMENT-REQUIRED",
-   "responseHeader": "PAYMENT-RESPONSE",
-   "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-   "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
-   "scheme": "exact",
-   "facilitators": [
-    "https://x402.roundhouseai.io",
-    "https://facilitator.payai.network"
-   ]
-  }
- },
- "servers": [
-  {
-   "url": "https://solene-fa2010da.base44.app"
-  }
- ],
- "paths": {
-  "/functions/forensicsApi": {
-   "get": {
-    "summary": "Forensics data endpoint",
-    "description": "Returns the requested forensics dataset. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Free daily trial calls per visitor IP are tracked in the X-Free-Calls-Remaining header.",
-    "parameters": [
-     {
-      "name": "endpoint",
-      "in": "query",
-      "required": true,
-      "schema": {
-       "type": "string",
-       "enum": [
-        "canton",
-        "linea",
-        "token",
-        "wallet",
-        "verdict",
-        "settlesafe"
-       ]
+  "openapi": "3.1.0",
+  "info": {
+    "title": "On-chain Forensics API",
+    "version": "2.3.2",
+    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/",
+    "x-payment": {
+      "protocol": "x402",
+      "price": {
+        "default": "$0.05",
+        "verdict": "$0.02",
+        "settlesafe": "$0.02"
       },
-      "description": "Dataset to fetch (verdict & settlesafe = $0.02, others $0.05)"
-     },
-     {
-      "name": "token",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "enum": [
-        "ondo",
-        "qnt",
-        "edel",
-        "xlm",
-        "aero",
-        "degen",
-        "brett",
-        "buidl",
-        "usdy",
-        "ousg",
-        "ustb",
-        "usyc",
-        "bcspx",
-        "bcoin",
-        "bnvda",
-        "btsla",
-        "aapl",
-        "nvda",
-        "usdc",
-        "usdc_eth"
-       ]
+      "amountAtomic": {
+        "default": "50000",
+        "verdict": "20000",
+        "settlesafe": "20000"
       },
-      "description": "Named token alias (endpoint=token or endpoint=settlesafe); resolves chain+contract automatically"
-     },
-     {
-      "name": "contract",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "pattern": "^0x[a-fA-F0-9]{40}$"
-      },
-      "description": "ERC-20 contract address (endpoint=token)"
-     },
-     {
-      "name": "chain",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "enum": [
-        "base",
-        "ethereum"
-       ],
-       "default": "base"
-      },
-      "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
-     },
-     {
-      "name": "address",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "pattern": "^0x[a-fA-F0-9]{40}$"
-      },
-      "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
-     },
-     {
-      "name": "counterparty",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "type": "string",
-       "pattern": "^0x[a-fA-F0-9]{40}$"
-      },
-      "description": "Optional counterparty wallet to trust-screen (endpoint=settlesafe); returns trust_tier per CounterpartyScreen.trust_tier enum"
-     }
-    ],
-    "responses": {
-     "200": {
-      "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/PaidResponse"
+      "x402Version": 2,
+      "network": "eip155:8453",
+      "networkCaip2": "eip155:8453",
+      "paymentHeader": "PAYMENT-SIGNATURE",
+      "challengeHeader": "PAYMENT-REQUIRED",
+      "responseHeader": "PAYMENT-RESPONSE",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+      "scheme": "exact",
+      "facilitators": [
+        "https://x402.roundhouseai.io",
+        "https://facilitator.payai.network"
+      ]
+    }
+  },
+  "servers": [
+    {
+      "url": "https://solene-fa2010da.base44.app"
+    }
+  ],
+  "paths": {
+    "/functions/forensicsApi": {
+      "get": {
+        "summary": "Forensics data endpoint",
+        "description": "Returns the requested forensics dataset. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Free daily trial calls per visitor IP are tracked in the X-Free-Calls-Remaining header.",
+        "parameters": [
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "canton",
+                "linea",
+                "token",
+                "wallet",
+                "verdict",
+                "settlesafe"
+              ]
+            },
+            "description": "Dataset to fetch (verdict & settlesafe = $0.02, others $0.05)"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (endpoint=token or endpoint=settlesafe); resolves chain+contract automatically"
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (endpoint=token)"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          },
+          {
+            "name": "counterparty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Optional counterparty wallet to trust-screen (endpoint=settlesafe); returns trust_tier per CounterpartyScreen.trust_tier enum"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
         }
-       }
       }
-     },
-     "402": {
-      "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
-     },
-     "400": {
-      "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
-     }
     }
-   }
-  }
- },
- "components": {
-  "schemas": {
-   "PaidResponse": {
-    "type": "object",
-    "required": [
-     "service",
-     "paid",
-     "data"
-    ],
-    "properties": {
-     "service": {
-      "type": "string",
-      "const": "onchain-forensics"
-     },
-     "paid": {
-      "type": "string",
-      "description": "Amount charged for this call, e.g. $0.02"
-     },
-     "settlement_tx": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "x402 settlement transaction hash when the facilitator reports one"
-     },
-     "data": {
-      "oneOf": [
-       {
-        "$ref": "#/components/schemas/SettleSafeResponse"
-       },
-       {
-        "$ref": "#/components/schemas/WalletResponse"
-       },
-       {
-        "$ref": "#/components/schemas/TokenResponse"
-       },
-       {
-        "$ref": "#/components/schemas/VerdictResponse"
-       },
-       {
-        "$ref": "#/components/schemas/CantonResponse"
-       },
-       {
-        "$ref": "#/components/schemas/LineaResponse"
-       }
-      ]
-     }
-    }
-   },
-   "SettleSafeResponse": {
-    "type": "object",
-    "description": "Pre-trade settle-safe screen ($0.02). Answers: is this the real asset, and can this counterparty be trusted? Decisive negatives (not-a-contract, not-readable) are confirmed across independent RPCs; a degraded public-RPC network yields VERIFICATION_UNAVAILABLE instead of a false negative.",
-    "required": [
-     "endpoint",
-     "checked_at",
-     "chain",
-     "settle_safe",
-     "overall_pass",
-     "asset_status",
-     "asset",
-     "risk_flags",
-     "reasons",
-     "plain_take"
-    ],
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "settlesafe"
-     },
-     "checked_at": {
-      "type": "string",
-      "format": "date-time"
-     },
-     "chain": {
-      "type": "string",
-      "enum": [
-       "base-mainnet",
-       "ethereum-mainnet"
-      ]
-     },
-     "settle_safe": {
-      "type": "boolean",
-      "description": "Asset screen result only"
-     },
-     "overall_pass": {
-      "type": "boolean",
-      "description": "Asset screen AND (counterparty screen if provided)"
-     },
-     "asset_status": {
-      "$ref": "#/components/schemas/AssetStatus"
-     },
-     "asset": {
-      "$ref": "#/components/schemas/AssetBlock"
-     },
-     "counterparty": {
-      "oneOf": [
-       {
-        "$ref": "#/components/schemas/CounterpartyScreen"
-       },
-       {
-        "type": "null"
-       }
-      ]
-     },
-     "risk_flags": {
-      "type": "array",
-      "items": {
-       "$ref": "#/components/schemas/RiskFlag"
-      }
-     },
-     "reasons": {
-      "type": "array",
-      "items": {
-       "type": "string"
-      }
-     },
-     "rpc_verification": {
-      "type": "object",
-      "properties": {
-       "code_agreeing_nodes": {
-        "type": "integer",
-        "description": "How many independent RPCs returned the same eth_getCode result"
-       },
-       "code_block": {
-        "type": "integer",
-        "description": "Block height of the freshest node used for the code read"
-       },
-       "supply_status": {
+  },
+  "components": {
+    "schemas": {
+      "PaidResponse": {
+        "type": "object",
+        "required": [
+          "service",
+          "paid",
+          "data"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "const": "onchain-forensics"
+          },
+          "paid": {
+            "type": "string",
+            "description": "Amount charged for this call, e.g. $0.02"
+          },
+          "settlement_tx": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "x402 settlement transaction hash when the facilitator reports one"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SettleSafeResponse"
+              },
+              {
+                "$ref": "#/components/schemas/WalletResponse"
+              },
+              {
+                "$ref": "#/components/schemas/TokenResponse"
+              },
+              {
+                "$ref": "#/components/schemas/VerdictResponse"
+              },
+              {
+                "$ref": "#/components/schemas/CantonResponse"
+              },
+              {
+                "$ref": "#/components/schemas/LineaResponse"
+              }
+            ]
+          }
+        }
+      },
+      "SettleSafeResponse": {
+        "type": "object",
+        "description": "Pre-trade settle-safe screen ($0.02). Answers: is this the real asset, and can this counterparty be trusted? Decisive negatives (not-a-contract, not-readable) are confirmed across independent RPCs; a degraded public-RPC network yields VERIFICATION_UNAVAILABLE instead of a false negative.",
+        "required": [
+          "endpoint",
+          "checked_at",
+          "chain",
+          "settle_safe",
+          "overall_pass",
+          "asset_status",
+          "asset",
+          "risk_flags",
+          "reasons",
+          "plain_take"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "settlesafe"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "chain": {
+            "type": "string",
+            "enum": [
+              "base-mainnet",
+              "ethereum-mainnet"
+            ]
+          },
+          "settle_safe": {
+            "type": "boolean",
+            "description": "Asset screen result only"
+          },
+          "overall_pass": {
+            "type": "boolean",
+            "description": "Asset screen AND (counterparty screen if provided)"
+          },
+          "asset_status": {
+            "$ref": "#/components/schemas/AssetStatus"
+          },
+          "asset": {
+            "$ref": "#/components/schemas/AssetBlock"
+          },
+          "counterparty": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CounterpartyScreen"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk_flags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RiskFlag"
+            }
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rpc_verification": {
+            "type": "object",
+            "properties": {
+              "code_agreeing_nodes": {
+                "type": "integer",
+                "description": "How many independent RPCs returned the same eth_getCode result"
+              },
+              "code_block": {
+                "type": "integer",
+                "description": "Block height of the freshest node used for the code read"
+              },
+              "supply_status": {
+                "type": "string",
+                "enum": [
+                  "readable",
+                  "not_readable",
+                  "degraded"
+                ],
+                "description": "readable = well-formed result confirmed by 2 RPCs (or a single well-formed result when the rest of the public RPC pool is degraded \u2014 reads only count when the returned value is well-formed, so degraded nodes can never flip a classification); not_readable = revert confirmed on healthy nodes; degraded = public RPC network unavailable, screen inconclusive"
+              },
+              "supply_probe": {
+                "type": "array",
+                "description": "Per-node evidence trail for the totalSupply read (v2.3.2): every RPC attempt that did NOT yield a well-formed result is logged here with its outcome, so any classification is auditable. Empty when all nodes answered well-formed on first try. Outcomes: invalid_result:<detail> (JSON-RPC success but empty/malformed result \u2014 common from degraded public nodes), error_retry / error_final (node error, retried once per node), skip_control_same_call (read failed and the control call is identical to the read, so no control is performed), control_failed (health check failed).",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "node": {
+                      "type": "string",
+                      "description": "RPC host that produced this outcome"
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "description": "What happened on this node's attempt"
+                    }
+                  },
+                  "required": [
+                    "node",
+                    "outcome"
+                  ]
+                }
+              }
+            }
+          },
+          "plain_take": {
+            "type": "string",
+            "description": "Shareable plain-language verdict"
+          }
+        }
+      },
+      "AssetStatus": {
         "type": "string",
         "enum": [
-         "readable",
-         "not_readable",
-         "degraded"
+          "KNOWN_CANONICAL",
+          "UNVERIFIED",
+          "NOT_A_CONTRACT",
+          "NOT_ERC20_READABLE",
+          "SYMBOL_MISMATCH",
+          "VERIFICATION_UNAVAILABLE"
         ],
-        "description": "readable = well-formed result confirmed by 2 RPCs (or a single well-formed result when the rest of the public RPC pool is degraded \u2014 reads only count when the returned value is well-formed, so degraded nodes can never flip a classification); not_readable = revert confirmed on healthy nodes; degraded = public RPC network unavailable, screen inconclusive"
-       },
-       "supply_probe": {
-        "type": "array",
-        "description": "Per-node evidence trail for the totalSupply read (v2.3.2): every RPC attempt that did NOT yield a well-formed result is logged here with its outcome, so any classification is auditable. Empty when all nodes answered well-formed on first try. Outcomes: invalid_result:<detail> (JSON-RPC success but empty/malformed result \u2014 common from degraded public nodes), error_retry / error_final (node error, retried once per node), skip_control_same_call (read failed and the control call is identical to the read, so no control is performed), control_failed (health check failed).",
-        "items": {
-         "type": "object",
-         "properties": {
-          "node": {
-           "type": "string",
-           "description": "RPC host that produced this outcome"
+        "description": "KNOWN_CANONICAL = contract matches the verified tokenized-asset registry and serves a readable ERC-20; UNVERIFIED = live ERC-20 but not in the registry; NOT_A_CONTRACT = EOA; NOT_ERC20_READABLE = totalSupply() revert confirmed on healthy nodes; SYMBOL_MISMATCH = on-chain symbol differs from the registry entry; VERIFICATION_UNAVAILABLE = public RPC network degraded, no verdict issued (retry)."
+      },
+      "RiskFlag": {
+        "type": "string",
+        "enum": [
+          "NOT_A_CONTRACT",
+          "NOT_ERC20_READABLE",
+          "SYMBOL_MISMATCH",
+          "NOT_IN_VERIFIED_REGISTRY",
+          "COUNTERPARTY_SUSPICIOUS",
+          "COUNTERPARTY_SCREEN_FAILED",
+          "READ_VERIFICATION_DEGRADED"
+        ]
+      },
+      "AssetBlock": {
+        "type": "object",
+        "properties": {
+          "contract": {
+            "type": "string"
           },
-          "outcome": {
-           "type": "string",
-           "description": "What happened on this node's attempt"
+          "token_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "token_symbol": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_supply": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable total supply at the token's own decimals"
+          },
+          "registry_alias": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "registry_canonical": {
+            "type": "boolean"
+          },
+          "is_contract": {
+            "type": "boolean"
           }
-         },
-         "required": [
-          "node",
-          "outcome"
-         ]
         }
-       }
-      }
-     },
-     "plain_take": {
-      "type": "string",
-      "description": "Shareable plain-language verdict"
-     }
-    }
-   },
-   "AssetStatus": {
-    "type": "string",
-    "enum": [
-     "KNOWN_CANONICAL",
-     "UNVERIFIED",
-     "NOT_A_CONTRACT",
-     "NOT_ERC20_READABLE",
-     "SYMBOL_MISMATCH",
-     "VERIFICATION_UNAVAILABLE"
-    ],
-    "description": "KNOWN_CANONICAL = contract matches the verified tokenized-asset registry and serves a readable ERC-20; UNVERIFIED = live ERC-20 but not in the registry; NOT_A_CONTRACT = EOA; NOT_ERC20_READABLE = totalSupply() revert confirmed on healthy nodes; SYMBOL_MISMATCH = on-chain symbol differs from the registry entry; VERIFICATION_UNAVAILABLE = public RPC network degraded, no verdict issued (retry)."
-   },
-   "RiskFlag": {
-    "type": "string",
-    "enum": [
-     "NOT_A_CONTRACT",
-     "NOT_ERC20_READABLE",
-     "SYMBOL_MISMATCH",
-     "NOT_IN_VERIFIED_REGISTRY",
-     "COUNTERPARTY_SUSPICIOUS",
-     "COUNTERPARTY_SCREEN_FAILED",
-     "READ_VERIFICATION_DEGRADED"
-    ]
-   },
-   "AssetBlock": {
-    "type": "object",
-    "properties": {
-     "contract": {
-      "type": "string"
-     },
-     "token_name": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "token_symbol": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "total_supply": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Human-readable total supply at the token's own decimals"
-     },
-     "registry_alias": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "registry_canonical": {
-      "type": "boolean"
-     },
-     "is_contract": {
-      "type": "boolean"
-     }
-    }
-   },
-   "CounterpartyScreen": {
-    "type": "object",
-    "description": "Trust tier heuristic: lifetime history (nonce) + ERC-20 flows in the recent window (~100 min).",
-    "properties": {
-     "address": {
-      "type": "string"
-     },
-     "trust_tier": {
-      "$ref": "#/components/schemas/TrustTier"
-     },
-     "trust_pass": {
-      "type": "boolean",
-      "description": "True only for TRUSTED_ACTIVITY"
-     },
-     "trust_reasons": {
-      "type": "array",
-      "items": {
-       "type": "string"
-      }
-     },
-     "total_txs_sent": {
-      "type": "integer",
-      "description": "Lifetime outgoing transactions (eth_getTransactionCount)"
-     },
-     "unique_counterparties": {
-      "type": "integer"
-     },
-     "is_contract": {
-      "type": "boolean",
-      "description": "eth_getCode non-empty (freshest of 3 nodes)"
-     },
-     "eip_7702_delegated": {
-      "type": "boolean",
-      "description": "True when the code is exactly the EIP-7702 delegation designator \u2014 reported as DELEGATED_EOA, not CONTRACT_ADDRESS"
-     },
-     "error": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Present when the screen itself failed (risk flag COUNTERPARTY_SCREEN_FAILED)"
-     }
-    }
-   },
-   "TrustTier": {
-    "type": "string",
-    "enum": [
-     "TRUSTED_ACTIVITY",
-     "LIGHT_ACTIVITY",
-     "NO_RECENT_ACTIVITY",
-     "SUSPICIOUS",
-     "EMPTY",
-     "CONTRACT_ADDRESS",
-     "DELEGATED_EOA"
-    ],
-    "description": "TRUSTED_ACTIVITY = >=10 lifetime txs, >=5 unique counterparties and >=8 in-window transfers; LIGHT_ACTIVITY = some history, limited activity; NO_RECENT_ACTIVITY = history but no ERC-20 movement in the window; SUSPICIOUS = funded but never sent a transaction (bait/dust pattern); EMPTY = no history at all; CONTRACT_ADDRESS = holds standalone contract code (screen with endpoint=token first); DELEGATED_EOA = EIP-7702 smart-account wallet (code is a delegation designator; screen the delegate before high-value settles)."
-   },
-   "WalletResponse": {
-    "type": "object",
-    "description": "Wallet forensics ($0.05): balance, lifetime tx count, ERC-20 flows and top counterparties (~100 min window), plus the machine-readable trust tier.",
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "wallet"
-     },
-     "chain": {
-      "type": "string",
-      "enum": [
-       "base-mainnet",
-       "ethereum-mainnet"
-      ]
-     },
-     "address": {
-      "type": "string"
-     },
-     "eth_balance": {
-      "type": "string"
-     },
-     "total_txs_sent": {
-      "type": "integer"
-     },
-     "is_contract": {
-      "type": "boolean"
-     },
-     "eip_7702_delegated": {
-      "type": "boolean"
-     },
-     "trust_tier": {
-      "$ref": "#/components/schemas/TrustTier"
-     },
-     "trust_pass": {
-      "type": "boolean"
-     },
-     "trust_reasons": {
-      "type": "array",
-      "items": {
-       "type": "string"
-      }
-     },
-     "activity_window_min": {
-      "type": "integer"
-     },
-     "erc20_transfers_in": {
-      "type": "integer"
-     },
-     "erc20_transfers_out": {
-      "type": "integer"
-     },
-     "distinct_tokens": {
-      "type": "integer"
-     },
-     "unique_counterparties": {
-      "type": "integer"
-     },
-     "top_counterparties": {
-      "type": "array",
-      "items": {
-       "type": "object",
-       "properties": {
-        "address": {
-         "type": "string"
-        },
-        "transfers_in": {
-         "type": "integer"
-        },
-        "transfers_out": {
-         "type": "integer"
+      },
+      "CounterpartyScreen": {
+        "type": "object",
+        "description": "Trust tier heuristic: lifetime history (nonce) + ERC-20 flows in the recent window (~100 min).",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "trust_tier": {
+            "$ref": "#/components/schemas/TrustTier"
+          },
+          "trust_pass": {
+            "type": "boolean",
+            "description": "True only for TRUSTED_ACTIVITY"
+          },
+          "trust_reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "total_txs_sent": {
+            "type": "integer",
+            "description": "Lifetime outgoing transactions (eth_getTransactionCount)"
+          },
+          "unique_counterparties": {
+            "type": "integer"
+          },
+          "is_contract": {
+            "type": "boolean",
+            "description": "eth_getCode non-empty (freshest of 3 nodes)"
+          },
+          "eip_7702_delegated": {
+            "type": "boolean",
+            "description": "True when the code is exactly the EIP-7702 delegation designator \u2014 reported as DELEGATED_EOA, not CONTRACT_ADDRESS"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Present when the screen itself failed (risk flag COUNTERPARTY_SCREEN_FAILED)"
+          }
         }
-       }
+      },
+      "TrustTier": {
+        "type": "string",
+        "enum": [
+          "TRUSTED_ACTIVITY",
+          "LIGHT_ACTIVITY",
+          "NO_RECENT_ACTIVITY",
+          "SUSPICIOUS",
+          "EMPTY",
+          "CONTRACT_ADDRESS",
+          "DELEGATED_EOA"
+        ],
+        "description": "TRUSTED_ACTIVITY = >=10 lifetime txs, >=5 unique counterparties and >=8 in-window transfers; LIGHT_ACTIVITY = some history, limited activity; NO_RECENT_ACTIVITY = history but no ERC-20 movement in the window; SUSPICIOUS = funded but never sent a transaction (bait/dust pattern); EMPTY = no history at all; CONTRACT_ADDRESS = holds standalone contract code (screen with endpoint=token first); DELEGATED_EOA = EIP-7702 smart-account wallet (code is a delegation designator; screen the delegate before high-value settles)."
+      },
+      "WalletResponse": {
+        "type": "object",
+        "description": "Wallet forensics ($0.05): balance, lifetime tx count, ERC-20 flows and top counterparties (~100 min window), plus the machine-readable trust tier.",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "wallet"
+          },
+          "chain": {
+            "type": "string",
+            "enum": [
+              "base-mainnet",
+              "ethereum-mainnet"
+            ]
+          },
+          "address": {
+            "type": "string"
+          },
+          "eth_balance": {
+            "type": "string"
+          },
+          "total_txs_sent": {
+            "type": "integer"
+          },
+          "is_contract": {
+            "type": "boolean"
+          },
+          "eip_7702_delegated": {
+            "type": "boolean"
+          },
+          "trust_tier": {
+            "$ref": "#/components/schemas/TrustTier"
+          },
+          "trust_pass": {
+            "type": "boolean"
+          },
+          "trust_reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "activity_window_min": {
+            "type": "integer"
+          },
+          "erc20_transfers_in": {
+            "type": "integer"
+          },
+          "erc20_transfers_out": {
+            "type": "integer"
+          },
+          "distinct_tokens": {
+            "type": "integer"
+          },
+          "unique_counterparties": {
+            "type": "integer"
+          },
+          "top_counterparties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "transfers_in": {
+                  "type": "integer"
+                },
+                "transfers_out": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "description": "ERC-20 burn/mint forensics ($0.05): exact 24h net supply delta (totalSupply at head vs 24h ago) plus recent mint/burn events.",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "token"
+          },
+          "chain": {
+            "type": "string",
+            "enum": [
+              "base-mainnet",
+              "ethereum-mainnet"
+            ]
+          },
+          "contract": {
+            "type": "string"
+          },
+          "token_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "token_symbol": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "decimals": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_supply_now": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_supply_24h_ago": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "net_supply_change_24h": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Negative = net burn, positive = net mint"
+          },
+          "net_supply_change_pct_24h": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recent_activity_window_min": {
+            "type": "integer"
+          },
+          "transfers_recent": {
+            "type": "integer"
+          },
+          "unique_wallets_recent": {
+            "type": "integer"
+          },
+          "mints_recent": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "volume": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "burns_recent": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "volume": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "logs_batches_failed": {
+            "type": "integer"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded_logs"
+            ],
+            "description": "degraded_logs = some eth_getLogs batches failed (rate-limited public RPC); activity counts are then a lower bound"
+          }
+        }
+      },
+      "VerdictResponse": {
+        "type": "object",
+        "description": "Token verdict card ($0.02): activity metrics, deterministic verdict tier, 0-100 score and a shareable take.",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "verdict"
+          },
+          "chain": {
+            "type": "string",
+            "enum": [
+              "base-mainnet",
+              "ethereum-mainnet"
+            ]
+          },
+          "contract": {
+            "type": "string"
+          },
+          "token_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "token_symbol": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_supply": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "verdict_tier": {
+            "type": "string",
+            "enum": [
+              "RED_HOT",
+              "HEAVY_FIRE",
+              "ACTIVE",
+              "THIN",
+              "SUSPICIOUS_THIN",
+              "DORMANT",
+              "NOT_A_TOKEN",
+              "NOT_A_CONTRACT",
+              "UNKNOWN"
+            ],
+            "description": "Activity tiers by unique wallets in the recent window: RED_HOT >=300, HEAVY_FIRE >=100, ACTIVE >=30, THIN >=10, SUSPICIOUS_THIN <10; DORMANT = zero transfers; NOT_A_TOKEN/NOT_A_CONTRACT = not a live ERC-20 / EOA; UNKNOWN = RPC errors, no verdict issued"
+          },
+          "activity_score_0_100": {
+            "type": "integer"
+          },
+          "window_min": {
+            "type": "integer"
+          },
+          "transfers_recent": {
+            "type": "integer"
+          },
+          "unique_wallets_recent": {
+            "type": "integer"
+          },
+          "mints_recent": {
+            "type": "integer"
+          },
+          "burns_recent": {
+            "type": "integer"
+          },
+          "largest_transfer": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "block": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "concentration_top_wallet_share": {
+            "type": "number"
+          },
+          "logs_batches_failed": {
+            "type": "integer"
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "FRESH_MINTS",
+                "BURNS_PRESENT",
+                "CONCENTRATED",
+                "WHALE_MOVE",
+                "LOGS_UNAVAILABLE"
+              ],
+              "description": "FRESH_MINTS = mints in window; BURNS_PRESENT = burns in window; CONCENTRATED = top wallet touched >50% of events (score penalized 30%); WHALE_MOVE = single transfer >10% of supply; LOGS_UNAVAILABLE = verdict withheld"
+            }
+          },
+          "plain_take": {
+            "type": "string"
+          },
+          "share_text": {
+            "type": "string"
+          }
+        }
+      },
+      "CantonResponse": {
+        "type": "object",
+        "description": "Canton Network (CC) burn/mint snapshot ($0.05). Canton is a permissioned chain: metrics are snapshotted on-chain twice daily (07:30 and 19:30 America/Chicago) and served from the latest snapshot. Delta fields are since the previous snapshot and re-derived from stored totals if a snapshot is missing them.",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "canton"
+          },
+          "as_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Snapshot timestamp"
+          },
+          "cc_price_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_supply_cc": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_burned_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Cumulative CC burned"
+          },
+          "total_minted_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Cumulative CC minted (rewards issued)"
+          },
+          "mint_delta_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "CC minted since previous snapshot (0 = no minting)"
+          },
+          "burn_delta_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "CC burned since previous snapshot (0 = no burning)"
+          },
+          "supply_delta_cc": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "net_emission_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "mint_delta - burn_delta since previous snapshot; negative = net deflationary"
+          },
+          "net_emission_7d_avg_cc": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Trailing-7-day daily-average net emission from snapshot history"
+          },
+          "burn_mint_ratio_24h": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "burn_delta/mint_delta since previous snapshot; null only when zero CC was minted (ratio undefined)"
+          },
+          "burn_mint_ratio_cumulative": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "tripped": {
+            "type": "boolean",
+            "description": "True when a monitored threshold event fired"
+          },
+          "trip_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "update_frequency": {
+            "type": "string"
+          },
+          "null_semantics": {
+            "type": "string"
+          }
+        }
+      },
+      "LineaResponse": {
+        "type": "object",
+        "description": "Linea burn-vault forensics snapshot ($0.05): ground-truth audit of the Linea burn pipeline, re-scanned on-chain daily (~09:00 America/Chicago).",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "const": "linea"
+          },
+          "as_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Timestamp of the latest on-chain re-scan"
+          },
+          "cumulative_burned_linea": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Cumulative LINEA removed from supply by the burn engine"
+          },
+          "last_l1_burn_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date of the last final L1 burn (engine paused since 2026-03-10)"
+          },
+          "last_op_block": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "last_op_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date of the last L2 vault burnAndBridge operation"
+          },
+          "vault_balance_eth": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "ETH held by the L2 burn vault"
+          },
+          "safe_balance_eth": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "ETH held by the burn-executor Safe multisig"
+          },
+          "safe_last_exec_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "update_frequency": {
+            "type": "string"
+          },
+          "data_note": {
+            "type": "string"
+          }
+        }
       }
-     }
     }
-   },
-   "TokenResponse": {
-    "type": "object",
-    "description": "ERC-20 burn/mint forensics ($0.05): exact 24h net supply delta (totalSupply at head vs 24h ago) plus recent mint/burn events.",
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "token"
-     },
-     "chain": {
-      "type": "string",
-      "enum": [
-       "base-mainnet",
-       "ethereum-mainnet"
-      ]
-     },
-     "contract": {
-      "type": "string"
-     },
-     "token_name": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "token_symbol": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "decimals": {
-      "type": [
-       "integer",
-       "null"
-      ]
-     },
-     "total_supply_now": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "total_supply_24h_ago": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "net_supply_change_24h": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Negative = net burn, positive = net mint"
-     },
-     "net_supply_change_pct_24h": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "recent_activity_window_min": {
-      "type": "integer"
-     },
-     "transfers_recent": {
-      "type": "integer"
-     },
-     "unique_wallets_recent": {
-      "type": "integer"
-     },
-     "mints_recent": {
-      "type": "object",
-      "properties": {
-       "count": {
-        "type": "integer"
-       },
-       "volume": {
-        "type": [
-         "string",
-         "null"
-        ]
-       }
-      }
-     },
-     "burns_recent": {
-      "type": "object",
-      "properties": {
-       "count": {
-        "type": "integer"
-       },
-       "volume": {
-        "type": [
-         "string",
-         "null"
-        ]
-       }
-      }
-     },
-     "logs_batches_failed": {
-      "type": "integer"
-     },
-     "data_quality": {
-      "type": "string",
-      "enum": [
-       "ok",
-       "degraded_logs"
-      ],
-      "description": "degraded_logs = some eth_getLogs batches failed (rate-limited public RPC); activity counts are then a lower bound"
-     }
-    }
-   },
-   "VerdictResponse": {
-    "type": "object",
-    "description": "Token verdict card ($0.02): activity metrics, deterministic verdict tier, 0-100 score and a shareable take.",
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "verdict"
-     },
-     "chain": {
-      "type": "string",
-      "enum": [
-       "base-mainnet",
-       "ethereum-mainnet"
-      ]
-     },
-     "contract": {
-      "type": "string"
-     },
-     "token_name": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "token_symbol": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "total_supply": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "verdict_tier": {
-      "type": "string",
-      "enum": [
-       "RED_HOT",
-       "HEAVY_FIRE",
-       "ACTIVE",
-       "THIN",
-       "SUSPICIOUS_THIN",
-       "DORMANT",
-       "NOT_A_TOKEN",
-       "NOT_A_CONTRACT",
-       "UNKNOWN"
-      ],
-      "description": "Activity tiers by unique wallets in the recent window: RED_HOT >=300, HEAVY_FIRE >=100, ACTIVE >=30, THIN >=10, SUSPICIOUS_THIN <10; DORMANT = zero transfers; NOT_A_TOKEN/NOT_A_CONTRACT = not a live ERC-20 / EOA; UNKNOWN = RPC errors, no verdict issued"
-     },
-     "activity_score_0_100": {
-      "type": "integer"
-     },
-     "window_min": {
-      "type": "integer"
-     },
-     "transfers_recent": {
-      "type": "integer"
-     },
-     "unique_wallets_recent": {
-      "type": "integer"
-     },
-     "mints_recent": {
-      "type": "integer"
-     },
-     "burns_recent": {
-      "type": "integer"
-     },
-     "largest_transfer": {
-      "type": [
-       "object",
-       "null"
-      ],
-      "properties": {
-       "value": {
-        "type": [
-         "string",
-         "null"
-        ]
-       },
-       "block": {
-        "type": [
-         "integer",
-         "null"
-        ]
-       }
-      }
-     },
-     "concentration_top_wallet_share": {
-      "type": "number"
-     },
-     "logs_batches_failed": {
-      "type": "integer"
-     },
-     "flags": {
-      "type": "array",
-      "items": {
-       "type": "string",
-       "enum": [
-        "FRESH_MINTS",
-        "BURNS_PRESENT",
-        "CONCENTRATED",
-        "WHALE_MOVE",
-        "LOGS_UNAVAILABLE"
-       ],
-       "description": "FRESH_MINTS = mints in window; BURNS_PRESENT = burns in window; CONCENTRATED = top wallet touched >50% of events (score penalized 30%); WHALE_MOVE = single transfer >10% of supply; LOGS_UNAVAILABLE = verdict withheld"
-      }
-     },
-     "plain_take": {
-      "type": "string"
-     },
-     "share_text": {
-      "type": "string"
-     }
-    }
-   },
-   "CantonResponse": {
-    "type": "object",
-    "description": "Canton Network (CC) burn/mint snapshot ($0.05). Canton is a permissioned chain: metrics are snapshotted on-chain twice daily (07:30 and 19:30 America/Chicago) and served from the latest snapshot. Delta fields are since the previous snapshot and re-derived from stored totals if a snapshot is missing them.",
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "canton"
-     },
-     "as_of": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Snapshot timestamp"
-     },
-     "cc_price_usd": {
-      "type": [
-       "number",
-       "null"
-      ]
-     },
-     "total_supply_cc": {
-      "type": [
-       "number",
-       "null"
-      ]
-     },
-     "total_burned_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "Cumulative CC burned"
-     },
-     "total_minted_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "Cumulative CC minted (rewards issued)"
-     },
-     "mint_delta_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "CC minted since previous snapshot (0 = no minting)"
-     },
-     "burn_delta_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "CC burned since previous snapshot (0 = no burning)"
-     },
-     "supply_delta_cc": {
-      "type": [
-       "number",
-       "null"
-      ]
-     },
-     "net_emission_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "mint_delta - burn_delta since previous snapshot; negative = net deflationary"
-     },
-     "net_emission_7d_avg_cc": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "Trailing-7-day daily-average net emission from snapshot history"
-     },
-     "burn_mint_ratio_24h": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "burn_delta/mint_delta since previous snapshot; null only when zero CC was minted (ratio undefined)"
-     },
-     "burn_mint_ratio_cumulative": {
-      "type": [
-       "number",
-       "null"
-      ]
-     },
-     "tripped": {
-      "type": "boolean",
-      "description": "True when a monitored threshold event fired"
-     },
-     "trip_reason": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "notes": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "update_frequency": {
-      "type": "string"
-     },
-     "null_semantics": {
-      "type": "string"
-     }
-    }
-   },
-   "LineaResponse": {
-    "type": "object",
-    "description": "Linea burn-vault forensics snapshot ($0.05): ground-truth audit of the Linea burn pipeline, re-scanned on-chain daily (~09:00 America/Chicago).",
-    "properties": {
-     "endpoint": {
-      "type": "string",
-      "const": "linea"
-     },
-     "as_of": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Timestamp of the latest on-chain re-scan"
-     },
-     "cumulative_burned_linea": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "Cumulative LINEA removed from supply by the burn engine"
-     },
-     "last_l1_burn_date": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Date of the last final L1 burn (engine paused since 2026-03-10)"
-     },
-     "last_op_block": {
-      "type": [
-       "number",
-       "null"
-      ]
-     },
-     "last_op_date": {
-      "type": [
-       "string",
-       "null"
-      ],
-      "description": "Date of the last L2 vault burnAndBridge operation"
-     },
-     "vault_balance_eth": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "ETH held by the L2 burn vault"
-     },
-     "safe_balance_eth": {
-      "type": [
-       "number",
-       "null"
-      ],
-      "description": "ETH held by the burn-executor Safe multisig"
-     },
-     "safe_last_exec_date": {
-      "type": [
-       "string",
-       "null"
-      ]
-     },
-     "update_frequency": {
-      "type": "string"
-     },
-     "data_note": {
-      "type": "string"
-     }
-    }
-   }
-  }
- },
- "x-classification-logic": {
-  "settlesafe": {
-   "asset": "KNOWN_CANONICAL requires an exact match (contract+chain) against the verified tokenized-asset registry (20 aliases) AND a readable ERC-20 interface. UNVERIFIED assets pass settle_safe=true with risk flag NOT_IN_VERIFIED_REGISTRY (confirm issuer independently). Fail-closed: NOT_A_CONTRACT, NOT_ERC20_READABLE, SYMBOL_MISMATCH and VERIFICATION_UNAVAILABLE all return settle_safe=false.",
-   "counterparty": "Same trust-tier heuristic as endpoint=wallet (see TrustTier description). SUSPICIOUS (funded, never acted) additionally raises risk flag COUNTERPARTY_SUSPICIOUS.",
-   "verification_guarantee": "Decisive negatives are confirmed across independent public RPCs before being issued: eth_getCode is read from the freshest of 3 nodes; a totalSupply revert is only accepted when a healthy node (verified via a control USDC read on the same node) confirms it; when the public RPC network itself is degraded the endpoint returns VERIFICATION_UNAVAILABLE instead of a false negative, and the client should retry."
   },
-  "wallet": "Trust tiers are deterministic thresholds over lifetime nonce and recent-window ERC-20 flows; see the TrustTier schema description for exact thresholds.",
-  "verdict": "Deterministic tiers over unique-wallet counts in the recent activity window; see the VerdictResponse.verdict_tier description.",
-  "canton": "Canton is a permissioned chain: on-chain CC reads are not publicly queryable, so the endpoint serves twice-daily snapshots (07:30/19:30 America/Chicago). Delta fields compare against the previous snapshot and are re-derived from stored cumulative totals when missing. burn_mint_ratio_24h is null only when zero CC was minted in the window (ratio undefined).",
-  "linea": "Snapshot-served from a daily on-chain re-scan (~09:00 America/Chicago). The burn engine has been paused since 2026-03-10, so cumulative figures are stable by design; vault/Safe balances re-verify at every refresh."
- }
+  "x-classification-logic": {
+    "settlesafe": {
+      "asset": "KNOWN_CANONICAL requires an exact match (contract+chain) against the verified tokenized-asset registry (20 aliases) AND a readable ERC-20 interface. UNVERIFIED assets pass settle_safe=true with risk flag NOT_IN_VERIFIED_REGISTRY (confirm issuer independently). Fail-closed: NOT_A_CONTRACT, NOT_ERC20_READABLE, SYMBOL_MISMATCH and VERIFICATION_UNAVAILABLE all return settle_safe=false.",
+      "counterparty": "Same trust-tier heuristic as endpoint=wallet (see TrustTier description). SUSPICIOUS (funded, never acted) additionally raises risk flag COUNTERPARTY_SUSPICIOUS.",
+      "verification_guarantee": "Decisive negatives are confirmed across independent public RPCs before being issued: eth_getCode is read from the freshest of 3 nodes; a totalSupply revert is only accepted when a healthy node (verified via a control USDC read on the same node) confirms it; when the public RPC network itself is degraded the endpoint returns VERIFICATION_UNAVAILABLE instead of a false negative, and the client should retry."
+    },
+    "wallet": "Trust tiers are deterministic thresholds over lifetime nonce and recent-window ERC-20 flows; see the TrustTier schema description for exact thresholds.",
+    "verdict": "Deterministic tiers over unique-wallet counts in the recent activity window; see the VerdictResponse.verdict_tier description.",
+    "canton": "Canton is a permissioned chain: on-chain CC reads are not publicly queryable, so the endpoint serves twice-daily snapshots (07:30/19:30 America/Chicago). Delta fields compare against the previous snapshot and are re-derived from stored cumulative totals when missing. burn_mint_ratio_24h is null only when zero CC was minted in the window (ratio undefined).",
+    "linea": "Snapshot-served from a daily on-chain re-scan (~09:00 America/Chicago). The burn engine has been paused since 2026-03-10, so cumulative figures are stable by design; vault/Safe balances re-verify at every refresh."
+  }
 }
