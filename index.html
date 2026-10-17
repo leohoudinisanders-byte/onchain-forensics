@@ -135,6 +135,23 @@
 </section>
 
 <section>
+  <h2>New: XRP Ledger support (chain=xrp)</h2>
+  <div class="demo">
+    <p style="color:var(--dim)">The flagship settle-safe screen now covers <b>XRPL issued currencies</b> — the structural counterparty risk of IOUs, machine-readable:</p>
+    <span class="tier">KNOWN_CANONICAL &middot; RLUSD &middot; issuer blackholed &middot; settle-safe: true</span>
+    <ul>
+      <li><b>?endpoint=settlesafe&amp;chain=xrp&amp;token=rlusd</b> ($0.02) — or any issuer: <code>&amp;issuer=r...&amp;currency=USD</code></li>
+      <li>Blackhole status (disabled master key + no regular key = obligations fixed)</li>
+      <li>Default Ripple, No Freeze vs Global Freeze, and trustline clawback flags — decoded, with severity</li>
+      <li>Outstanding obligations + trustline breadth via gateway_balances</li>
+      <li>Verified registry: RLUSD (Ripple USD), GateHub USD — Bitstamp pending verification</li>
+      <li><b>?endpoint=wallet&amp;chain=xrp&amp;address=r...</b> ($0.05) — payments, offers, trustlines, counterparties, trust tiers</li>
+    </ul>
+    <p style="margin-top:12px">Reads run against public rippled/Clio servers — no API keys. Same wallet, same x402 payment rail. XRPL verdict/memo arrive in Phase 2.</p>
+  </div>
+</section>
+
+<section>
   <h2>Machine-readable docs</h2>
   <p style="color:var(--dim);font-size:.95rem">OpenAPI 3.1 specification, served from this origin:</p>
   <ul>
