@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.5.0",
-    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker — x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo — $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp — wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL token/verdict/memo arrive in Phase 2. Operated by Solene — deep research with receipts: the agent that ships working proof, not promises.",
+    "version": "2.6.1",
+    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker — x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo — $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp — wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL token/verdict/memo arrive in Phase 2. Operated by Solene — deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
     "x-payment": {
       "protocol": "x402",
       "price": {
@@ -40,7 +40,7 @@
     "/functions/forensicsApi": {
       "get": {
         "summary": "Forensics data endpoint",
-        "description": "Returns the requested forensics dataset. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Free daily trial calls per visitor IP are tracked in the X-Free-Calls-Remaining header.",
+        "description": "Returns the requested forensics dataset. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Free daily trial calls per visitor IP are tracked in the X-Free-Calls-Remaining header. Resource-oriented aliases exist for each operation (/functions/forensicsToken, /functions/forensicsWallet, /functions/forensicsVerdict, /functions/forensicsSettlesafe, /functions/forensicsMemo, /functions/forensicsCanton, /functions/forensicsLinea). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
         "parameters": [
           {
             "name": "endpoint",
@@ -175,6 +175,441 @@
             "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
           }
         }
+      }
+    },
+    "/functions/forensicsToken": {
+      "get": {
+        "summary": "ERC-20 burn/mint forensics (resource path)",
+        "description": "Exact 24h net supply change + recent mint/burn events for any ERC-20 on Base or Ethereum mainnet. Named aliases supported via token=. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (endpoint=token or endpoint=settlesafe); resolves chain+contract automatically"
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (endpoint=token)"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum",
+                "xrp"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "tokenForensics"
+      }
+    },
+    "/functions/forensicsWallet": {
+      "get": {
+        "summary": "Wallet forensics (resource path)",
+        "description": "Balance, tx count, ERC-20 flows and top counterparties for any address on Base or Ethereum (chain=xrp for XRPL wallets). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum",
+                "xrp"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "walletForensics"
+      }
+    },
+    "/functions/forensicsVerdict": {
+      "get": {
+        "summary": "Token verdict card, $0.02 (resource path)",
+        "description": "Activity metrics, deterministic verdict tier, 0-100 activity score and a shareable plain-language take. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum",
+                "xrp"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "verdictForensics"
+      }
+    },
+    "/functions/forensicsSettlesafe": {
+      "get": {
+        "summary": "Settle-safe pre-trade screen, $0.02 (resource path)",
+        "description": "Canonical-asset check against the verified registry (EVM tokens + XRPL issuers via chain=xrp&address=<issuer>&currency=USD) plus optional counterparty wallet trust tier. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (endpoint=token or endpoint=settlesafe); resolves chain+contract automatically"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum",
+                "xrp"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          },
+          {
+            "name": "counterparty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Optional counterparty wallet to trust-screen (endpoint=settlesafe); returns trust_tier per CounterpartyScreen.trust_tier enum"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$|^[0-9A-Fa-f]{40}$"
+            },
+            "description": "XRPL issued-currency code (chain=xrp settlesafe; e.g. USD, RLUSD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "settleSafeForensics"
+      }
+    },
+    "/functions/forensicsMemo": {
+      "get": {
+        "summary": "Due diligence memo, $0.25 (resource path)",
+        "description": "Verdict + 24h supply forensics + wallet flows + settle-safe screen composed into one reproducible analyst memo (no LLM calls; $0.35 with counterparty trust screen). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (endpoint=token or endpoint=settlesafe); resolves chain+contract automatically"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum",
+                "xrp"
+              ],
+              "default": "base"
+            },
+            "description": "Chain to read (endpoint=token with a raw contract; endpoint=wallet for wallet analysis)"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          },
+          {
+            "name": "counterparty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Optional counterparty wallet to trust-screen (endpoint=settlesafe); returns trust_tier per CounterpartyScreen.trust_tier enum"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "memoForensics"
+      }
+    },
+    "/functions/forensicsCanton": {
+      "get": {
+        "summary": "Canton Network (CC) burn/mint snapshot (resource path)",
+        "description": "Twice-daily CC burn/mint snapshot: totals, deltas, burn/mint ratio, net emission and 7d average. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "cantonSnapshot"
+      }
+    },
+    "/functions/forensicsLinea": {
+      "get": {
+        "summary": "Linea burn-vault audit snapshot (resource path)",
+        "description": "Daily on-chain re-scan of the Linea burn vault: cumulative burned LINEA, vault/Safe balances, last burn and execution dates. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "lineaSnapshot"
       }
     }
   },

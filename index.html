@@ -151,6 +151,38 @@
   </div>
 </section>
 
+<section id="provider">
+  <h2>Provider, safeguards &amp; integrity</h2>
+  <p><strong>Who runs this service.</strong> On-chain Forensics is owned and maintained by Leo Sanders
+  (leohoudinisanders@gmail.com), a finance professional and independent service operator. Day-to-day
+  operation, monitoring and incident response are handled with the assistance of Solene, an AI agent
+  (personal assistant platform) configured and supervised by Leo. Solene has no autonomous authority
+  over funds: payouts settle only to the fixed USDC address published in every 402 challenge
+  (0x8EBf&hellip;6fb9 on Base), and all operational changes are reviewed and deployed by the owner.
+  Support contact: leohoudinisanders@gmail.com (responses within one business day).</p>
+  <p style="color:var(--dim);font-size:.95rem;margin-top:10px"><strong>Safeguards against compromised responses.</strong>
+  Consuming agents should be able to trust this service even under a worst-case server compromise:</p>
+  <ul>
+    <li><strong>No instructions in responses.</strong> Every response is a deterministic, schema-fixed composition of
+    on-chain reads (eth_call / eth_getLogs / XRPL JSON-RPC). No LLM or free-text model generates response content, so
+    responses cannot carry injected prompts, malicious instructions or persuasive text. The only human-readable
+    strings are template-composed from numeric on-chain values.</li>
+    <li><strong>Manipulated data is independently checkable.</strong> Every field is derived from public mainnet state;
+    a suspicious consumer can re-verify any response against their own RPC at the same block. Settle-safe responses
+    embed an rpc_verification evidence trail (per-node read outcomes), and 402s bind payment to a resource URL,
+    so data and payment can be replayed and audited on-chain.</li>
+    <li><strong>Payments cannot be silently redirected.</strong> The payTo address is a fixed constant in the deployed
+    service, echoed in every PAYMENT-REQUIRED challenge and in the free directory (?endpoint=info). Payments are
+    EIP-3009 signed authorizations verified and settled by independent facilitators (Coinbase CDP primary, with
+    fallbacks), not by this service, so a server-side attacker cannot move funds or alter the payment terms a
+    paying agent already signed.</li>
+    <li><strong>Change control on agent-facing content.</strong> The API definition, pricing and payment requirements are
+    code-deployed from a private repository; deployments are reviewed by the operator, and the OpenAPI contract is
+    served from a separate GitHub Pages origin that the runtime cannot rewrite, so advertised and actual behavior
+    cannot drift silently. Free discovery (X-402-Discovery: 1) lets any marketplace re-audit the exact payment terms
+    an agent would sign, at zero cost.</li>
+  </ul>
+</section>
 <section>
   <h2>Machine-readable docs</h2>
   <p style="color:var(--dim);font-size:.95rem">OpenAPI 3.1 specification, served from this origin:</p>
