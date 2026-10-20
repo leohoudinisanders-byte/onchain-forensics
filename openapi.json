@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.6.1",
-    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker — x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo — $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp — wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL token/verdict/memo arrive in Phase 2. Operated by Solene — deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
+    "version": "2.7.2",
+    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker — x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo — $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp — wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene — deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
     "x-payment": {
       "protocol": "x402",
       "price": {
@@ -315,7 +315,7 @@
     "/functions/forensicsVerdict": {
       "get": {
         "summary": "Token verdict card, $0.02 (resource path)",
-        "description": "Activity metrics, deterministic verdict tier, 0-100 activity score and a shareable plain-language take. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "description": "Activity metrics, deterministic verdict tier, 0-100 activity score and a shareable plain-language take (chain=xrp: issuer verdicts — activity metrics, EVM-tier mapping and registry/freeze/blackhole flags via chain=xrp&issuer=r...&currency=USD). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
         "parameters": [
           {
             "name": "chain",
@@ -341,6 +341,26 @@
               "pattern": "^0x[a-fA-F0-9]{40}$"
             },
             "description": "Wallet address (endpoint=wallet), ERC-20 token contract (endpoint=verdict), or token contract to screen (endpoint=settlesafe)"
+          },
+          {
+            "name": "issuer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^r[1-9A-HJ-NP-Za-km-z]{24,34}$"
+            },
+            "description": "XRPL issuer address (chain=xrp settlesafe; equivalent to address=)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$|^[0-9A-Fa-f]{40}$"
+            },
+            "description": "XRPL issued-currency code (chain=xrp settlesafe; e.g. USD, RLUSD)"
           }
         ],
         "responses": {
@@ -367,7 +387,7 @@
     "/functions/forensicsSettlesafe": {
       "get": {
         "summary": "Settle-safe pre-trade screen, $0.02 (resource path)",
-        "description": "Canonical-asset check against the verified registry (EVM tokens + XRPL issuers via chain=xrp&address=<issuer>&currency=USD) plus optional counterparty wallet trust tier. Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "description": "Canonical-asset check against the verified registry (EVM tokens + XRPL issuers via chain=xrp&address=<issuer>&currency=USD) plus optional counterparty wallet trust tier (chain=xrp: issuer screens via issuer= + currency=). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
         "parameters": [
           {
             "name": "token",
@@ -444,6 +464,16 @@
               "pattern": "^[A-Za-z]{3}$|^[0-9A-Fa-f]{40}$"
             },
             "description": "XRPL issued-currency code (chain=xrp settlesafe; e.g. USD, RLUSD)"
+          },
+          {
+            "name": "issuer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^r[1-9A-HJ-NP-Za-km-z]{24,34}$"
+            },
+            "description": "XRPL issuer address (chain=xrp settlesafe; equivalent to address=)"
           }
         ],
         "responses": {
@@ -470,7 +500,7 @@
     "/functions/forensicsMemo": {
       "get": {
         "summary": "Due diligence memo, $0.25 (resource path)",
-        "description": "Verdict + 24h supply forensics + wallet flows + settle-safe screen composed into one reproducible analyst memo (no LLM calls; $0.35 with counterparty trust screen). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "description": "Verdict + 24h supply forensics + wallet flows + settle-safe screen composed into one reproducible analyst memo (no LLM calls; $0.35 with counterparty trust screen) (chain=xrp: issuer due-diligence memos with the same severity-ranked red-flag table via chain=xrp&issuer=r...&currency=USD). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
         "parameters": [
           {
             "name": "token",
@@ -537,6 +567,26 @@
               "pattern": "^0x[a-fA-F0-9]{40}$"
             },
             "description": "Optional counterparty wallet to trust-screen (endpoint=settlesafe); returns trust_tier per CounterpartyScreen.trust_tier enum"
+          },
+          {
+            "name": "issuer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^r[1-9A-HJ-NP-Za-km-z]{24,34}$"
+            },
+            "description": "XRPL issuer address (chain=xrp settlesafe; equivalent to address=)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$|^[0-9A-Fa-f]{40}$"
+            },
+            "description": "XRPL issued-currency code (chain=xrp settlesafe; e.g. USD, RLUSD)"
           }
         ],
         "responses": {
