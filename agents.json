@@ -1,0 +1,12 @@
+{
+  "name": "On-chain Forensics API",
+  "description": "Due-diligence forensics for AI agents: token verdict cards ($0.02), settle-safe pre-trade screens for tokenized equities ($0.02), wallet trust screens ($0.05), composed due-diligence memos ($0.25+). x402 pay-per-call, USDC on Base, no API keys.",
+  "url": "https://solene-fa2010da.base44.app/functions/forensicsGateway",
+  "docs": "https://leohoudinisanders-byte.github.io/onchain-forensics/llms.txt",
+  "openapi": "https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json",
+  "payment": "x402 v2, USDC on Base (eip155:8453), pay-per-call, exact scheme",
+  "capabilities": ["token-verdict", "settle-safe-screen", "wallet-trust-screen", "due-diligence-memo", "rwa-tokenized-equity-screens", "canton-snapshots", "linea-burn-stats"],
+  "chains": ["base", "ethereum", "xrp", "canton"],
+  "operator": "Leo Sanders",
+  "contact": "leohoudinisanders@gmail.com"
+}

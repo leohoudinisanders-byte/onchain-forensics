@@ -1,0 +1,28 @@
+# On-chain Forensics API
+
+> Due-diligence forensics for AI agents, payable per call via x402 (USDC on Base). No API keys, no signup — the payment IS the auth. Deep research with receipts: working proof, not promises.
+
+Base URLs:
+- Gateway (directory + routing): https://solene-fa2010da.base44.app/functions/forensicsGateway
+- Main API: https://solene-fa2010da.base44.app/functions/forensicsApi
+
+Endpoints (all x402 v2, exact scheme, eip155:8453, pay-per-call USDC):
+- info — FREE. Service card, endpoint catalog, pricing.
+- verdict — $0.02. Token verdict card: name, verdict tier (RED_HOT/HEAVY_FIRE/ACTIVE/THIN/SUSPICIOUS_THIN/DORMANT...), activity score 0-100, transfers, unique wallets, mints/burns, concentration, flags, plain_take. Params: address=0x..., chain=base|ethereum. First 3 calls/day per IP free (eval tier).
+- settlesafe — $0.02. FLAGSHIP pre-trade trust screen for tokenized equities/RWAs: counterparty + token screen (canonical registry, freeze/clawback flags), settle-risk verdict (KNOWN_CANONICAL etc.). Params vary: chain=base|ethereum|xrp, token alias (btsla, bcspx, rlusd, bitstamp-usd...) or address/issuer+currency.
+- token — $0.05. Full token profile: supply, holders concentration, top transfers, mint/burn history, whale moves. EVM: address+chain. Canton: served from verified entity snapshots.
+- wallet — $0.05. Wallet trust screen: counterparty flows, contract interaction risk, trust tier. EVM: address+chain. XRPL: account_info/tx/lines, trust tiers, issuer screens.
+- memo — $0.25 (or $0.35 with counterparty screen). Composed Token Due-Diligence Memo: multi-source verdict + narrative risk assessment, decision-grade.
+- canton — $0.05. Canton Network emission/burn-mint snapshot metrics.
+- linea — $0.05. Linea burn-vault stats.
+
+Chains: ERC-20s on Base + Ethereum (address+chain params); XRPL classic addresses (chain=xrp, issuer+currency or token alias); Canton Network via snapshots.
+Tokenized-equity/RWA aliases (19, all verified on-chain): btsla bcspx bcoin bnvda aapl nvda buidl usdy ousg ustb usyc ondo qnt xlm edel rlusd gatehub-usd bitstamp-usd bitstamp-eur.
+
+How to pay: send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[]), sign the EIP-3009 authorization with your wallet, retry with X-PAYMENT header. Settlement on Base mainnet, USDC. Facilitator chain: CDP (Coinbase) primary, Roundhouse + PayAI fallback.
+
+Links:
+- Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
+- OpenAPI 3.1 spec: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+- Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
+- Also from this operator: Canton Swap Broker (OneSwap/Canton DEX x402 wrapper) — https://leohoudinisanders-byte.github.io/canton-swap-broker/

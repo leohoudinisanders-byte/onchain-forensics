@@ -1,0 +1,32 @@
+{
+  "x402Version": 2,
+  "serviceName": "On-chain Forensics",
+  "description": "Due-diligence forensics API for AI agents: token verdict cards, wallet trust screens, pre-trade settle-safe screens for tokenized equities, and composed due-diligence memos. Pay-per-call x402 v2, USDC on Base.",
+  "resources": [
+    {
+      "path": "/functions/forensicsGateway",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsGateway",
+      "description": "Directory endpoint: free service card + all endpoint/pricing metadata, x402-routes to every paid endpoint",
+      "priceUsd": "0.02",
+      "scheme": "exact",
+      "network": "eip155:8453"
+    },
+    {
+      "path": "/functions/forensicsApi",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsApi",
+      "description": "Main API: info free; verdict/settlesafe $0.02; token/wallet/canton/linea $0.05; memo $0.25-$0.35",
+      "scheme": "exact",
+      "network": "eip155:8453"
+    }
+  ],
+  "openapi": "https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json",
+  "llmsTxt": "https://leohoudinisanders-byte.github.io/onchain-forensics/llms.txt",
+  "landing": "https://leohoudinisanders-byte.github.io/onchain-forensics/",
+  "related": [
+    {
+      "name": "Canton Swap Broker",
+      "url": "https://solene-fa2010da.base44.app/functions/cantonSwapBroker",
+      "landing": "https://leohoudinisanders-byte.github.io/canton-swap-broker/"
+    }
+  ]
+}
