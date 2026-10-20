@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.7.2",
+    "version": "2.7.4",
     "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker — x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo — $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp — wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene — deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
     "x-payment": {
       "protocol": "x402",
@@ -55,7 +55,8 @@
                 "wallet",
                 "verdict",
                 "settlesafe",
-                "memo"
+                "memo",
+                "sweep"
               ]
             },
             "description": "Dataset to fetch (verdict & settlesafe = $0.02, others $0.05) memo = $0.25 composed due-diligence memo (verdict + token + settlesafe in one, plus red-flag table and bottom line)."
@@ -660,6 +661,57 @@
           }
         },
         "operationId": "lineaSnapshot"
+      }
+    },
+    "/functions/forensicsSweep": {
+      "get": {
+        "summary": "Portfolio sweep, $0.25 (resource path)",
+        "description": "One wallet, every verified-registry token on its chain screened in a single call: balances, verdict tiers, activity scores, red flags per holding, aggregated portfolio risk and a deterministic bottom line (no LLM calls). USD pricing is intentionally out of scope (no oracle dependency). Requires x402 v2 USDC payment (PAYMENT-SIGNATURE header; 402 challenge in PAYMENT-REQUIRED header). Send X-402-Discovery: 1 for a discovery-only 402 (operation not executed, trial quota untouched).",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "wallet address to sweep (EOA or contract; holdings are read via balanceOf on each registry token)"
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "chain whose registry tokens are screened (XRPL is not supported for sweeps)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaidResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "forensicsSweep"
       }
     }
   },
