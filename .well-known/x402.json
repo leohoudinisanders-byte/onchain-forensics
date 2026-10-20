@@ -28,5 +28,35 @@
       "url": "https://solene-fa2010da.base44.app/functions/cantonSwapBroker",
       "landing": "https://leohoudinisanders-byte.github.io/canton-swap-broker/"
     }
-  ]
+  ],
+  "mcpServer": {
+    "url": "https://solene-fa2010da.base44.app/functions/forensicsMcp",
+    "transport": "streamable-http",
+    "tools": [
+      {
+        "name": "forensics_info",
+        "price": "free"
+      },
+      {
+        "name": "token_verdict",
+        "priceUsd": "0.02"
+      },
+      {
+        "name": "settle_safe",
+        "priceUsd": "0.02"
+      },
+      {
+        "name": "wallet_screen",
+        "priceUsd": "0.05"
+      },
+      {
+        "name": "token_profile",
+        "priceUsd": "0.05"
+      },
+      {
+        "name": "diligence_memo",
+        "priceUsd": "0.25"
+      }
+    ]
+  }
 }

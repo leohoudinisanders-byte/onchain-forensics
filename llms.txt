@@ -21,6 +21,12 @@ Tokenized-equity/RWA aliases (19, all verified on-chain): btsla bcspx bcoin bnvd
 
 How to pay: send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[]), sign the EIP-3009 authorization with your wallet, retry with X-PAYMENT header. Settlement on Base mainnet, USDC. Facilitator chain: CDP (Coinbase) primary, Roundhouse + PayAI fallback.
 
+MCP server (for Claude, ChatGPT and any MCP client):
+- Endpoint: https://solene-fa2010da.base44.app/functions/forensicsMcp (streamable HTTP, JSON-RPC 2.0)
+- Tools: forensics_info (free), token_verdict ($0.02), settle_safe ($0.02), wallet_screen ($0.05), token_profile ($0.05), diligence_memo ($0.25 / $0.35 with counterparty)
+- Same x402 pay-per-call: a paid tools/call returns HTTP 402 with PAYMENT-REQUIRED until paid; sign and retry with X-PAYMENT.
+- MCP tools are also indexed in the Coinbase x402 Bazaar (type: mcp, transport: streamable-http).
+
 Links:
 - Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
 - OpenAPI 3.1 spec: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json

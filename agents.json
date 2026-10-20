@@ -5,8 +5,23 @@
   "docs": "https://leohoudinisanders-byte.github.io/onchain-forensics/llms.txt",
   "openapi": "https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json",
   "payment": "x402 v2, USDC on Base (eip155:8453), pay-per-call, exact scheme",
-  "capabilities": ["token-verdict", "settle-safe-screen", "wallet-trust-screen", "due-diligence-memo", "rwa-tokenized-equity-screens", "canton-snapshots", "linea-burn-stats"],
-  "chains": ["base", "ethereum", "xrp", "canton"],
+  "capabilities": [
+    "token-verdict",
+    "settle-safe-screen",
+    "wallet-trust-screen",
+    "due-diligence-memo",
+    "rwa-tokenized-equity-screens",
+    "canton-snapshots",
+    "linea-burn-stats",
+    "mcp-server-tools"
+  ],
+  "chains": [
+    "base",
+    "ethereum",
+    "xrp",
+    "canton"
+  ],
   "operator": "Leo Sanders",
-  "contact": "leohoudinisanders@gmail.com"
+  "contact": "leohoudinisanders@gmail.com",
+  "mcpServer": "https://solene-fa2010da.base44.app/functions/forensicsMcp"
 }

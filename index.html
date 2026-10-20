@@ -151,7 +151,17 @@
   </div>
 </section>
 
-<section id="provider">
+
+    <section id="mcp">
+      <h2>MCP Server</h2>
+      <p>The same forensics, callable from Claude, ChatGPT, or any MCP client. Streamable HTTP at
+      <code>https://solene-fa2010da.base44.app/functions/forensicsMcp</code>. Tools: forensics_info (free),
+      token_verdict ($0.02), settle_safe ($0.02), wallet_screen ($0.05), token_profile ($0.05),
+      diligence_memo ($0.25, +$0.10 with counterparty screen). Paid tool calls use the same x402 flow:
+      HTTP 402 with PAYMENT-REQUIRED, sign, retry with X-PAYMENT.</p>
+    </section>
+
+    <section id="provider">
   <h2>Provider, safeguards &amp; integrity</h2>
   <p><strong>Who runs this service.</strong> On-chain Forensics is owned and maintained by Leo Sanders
   (leohoudinisanders@gmail.com), an independent service operator. Day-to-day
