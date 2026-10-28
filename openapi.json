@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.8.0",
+    "version": "2.8.1",
     "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo \u2014 $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp \u2014 wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene \u2014 deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
     "x-payment": {
       "protocol": "x402",
@@ -1174,7 +1174,7 @@
               "integer",
               "null"
             ],
-            "description": "Null when log reads were incomplete."
+            "description": "null when the log read is incomplete - a zero here is an observed zero, never an assumed one"
           },
           "unique_wallets_recent": {
             "type": [
@@ -1242,8 +1242,10 @@
             "enum": [
               "OK",
               "PARTIAL_LOGS",
+              "PARTIAL_COVERAGE",
               "UNAVAILABLE_SILENT_EMPTY_LOGS"
-            ]
+            ],
+            "description": "OK = complete read; PARTIAL_LOGS / PARTIAL_COVERAGE / UNAVAILABLE_SILENT_EMPTY_LOGS = counts withheld because the read was incomplete"
           },
           "activity_note": {
             "type": "string",
@@ -1262,18 +1264,16 @@
           },
           "data_quality": {
             "type": "string",
-            "enum": [
-              "ok",
-              "degraded_logs",
-              "ok_partial_supply",
-              "degraded_logs_partial_supply"
-            ]
+            "description": "ok | degraded_logs | ok_partial_supply | degraded_logs_partial_supply"
           },
           "evaluated_blocks": {
             "$ref": "#/components/schemas/EvaluatedBlocks"
           },
           "error": {
             "type": "string"
+          },
+          "logs_coverage": {
+            "$ref": "#/components/schemas/LogsCoverage"
           }
         }
       },
@@ -1296,7 +1296,7 @@
               "integer",
               "null"
             ],
-            "description": "Null when log reads were incomplete."
+            "description": "null when the log read is incomplete - a zero here is an observed zero, never an assumed one"
           },
           "unique_wallets_recent": {
             "type": [
@@ -1336,8 +1336,10 @@
             "enum": [
               "OK",
               "PARTIAL_LOGS",
+              "PARTIAL_COVERAGE",
               "UNAVAILABLE_SILENT_EMPTY_LOGS"
-            ]
+            ],
+            "description": "OK = complete read; PARTIAL_LOGS / PARTIAL_COVERAGE / UNAVAILABLE_SILENT_EMPTY_LOGS = counts withheld because the read was incomplete"
           },
           "logs_batches_failed": {
             "type": "integer"
@@ -1347,6 +1349,9 @@
           },
           "take": {
             "type": "string"
+          },
+          "logs_coverage": {
+            "$ref": "#/components/schemas/LogsCoverage"
           }
         }
       },
@@ -1733,6 +1738,39 @@
           },
           "note": {
             "type": "string"
+          }
+        }
+      },
+      "LogsCoverage": {
+        "type": "object",
+        "description": "Log-read coverage accounting (v2.8.1). Density-adaptive chunking keeps each eth_getLogs query under provider response caps; when the request budget cannot cover the nominal window the scanned span shrinks and is reported here and in evaluated_blocks, so counts stay exact for the span they describe.",
+        "properties": {
+          "window_blocks": {
+            "type": "integer",
+            "description": "nominal window the endpoint targets"
+          },
+          "scanned_blocks": {
+            "type": "integer",
+            "description": "blocks actually scanned (0 when the read is incomplete)"
+          },
+          "chunks": {
+            "type": "integer"
+          },
+          "logs_per_block": {
+            "type": "number",
+            "description": "density probe result used to size chunks"
+          },
+          "chunk_blocks": {
+            "type": "integer",
+            "description": "block span per query after density sizing"
+          },
+          "exact": {
+            "type": "boolean",
+            "description": "true only when the scan completed without loss and the counts are exact for scanned_blocks"
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "true when any batch was lost after retries; activity counts are withheld in that case"
           }
         }
       }
