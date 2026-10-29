@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.8.1",
+    "version": "2.8.2",
     "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo \u2014 $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp \u2014 wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene \u2014 deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
     "x-payment": {
       "protocol": "x402",
@@ -1559,25 +1559,72 @@
           "header": {
             "type": "object",
             "properties": {
-              "generated": {
-                "type": "string"
-              },
-              "asset": {
+              "contract": {
                 "type": "string"
               },
               "chain": {
                 "type": "string"
               },
-              "price_tier": {
+              "block": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "generated_at": {
                 "type": "string"
               },
-              "memo_version": {
+              "token_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "token_symbol": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "data_freshness": {
                 "type": "string"
               }
             }
           },
           "executive_summary": {
-            "type": "string"
+            "type": "object",
+            "description": "OBJECT, not a string.",
+            "properties": {
+              "verdict_tier": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "activity_score_0_100": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "settle_safe": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "plain_take": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "verdict_tier",
+              "activity_score_0_100",
+              "settle_safe"
+            ]
           },
           "supply_forensics": {
             "type": [
@@ -1592,13 +1639,6 @@
               "null"
             ],
             "description": "Verdict-derived flows incl. evaluated_blocks; may be {status: unavailable}."
-          },
-          "settle_safe_screen": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "description": "SettleSafeResponse-shaped section."
           },
           "red_flags": {
             "type": "array",
@@ -1626,7 +1666,6 @@
           },
           "section_quality": {
             "type": "object",
-            "description": "Per-section data quality: settlesafe, verdict_logs, supply.",
             "properties": {
               "settlesafe": {
                 "type": "string"
@@ -1640,18 +1679,8 @@
             }
           },
           "bottom_line": {
-            "type": "object",
-            "properties": {
-              "recommendation": {
-                "type": "string"
-              },
-              "confidence": {
-                "type": "string"
-              },
-              "summary": {
-                "type": "string"
-              }
-            }
+            "type": "string",
+            "description": "STRING bottom line, always present."
           },
           "counterparty_screen": {
             "type": [
@@ -1659,6 +1688,36 @@
               "null"
             ],
             "description": "Present on the $0.35 tier."
+          },
+          "settlesafe_screen": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "SettleSafe-derived section (field name is settlesafe_screen)."
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ],
+            "description": "COMPLETE when all three sections read; PARTIAL/UNAVAILABLE when degraded RPC reads prevented a section. Never treat PARTIAL as clean."
+          },
+          "section_availability": {
+            "type": "object",
+            "properties": {
+              "asset_verification": {
+                "type": "boolean"
+              },
+              "activity": {
+                "type": "boolean"
+              },
+              "supply": {
+                "type": "boolean"
+              }
+            }
           }
         }
       },
@@ -1738,6 +1797,24 @@
           },
           "note": {
             "type": "string"
+          },
+          "holdings_status": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ],
+            "description": "UNAVAILABLE means balance reads failed - NOT an empty wallet."
+          },
+          "reads_failed": {
+            "type": "integer"
+          },
+          "evaluated_block": {
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         }
       },
