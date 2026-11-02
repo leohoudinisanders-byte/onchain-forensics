@@ -233,5 +233,77 @@ function fail(msg) {
     "paid routes skip the free limit at $0.02 to $0.25.</div>";
 }
 </script>
+
+<section id="micro" style="margin-top:38px;border:1px solid #1e2733;border-radius:14px;padding:22px;background:#0f141c">
+  <h2 style="font-size:1.15rem;margin:0 0 6px">Single-question reads</h2>
+  <p style="color:#8b98a8;font-size:.93rem;margin:0 0 16px">Six narrow routes, each one question, each its own endpoint. Five free calls per day per visitor. Paste a contract and pick the question.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    <input id="m-addr" value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" spellcheck="false"
+      style="flex:1 1 320px;min-width:260px;background:#0b0f16;border:1px solid #29323f;color:#e8edf4;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86rem" />
+    <select id="m-chain" style="background:#0b0f16;border:1px solid #29323f;color:#e8edf4;border-radius:10px;padding:12px 10px;font-size:.86rem">
+      <option value="base">base</option><option value="ethereum">ethereum</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button data-micro="registry" class="mbtn">Is it canonical?</button>
+    <button data-micro="supply" class="mbtn">Supply</button>
+    <button data-micro="activity" class="mbtn">Activity window</button>
+    <button data-micro="holders" class="mbtn">Holders</button>
+    <button data-micro="mints" class="mbtn">Mints</button>
+    <button data-micro="burns" class="mbtn">Burns</button>
+  </div>
+  <div id="m-out" style="margin-top:16px;font-size:.93rem;color:#c3ccd8;line-height:1.6"></div>
+  <p style="color:#66707e;font-size:.8rem;margin:14px 0 0">Free tier: 5 calls per route per day. Paid: $0.01 for registry, supply and activity, $0.02 for holders, mints and burns.</p>
+  <style>
+    .mbtn{background:#151d28;border:1px solid #29323f;color:#dbe3ec;border-radius:9px;padding:10px 14px;font-size:.88rem;cursor:pointer}
+    .mbtn:hover{background:#1b2532;border-color:#3a4655}
+    .mbtn:disabled{opacity:.55;cursor:default}
+    .mk{color:#8b98a8}
+  </style>
+</section>
+<script>
+(function () {
+  var API = "https://solene-fa2010da.base44.app";
+  var out = document.getElementById("m-out");
+  var fmt = function (n) {
+    if (n === null || n === undefined) return "unavailable";
+    if (typeof n !== "number") return String(n);
+    return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  };
+  function summarise(kind, d) {
+    if (kind === "registry") return "<b>" + (d.canonical ? "Canonical on this chain" : d.known_external ? "Known, but on " + d.registry_chain : "Not in the registry") + "</b>" + (d.symbol ? " <span class='mk'>&middot; " + d.symbol + "</span>" : "") + "<br><span class='mk'>" + d.note + "</span>";
+    if (kind === "supply") return "<b>" + fmt(d.total_supply_display) + "</b> " + (d.symbol || "units") + " supply <span class='mk'>&middot; 24h change " + fmt(d.supply_24h_change_display) + " &middot; issuer moved supply: " + (d.issuer_controlled === null ? "unknown" : d.issuer_controlled ? "yes" : "no") + "</span>";
+    if (kind === "activity") return "<b>" + fmt(d.transfers) + "</b> transfers <span class='mk'>&middot; " + fmt(d.unique_wallets) + " wallets &middot; " + fmt(d.transfers_per_min) + "/min across " + (d.window ? d.window.blocks + " blocks (" + d.window.window_min + " min)" : "the window") + "</span>";
+    if (kind === "holders") return "Top holder <b>" + fmt(d.top1_pct) + "%</b>, top 10 <b>" + fmt(d.top10_pct) + "%</b> of supply <span class='mk'>&middot; " + (d.method || "") + "</span>";
+    if (kind === "mints") return "<b>" + fmt(d.mint_count) + "</b> mints totalling <b>" + fmt(d.total_minted) + "</b> <span class='mk'>&middot; " + (d.window ? d.window.window_min + " min window" : "") + "</span>";
+    if (kind === "burns") return "<b>" + fmt(d.burn_count) + "</b> burns totalling <b>" + fmt(d.total_burned) + "</b> <span class='mk'>&middot; " + (d.window ? d.window.window_min + " min window" : "") + "</span>";
+    return "<span class='mk'>" + JSON.stringify(d).slice(0, 300) + "</span>";
+  }
+  document.querySelectorAll("[data-micro]").forEach(function (btn) {
+    btn.addEventListener("click", async function () {
+      var kind = btn.getAttribute("data-micro");
+      var addr = document.getElementById("m-addr").value.trim();
+      var chain = document.getElementById("m-chain").value;
+      var all = document.querySelectorAll("[data-micro]");
+      all.forEach(function (b) { b.disabled = true; });
+      out.innerHTML = "<span class='mk'>Reading " + kind + "&hellip;</span>";
+      try {
+        var r = await fetch(API + "/functions/forensicsApi?endpoint=" + kind + "&address=" + encodeURIComponent(addr) + "&chain=" + chain + "&trial=1");
+        var j = await r.json();
+        if (r.status !== 200) {
+          out.innerHTML = "<span style='color:#f0a35e'>" + (j.error || ("HTTP " + r.status)) + "</span> <span class='mk'>" + (j.hint || "") + "</span>";
+        } else {
+          var d = j.data || j;
+          out.innerHTML = summarise(kind, d) + "<br><span class='mk' style='font-size:.82rem'>quality: " + (d.data_quality || "n/a") + " &middot; " + (j.free_trial ? "free " + j.free_trial.used + "/" + j.free_trial.limit + " used today" : "paid call") + "</span>";
+        }
+      } catch (e) {
+        out.innerHTML = "<span style='color:#f0a35e'>Request failed: " + String(e).slice(0, 120) + "</span>";
+      } finally {
+        all.forEach(function (b) { b.disabled = false; });
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>
