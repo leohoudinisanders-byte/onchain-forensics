@@ -76,7 +76,9 @@
     <p>Same reads, machine-payable, no account. Your agent gets an HTTP 402 with the price, pays in USDC on Base, retries once.</p>
     <table>
       <tr><th>Route</th><th>What it returns</th><th>Price</th></tr>
-      <tr><td><code>?endpoint=verdict</code></td><td>Activity window, smart-money concentration, mints and burns, verdict tier, plain take</td><td>$0.02</td></tr>
+      <tr><td><code>?endpoint=verdict</code></td><td>Activity window, smart-money concentration, mints and burns, verdict tier, letter grade and roast, plain take</td><td>$0.02</td></tr>
+      <tr><td><code>?endpoint=deployer</code></td><td>Deploying address, creation tx and block, deployer wallet age and tx count, OFAC screen, launch window</td><td>$0.05</td></tr>
+      <tr><td><code>?endpoint=trust</code></td><td>One-word trust enum plus reason codes and the checks that ran</td><td>$0.02</td></tr>
       <tr><td><code>?endpoint=settlesafe</code></td><td>Pre-trade asset screen: canonical check, counterparty trust, settle pass or fail</td><td>$0.02</td></tr>
       <tr><td><code>?endpoint=wallet</code></td><td>Wallet trust tier, funding history, bait-wallet detection</td><td>$0.05</td></tr>
       <tr><td><code>?endpoint=token</code></td><td>Supply audit: mints, burns, transfer counts, holders</td><td>$0.05</td></tr>
