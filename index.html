@@ -57,12 +57,19 @@
 </header>
 
 <section>
+  <h2>Try it before you pay anything</h2>
+  <p style="color:var(--dim);font-size:.95rem">Paste a token address and get the same deterministic read the paid API returns, rendered as a shareable card. No wallet, no API key, no sign-up.</p>
+  <p style="margin-top:14px"><a href="try.html" style="display:inline-block;background:var(--accent);color:#04150c;font-weight:600;padding:12px 18px;border-radius:8px;text-decoration:none">Run a free token check &rarr;</a></p>
+</section>
+
+
+<section>
   <h2>Buyer proof, before you pay</h2>
   <p style="color:var(--dim);font-size:.95rem">This is a live paid API that an independent third party has bought from and audited. Nothing here is self-reported.</p>
   <ul>
     <li><b>Independently audited delivery.</b> paidfor.dev buys from hundreds of x402 sellers every six hours and publishes who delivers. Its public record for this API: <b>0 failed deliveries</b> across every paid call it made (6 calls at $0.02, last checked 2 Nov 2026). <a href="https://paidfor.dev/seller/solene-fa2010da.base44.app" style="color:var(--accent2)">See the record</a>.</li>
     <li><b>Challenge speed.</b> A 402 challenge returns in under a second (measured 0.44&ndash;0.50s), so an agent learns the exact price and terms in one round trip before committing funds.</li>
-    <li><b>Free before paid.</b> Every visitor gets the full endpoint map at zero cost from the <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info" style="color:var(--accent2)">info route</a>, and 3 verdict + 1 token/wallet call per day without a wallet.</li>
+    <li><b>Free before paid.</b> Every visitor gets the full endpoint map at zero cost from the <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info" style="color:var(--accent2)">info route</a>, and 10 verdict + 3 token or wallet calls per day without a wallet.</li>
     <li><b>Reproducible output.</b> No LLM calls anywhere in the pipeline. The same block and the same inputs return the same memo, so a paid result can be re-run and checked.</li>
   </ul>
 </section>
