@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.10.2",
-    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo \u2014 $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp \u2014 wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene \u2014 deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content. v2.10.2 adds six single-question routes: supply, activity and registry at $0.01; holders, mints and burns at $0.02.",
+    "version": "2.11.3",
+    "description": "Pay-per-call on-chain forensics. Single-question reads at $0.01-$0.03: registry (is this the real contract), supply, activity window, transfers, holder concentration, mints, burns, contract introspection and wallet USDC flows. Deeper screens: verdict cards and settle-safe pre-trade checks at $0.02, tokenized-equity reads and verdicts at $0.03, EVM/XRPL wallet and token forensics at $0.05, Canton burn/mint and Linea burn-vault snapshots, and $0.25 composed due-diligence memos and portfolio sweeps (Base + Ethereum + XRPL). Every paid route is also a free 5-call-per-day trial with &trial=1. Each route returns an explicit data_quality of COMPLETE/PARTIAL/UNAVAILABLE and never reports a read failure as a zero.",
     "x-payment": {
       "protocol": "x402",
       "price": {
@@ -1249,6 +1249,462 @@
           }
         },
         "operationId": "getForensicsBurns"
+      }
+    },
+    "/functions/forensicsTransfers": {
+      "get": {
+        "summary": "Largest transfers (resource path)",
+        "description": "The 20 largest transfers in an exact, reported window with both counterparties, per-address volume, mint/burn legs and the largest transfer's share of window volume. The window is sized from a 5-block density probe against a fixed log budget, so a hot contract reports a shorter window: read window.blocks and window.window_min instead of assuming a fixed span. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address. Exactly one of address, contract or token."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address."
+          },
+          [
+            {
+              "name": "token",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ondo",
+                  "qnt",
+                  "edel",
+                  "xlm",
+                  "aero",
+                  "degen",
+                  "brett",
+                  "buidl",
+                  "usdy",
+                  "ousg",
+                  "ustb",
+                  "usyc",
+                  "bcspx",
+                  "bcoin",
+                  "bnvda",
+                  "btsla",
+                  "aapl",
+                  "nvda",
+                  "usdc",
+                  "usdc_eth"
+                ]
+              },
+              "description": "Named token alias (required unless a contract is given)."
+            }
+          ],
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransfersResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "transfersRoute"
+      }
+    },
+    "/functions/forensicsContract": {
+      "get": {
+        "summary": "Contract introspection (resource path)",
+        "description": "Bytecode size, proxy type (EIP-1167 minimal, EIP-1967 transparent/UUPS or beacon), implementation and admin addresses, owner, pause capability and an approximate deployment window from log-spaced historical eth_getCode probes. An EOA address returns is_contract false with COMPLETE quality rather than an error.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Contract address to introspect. Exactly one of address or contract."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "contractRoute"
+      }
+    },
+    "/functions/forensicsWalletFlows": {
+      "get": {
+        "summary": "Wallet USDC flows (resource path)",
+        "description": "USDC in and out for one wallet over an exact, reported window: counts, totals, largest flow each way, top counterparties by volume, net flow, plus native balance and the lifetime outgoing transaction count (nonce). Scope is USDC on the requested chain, not full transaction history, and the payload says so.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Wallet address (EVM). XRPL is not supported on this route."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletFlowsResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "walletFlowsRoute"
+      }
+    },
+    "/functions/forensicsEquity": {
+      "get": {
+        "summary": "Tokenized-equity registry read (resource path)",
+        "description": "Issuer, underlying ticker, on-chain share supply, 24h issuance and readable controls for a tokenized equity (Backed xStocks and Dinari dShares on Base). On-chain supply is the tokenized share count; it is explicitly NOT the issuer's reported shares outstanding. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Tokenized-equity contract address. Exactly one of address, contract or token."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address."
+          },
+          [
+            {
+              "name": "token",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "btsla",
+                  "bnvda",
+                  "bcoin",
+                  "bcspx",
+                  "aapl",
+                  "nvda"
+                ]
+              },
+              "description": "Tokenized-equity alias: btsla, bnvda, bcoin, bcspx (Backed xStocks) or aapl, nvda (Dinari dShares)."
+            }
+          ],
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquityResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "equityRoute"
+      }
+    },
+    "/functions/forensicsEquityVerdict": {
+      "get": {
+        "summary": "Tokenized-equity verdict (resource path)",
+        "description": "Issuer verification, pause state and the full activity verdict (tier, score, transfers, unique wallets, concentration, flags, evaluated blocks) for a tokenized-equity contract, plus a plain-language take. Tier and scores come from the same engine as the verdict route.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Tokenized-equity contract address. Exactly one of address, contract or token."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address."
+          },
+          [
+            {
+              "name": "token",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "btsla",
+                  "bnvda",
+                  "bcoin",
+                  "bcspx",
+                  "aapl",
+                  "nvda"
+                ]
+              },
+              "description": "Tokenized-equity alias: btsla, bnvda, bcoin, bcspx, aapl, nvda."
+            }
+          ],
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquityVerdictResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "equityVerdictRoute"
+      }
+    },
+    "/functions/forensicsEquitySettlesafe": {
+      "get": {
+        "summary": "Tokenized-equity pre-trade screen (resource path)",
+        "description": "Pre-trade pass/fail for tokenized-stock pairs: issuer verification, pause state and the standard asset screen combined. It cannot see off-chain transfer-agent allowlists, so a pass is necessary but not sufficient, and the payload states that.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Tokenized-equity contract address. Exactly one of address, contract or token."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address."
+          },
+          [
+            {
+              "name": "token",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "btsla",
+                  "bnvda",
+                  "bcoin",
+                  "bcspx",
+                  "aapl",
+                  "nvda"
+                ]
+              },
+              "description": "Tokenized-equity alias: btsla, bnvda, bcoin, bcspx, aapl, nvda."
+            }
+          ],
+          {
+            "name": "counterparty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Optional counterparty wallet to screen alongside the equity contract."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquitySettleSafeResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "equitySettlesafeRoute"
       }
     }
   },
@@ -2808,6 +3264,626 @@
           "note": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "DeploymentProbe": {
+        "type": "object",
+        "properties": {
+          "block": {
+            "type": "integer"
+          },
+          "has_code": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "ContractResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "chain",
+          "contract",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "contract"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "is_contract": {
+            "type": "boolean"
+          },
+          "bytecode_size": {
+            "type": "integer"
+          },
+          "proxy": {
+            "type": "string",
+            "enum": [
+              "none",
+              "eip1167_minimal",
+              "eip1967_beacon",
+              "eip1967_transparent_or_uups"
+            ]
+          },
+          "minimal_proxy": {
+            "type": "string",
+            "nullable": true
+          },
+          "implementation": {
+            "type": "string",
+            "nullable": true
+          },
+          "beacon": {
+            "type": "string",
+            "nullable": true
+          },
+          "admin": {
+            "type": "string",
+            "nullable": true
+          },
+          "owner": {
+            "type": "string",
+            "nullable": true
+          },
+          "upgradeable": {
+            "type": "boolean"
+          },
+          "pause_capable": {
+            "type": "boolean"
+          },
+          "paused": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "deployment_window": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "from_block": {
+                "type": "integer"
+              },
+              "to_block": {
+                "type": "integer",
+                "nullable": true
+              },
+              "approx": {
+                "type": "boolean"
+              }
+            }
+          },
+          "deployment_probe": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeploymentProbe"
+            }
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "reads_failed": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "TransferRow": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string",
+            "nullable": true
+          },
+          "to": {
+            "type": "string",
+            "nullable": true
+          },
+          "tx": {
+            "type": "string"
+          },
+          "block": {
+            "type": "integer"
+          }
+        }
+      },
+      "AddressVolume": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "number"
+          }
+        }
+      },
+      "TransfersResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "chain",
+          "contract",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "transfers"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "transfers_in_window": {
+            "type": "integer"
+          },
+          "total_moved": {
+            "type": "number"
+          },
+          "largest_transfer": {
+            "$ref": "#/components/schemas/TransferRow"
+          },
+          "largest_share_of_window_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "top_transfers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferRow"
+            }
+          },
+          "top_counterparties_by_volume": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressVolume"
+            }
+          },
+          "mint_legs": {
+            "type": "integer",
+            "nullable": true
+          },
+          "burn_legs": {
+            "type": "integer",
+            "nullable": true
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "FlowLeg": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "number"
+          },
+          "largest": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "peer": {
+                "type": "string",
+                "nullable": true
+              },
+              "tx": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              }
+            }
+          },
+          "peers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressVolume"
+            }
+          }
+        }
+      },
+      "WalletFlowsResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "chain",
+          "wallet",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "walletflows"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "wallet": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "asset_contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "native_balance": {
+            "type": "number",
+            "nullable": true
+          },
+          "outgoing_tx_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "usdc_in": {
+            "$ref": "#/components/schemas/FlowLeg"
+          },
+          "usdc_out": {
+            "$ref": "#/components/schemas/FlowLeg"
+          },
+          "net_usdc_flow": {
+            "type": "number",
+            "nullable": true
+          },
+          "distinct_usdc_counterparties": {
+            "type": "integer",
+            "nullable": true
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "EquityIdentity": {
+        "type": "object",
+        "properties": {
+          "registry_alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "underlying": {
+            "type": "string",
+            "nullable": true
+          },
+          "issuer": {
+            "type": "string",
+            "nullable": true
+          },
+          "instrument": {
+            "type": "string"
+          },
+          "registry_verified": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "EquityIssuance": {
+        "type": "object",
+        "properties": {
+          "total_supply": {
+            "type": "string",
+            "nullable": true
+          },
+          "total_supply_display": {
+            "type": "number",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer",
+            "nullable": true
+          },
+          "supply_24h_change_display": {
+            "type": "number",
+            "nullable": true
+          },
+          "new_issuance_24h": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "EquityControls": {
+        "type": "object",
+        "properties": {
+          "is_contract": {
+            "type": "boolean"
+          },
+          "owner": {
+            "type": "string",
+            "nullable": true
+          },
+          "pause_capable": {
+            "type": "boolean"
+          },
+          "paused": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "issuer_controlled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "EquityResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "equity",
+          "issuance",
+          "controls",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "equity"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "equity": {
+            "$ref": "#/components/schemas/EquityIdentity"
+          },
+          "issuance": {
+            "$ref": "#/components/schemas/EquityIssuance"
+          },
+          "controls": {
+            "$ref": "#/components/schemas/EquityControls"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "transfer_restrictions": {
+            "type": "string"
+          }
+        }
+      },
+      "EquityVerdictResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "equity",
+          "verdict",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "equityverdict"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "equity": {
+            "$ref": "#/components/schemas/EquityIdentity"
+          },
+          "issuance": {
+            "$ref": "#/components/schemas/EquityIssuance"
+          },
+          "controls": {
+            "$ref": "#/components/schemas/EquityControls"
+          },
+          "verdict": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "type": "string"
+              },
+              "activity_score_0_100": {
+                "type": "integer",
+                "nullable": true
+              },
+              "transfers_recent": {
+                "type": "integer",
+                "nullable": true
+              },
+              "unique_wallets_recent": {
+                "type": "integer",
+                "nullable": true
+              },
+              "concentration_top_wallet_share": {
+                "type": "number",
+                "nullable": true
+              },
+              "flags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "activity_status": {
+                "type": "string"
+              },
+              "evaluated_blocks": {
+                "$ref": "#/components/schemas/EvaluatedBlocks"
+              }
+            }
+          },
+          "plain_take": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          }
+        }
+      },
+      "EquitySettleSafeResponse": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "equity",
+          "settle_safe",
+          "data_quality"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "equitysettlesafe"
+            ]
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "equity": {
+            "$ref": "#/components/schemas/EquityIdentity"
+          },
+          "issuance": {
+            "$ref": "#/components/schemas/EquityIssuance"
+          },
+          "controls": {
+            "$ref": "#/components/schemas/EquityControls"
+          },
+          "settle_safe": {
+            "type": "object",
+            "properties": {
+              "pass": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "asset_status": {
+                "$ref": "#/components/schemas/AssetStatus"
+              },
+              "counterparty": {
+                "$ref": "#/components/schemas/CounterpartyScreen"
+              },
+              "risk_flags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "registry_canonical": {
+                "type": "boolean"
+              }
+            }
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "note": {
+            "type": "string"
           }
         }
       }
