@@ -92,6 +92,16 @@
 <tr><td><code>?endpoint=equity</code></td><td>Issuer, underlying, on-chain share supply, controls (Backed xStocks, Dinari)</td><td>$0.03</td></tr>
 <tr><td><code>?endpoint=equityverdict</code></td><td>Issuer verification plus full activity verdict for a tokenized equity</td><td>$0.03</td></tr>
 <tr><td><code>?endpoint=equitysettlesafe</code></td><td>Pre-trade pass/fail for tokenized-stock pairs</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=walletage</code></td><td>First-seen block and time, age in days, first send, lifetime tx count, never sent</td><td>$0.01</td></tr>
+<tr><td><code>?endpoint=walletfunding</code></td><td>First funding block, funder, asset, amount, contract or wallet, funding depth</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=walletcounterparties</code></td><td>Top counterparties by volume, share, in/out counts, contract status, cluster hints</td><td>$0.05</td></tr>
+<tr><td><code>?endpoint=walletrisk</code></td><td>OFAC screen on the wallet and its peers, bait pattern, contract check, risk tier</td><td>$0.05</td></tr>
+<tr><td><code>?endpoint=solanaholders</code></td><td>Top 20 SPL accounts with resolved owners and share of supply</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=solanaauthorities</code></td><td>Mint and freeze authorities, SPL vs Token-2022, transfer hooks and fees</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=solanaliquidity</code></td><td>Jupiter quotes at $100 and $1,000, price impact, deepest pool and depth</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=solanalaunch</code></td><td>Mint age and basis, first pool, top-10 concentration, launch flags</td><td>$0.03</td></tr>
+<tr><td><code>?endpoint=derivs</code></td><td>Perp funding per 8h and annualized, open interest, venue spread for BTC/ETH/SOL</td><td>$0.05</td></tr>
+<tr><td><code>?endpoint=options</code></td><td>Open interest, put/call ratio, ATM IV and wing skew by expiry for BTC/ETH</td><td>$0.05</td></tr>
 <tr><td><code>/functions/verdictCard</code></td><td>The card on this page, as a shareable SVG or social-preview link</td><td>free</td></tr>
       <tr><td><code>/functions/forensicsSolana</code></td><td>Solana mint forensics: authorities, top-holder concentration, activity</td><td>free preview</td></tr>
     </table>
