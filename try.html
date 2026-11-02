@@ -86,6 +86,12 @@
 <tr><td><code>?endpoint=holders</code></td><td>Top holders with share of supply, sampling method stated.</td><td>$0.02</td></tr>
 <tr><td><code>?endpoint=mints</code></td><td>Mint events with amounts and destination wallets, window total.</td><td>$0.02</td></tr>
 <tr><td><code>?endpoint=burns</code></td><td>Burn events with amounts and sending wallets, window total.</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=transfers</code></td><td>20 largest transfers with counterparties, per-address volume, mint/burn legs</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=contract</code></td><td>Proxy type, implementation, admin, owner, pause state, deployment window</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=walletflows</code></td><td>USDC in/out, top counterparties, net flow, nonce over an exact window</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=equity</code></td><td>Issuer, underlying, on-chain share supply, controls (Backed xStocks, Dinari)</td><td>$0.03</td></tr>
+<tr><td><code>?endpoint=equityverdict</code></td><td>Issuer verification plus full activity verdict for a tokenized equity</td><td>$0.03</td></tr>
+<tr><td><code>?endpoint=equitysettlesafe</code></td><td>Pre-trade pass/fail for tokenized-stock pairs</td><td>$0.02</td></tr>
 <tr><td><code>/functions/verdictCard</code></td><td>The card on this page, as a shareable SVG or social-preview link</td><td>free</td></tr>
       <tr><td><code>/functions/forensicsSolana</code></td><td>Solana mint forensics: authorities, top-holder concentration, activity</td><td>free preview</td></tr>
     </table>
@@ -255,11 +261,16 @@ function fail(msg) {
     <button data-micro="supply" class="mbtn">Supply</button>
     <button data-micro="activity" class="mbtn">Activity window</button>
     <button data-micro="holders" class="mbtn">Holders</button>
+    <button data-micro="transfers" class="mbtn">Largest transfers</button>
+    <button data-micro="walletflows" class="mbtn">Wallet USDC flows</button>
     <button data-micro="mints" class="mbtn">Mints</button>
     <button data-micro="burns" class="mbtn">Burns</button>
+    <button data-micro="contract" class="mbtn">Is it a proxy?</button>
+    <button data-micro="equity" class="mbtn">Equity read</button>
+    <button data-micro="equityverdict" class="mbtn">Equity verdict</button>
   </div>
   <div id="m-out" style="margin-top:16px;font-size:.93rem;color:#c3ccd8;line-height:1.6"></div>
-  <p style="color:#66707e;font-size:.8rem;margin:14px 0 0">Free tier: 5 calls per route per day. Paid: $0.01 for registry, supply and activity, $0.02 for holders, mints and burns.</p>
+  <p style="color:#66707e;font-size:.8rem;margin:14px 0 0">Free tier: 5 calls per route per day. Paid: $0.01 for registry, supply and activity, $0.02 for holders, mints, burns, transfers, contract, walletflows and equitysettlesafe, $0.03 for equity and equityverdict.</p>
   <style>
     .mbtn{background:#151d28;border:1px solid #29323f;color:#dbe3ec;border-radius:9px;padding:10px 14px;font-size:.88rem;cursor:pointer}
     .mbtn:hover{background:#1b2532;border-color:#3a4655}
@@ -283,6 +294,12 @@ function fail(msg) {
     if (kind === "holders") return "Top holder <b>" + fmt(d.top1_pct) + "%</b>, top 10 <b>" + fmt(d.top10_pct) + "%</b> of supply <span class='mk'>&middot; " + (d.method || "") + "</span>";
     if (kind === "mints") return "<b>" + fmt(d.mint_count) + "</b> mints totalling <b>" + fmt(d.total_minted) + "</b> <span class='mk'>&middot; " + (d.window ? d.window.window_min + " min window" : "") + "</span>";
     if (kind === "burns") return "<b>" + fmt(d.burn_count) + "</b> burns totalling <b>" + fmt(d.total_burned) + "</b> <span class='mk'>&middot; " + (d.window ? d.window.window_min + " min window" : "") + "</span>";
+    if (kind === "transfers") return "<b>" + fmt(d.transfers_in_window) + "</b> transfers moving <b>" + fmt(d.total_moved) + "</b> <span class='mk'>&middot; largest " + (d.largest_transfer ? fmt(d.largest_transfer.amount) : "n/a") + " (" + fmt(d.largest_share_of_window_pct) + "% of window)" + (d.window ? " &middot; " + d.window.window_min + " min window" : "") + "</span>";
+    if (kind === "walletflows") return "USDC in <b>" + fmt(d.usdc_in && d.usdc_in.total) + "</b> / out <b>" + fmt(d.usdc_out && d.usdc_out.total) + "</b> <span class='mk'>&middot; net " + fmt(d.net_usdc_flow) + " &middot; " + fmt(d.distinct_usdc_counterparties) + " counterparties &middot; " + (d.window ? d.window.window_min + " min window" : "") + " &middot; lifetime txs " + fmt(d.outgoing_tx_count) + "</span>";
+    if (kind === "contract") return (d.is_contract ? "<b>" + d.proxy + "</b> proxy" + (d.upgradeable ? " (upgradeable)" : " (not upgradeable)") : "<b>Not a contract</b>") + " <span class='mk'>&middot; " + fmt(d.bytecode_size) + " bytes &middot; owner " + (d.owner || "none readable") + " &middot; paused " + (d.paused === null ? "no pause function" : d.paused ? "YES" : "no") + "</span>";
+    if (kind === "equity") return "<b>" + (d.equity && d.equity.symbol ? d.equity.symbol : "unverified") + "</b>" + (d.equity && d.equity.underlying ? " &rarr; " + d.equity.underlying : "") + " <span class='mk'>&middot; " + fmt(d.issuance && d.issuance.total_supply_display) + " tokenized shares &middot; 24h issuance " + fmt(d.issuance && d.issuance.supply_24h_change_display) + " &middot; issuer " + ((d.equity && d.equity.issuer) || "unknown") + "</span>";
+    if (kind === "equityverdict") return "<b>" + ((d.verdict && d.verdict.tier) || "UNKNOWN") + "</b> <span class='mk'>&middot; score " + fmt(d.verdict && d.verdict.activity_score_0_100) + " &middot; " + fmt(d.verdict && d.verdict.transfers_recent) + " transfers &middot; flags: " + (((d.verdict && d.verdict.flags) || []).join(", ") || "none") + "</span><br>" + ((d.plain_take || ""));
+    if (kind === "equitysettlesafe") return "<b>" + (d.settle_safe && d.settle_safe.pass === true ? "PASS" : d.settle_safe && d.settle_safe.pass === false ? "FAIL" : "UNKNOWN") + "</b> <span class='mk'>&middot; " + ((d.settle_safe && d.settle_safe.asset_status) || "no asset status") + " &middot; flags: " + (((d.settle_safe && d.settle_safe.risk_flags) || []).join(", ") || "none") + "</span>";
     return "<span class='mk'>" + JSON.stringify(d).slice(0, 300) + "</span>";
   }
   document.querySelectorAll("[data-micro]").forEach(function (btn) {
