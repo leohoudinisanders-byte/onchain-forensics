@@ -80,7 +80,13 @@
       <tr><td><code>?endpoint=settlesafe</code></td><td>Pre-trade asset screen: canonical check, counterparty trust, settle pass or fail</td><td>$0.02</td></tr>
       <tr><td><code>?endpoint=wallet</code></td><td>Wallet trust tier, funding history, bait-wallet detection</td><td>$0.05</td></tr>
       <tr><td><code>?endpoint=token</code></td><td>Supply audit: mints, burns, transfer counts, holders</td><td>$0.05</td></tr>
-      <tr><td><code>/functions/verdictCard</code></td><td>The card on this page, as a shareable SVG or social-preview link</td><td>free</td></tr>
+      <tr><td><code>?endpoint=registry</code></td><td>Canonical check against the verified registry: alias, chain, known-external. No RPC.</td><td>$0.01</td></tr>
+<tr><td><code>?endpoint=supply</code></td><td>Total supply, decimals, 24h supply change, issuer-moved flag.</td><td>$0.01</td></tr>
+<tr><td><code>?endpoint=activity</code></td><td>Transfers, unique wallets, velocity, largest transfer, exact window.</td><td>$0.01</td></tr>
+<tr><td><code>?endpoint=holders</code></td><td>Top holders with share of supply, sampling method stated.</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=mints</code></td><td>Mint events with amounts and destination wallets, window total.</td><td>$0.02</td></tr>
+<tr><td><code>?endpoint=burns</code></td><td>Burn events with amounts and sending wallets, window total.</td><td>$0.02</td></tr>
+<tr><td><code>/functions/verdictCard</code></td><td>The card on this page, as a shareable SVG or social-preview link</td><td>free</td></tr>
       <tr><td><code>/functions/forensicsSolana</code></td><td>Solana mint forensics: authorities, top-holder concentration, activity</td><td>free preview</td></tr>
     </table>
     <div class="acts">
