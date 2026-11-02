@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.8.2",
-    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo \u2014 $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp \u2014 wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene \u2014 deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content.",
+    "version": "2.10.2",
+    "description": "Pay-per-call on-chain forensics: Canton Network (CC) burn/mint tracking, Linea burn-vault audit, ERC-20 burn/mint forensics for any token on Base or Ethereum mainnet (named aliases: ondo, qnt, edel, xlm, aero, degen, brett, buidl, usdy, ousg, ustb, usyc, bcspx, bcoin, bnvda, btsla, aapl, nvda, usdc, usdc_eth), wallet flow analysis for any address on Base or Ethereum mainnet, a token verdict card (activity metrics, verdict tier, shareable take) for any ERC-20, and a settle-safe pre-trade screen for AI agents trading tokenized assets. Payments via the x402 protocol: unpaid requests receive HTTP 402 with machine-readable payment requirements in the PAYMENT-REQUIRED header (USDC on Base).\n\nRelated service: Canton Swap Broker \u2014 x402-payable pay-per-call swaps on the Canton Network via the OneSwap atomic DvP DEX (quotes, escrow swaps, market data; same USDC-on-Base x402 payment). Landing + spec: https://leohoudinisanders-byte.github.io/canton-swap-broker/\n\nNEW (v2.4.1): ?endpoint=memo \u2014 $0.25 composed Due Diligence Memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, and a deterministic bottom-line settlement recommendation (no LLM calls, same block = same memo). Pricing: $0.25 base; $0.35 when &counterparty= is provided (adds the counterparty trust screen to the memo).\n\nNEW (v2.5.0): XRPL support via chain=xrp \u2014 wallet forensics ($0.05, any r... address) and the issued-currency settle-safe screen ($0.02, issuer + currency or &token=rlusd|gatehub-usd): blackhole status, Default Ripple / No Freeze / Global Freeze / clawback flags, outstanding obligations, trustline breadth, verified gateway registry. XRPL verdict ($0.02) and due-diligence memo ($0.25/$0.35) are LIVE for XRPL issuers (chain=xrp&issuer=r...&currency=USD): EVM-tier verdict mapping plus issuer checks (freeze/clawback/blackhole/registry) and holder/flow/book-offers/AMM activity metrics. Operated by Solene \u2014 deep research with receipts: the agent that ships working proof, not promises. All operations are also available as resource-oriented paths (/functions/forensicsToken etc.) per the Circle Agent Marketplace integration convention; X-402-Discovery: 1 requests return discovery-only 402s. Operated by Leo Sanders (leohoudinisanders@gmail.com); responses are deterministic compositions of on-chain reads with no LLM-generated content. v2.10.2 adds six single-question routes: supply, activity and registry at $0.01; holders, mints and burns at $0.02.",
     "x-payment": {
       "protocol": "x402",
       "price": {
@@ -711,6 +711,544 @@
           }
         },
         "operationId": "forensicsSweep"
+      }
+    },
+    "/functions/forensicsSupply": {
+      "get": {
+        "summary": "Token supply snapshot (resource path)",
+        "description": "Total supply, decimals, supply 24h earlier and the resulting change, plus an issuer_controlled flag (true when supply moved in the window). Reads totalSupply() now and at the 24h-ago block. data_quality is COMPLETE when both reads succeed, PARTIAL when the historical read fails, UNAVAILABLE when totalSupply() is unreadable (a read failure is never reported as zero supply). REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet). XRPL is not supported on this route."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplyResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsSupply"
+      }
+    },
+    "/functions/forensicsActivity": {
+      "get": {
+        "summary": "Token activity window (resource path)",
+        "description": "Transfers, unique wallets, velocity and the largest transfer across an exact, reported block window. The window is sized from a 5-block density probe against a fixed log budget, so a hot contract is sampled over fewer blocks rather than left unfinished; window.blocks and window.window_min report the span actually scanned, and window.exact says whether it was complete. data_quality is PARTIAL when log batches failed and UNAVAILABLE when the read was silently empty. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet). XRPL is not supported on this route."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsActivity"
+      }
+    },
+    "/functions/forensicsRegistry": {
+      "get": {
+        "summary": "Verified-asset registry lookup (resource path)",
+        "description": "Canonical lookup against the operator's verified registry: alias, symbol and registry chain for the contract, plus canonical (true only on the matching chain) and known_external (entry exists on another chain). No RPC is performed; data_quality is always COMPLETE. Canonical means the contract address was verified on-chain by this operator, not that the asset is safe. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistryResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsRegistry"
+      }
+    },
+    "/functions/forensicsHolders": {
+      "get": {
+        "summary": "Holder concentration (resource path)",
+        "description": "Top holders by balance with share of supply, top1_pct and top10_pct. Candidates are the largest active recipients in the window, then each balance is confirmed on-chain with balanceOf: this is a sampling method, stated in the method field, not a full holder enumeration. reads_failed counts balanceOf calls that did not return a number; data_quality degrades to PARTIAL when any read failed. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet). XRPL is not supported on this route."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HoldersResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsHolders"
+      }
+    },
+    "/functions/forensicsMints": {
+      "get": {
+        "summary": "Mint events (resource path)",
+        "description": "Mint transfers in the window, filtered at the RPC level by the zero-address from-topic. Returns mint_count, total_minted and up to 20 most recent events with tx hash, block, amount and destination wallet. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet). XRPL is not supported on this route."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MintsResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsMints"
+      }
+    },
+    "/functions/forensicsBurns": {
+      "get": {
+        "summary": "Burn events (resource path)",
+        "description": "Burn transfers in the window, filtered at the RPC level by the zero-address to-topic. Returns burn_count, total_burned and up to 20 most recent events with tx hash, block, amount and sending wallet. REQUIRED INPUT: exactly one of address, contract or token.",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "ERC-20 contract address (required unless token alias is given). address, contract or token: exactly one."
+          },
+          {
+            "name": "contract",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[a-fA-F0-9]{40}$"
+            },
+            "description": "Alias for address, accepted for compatibility with the token route."
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ondo",
+                "qnt",
+                "edel",
+                "xlm",
+                "aero",
+                "degen",
+                "brett",
+                "buidl",
+                "usdy",
+                "ousg",
+                "ustb",
+                "usyc",
+                "bcspx",
+                "bcoin",
+                "bnvda",
+                "btsla",
+                "aapl",
+                "nvda",
+                "usdc",
+                "usdc_eth"
+              ]
+            },
+            "description": "Named token alias (required unless contract is given). Exactly one of token or contract must be provided."
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "base",
+                "ethereum"
+              ],
+              "default": "base"
+            },
+            "description": "EVM chain (Base or Ethereum mainnet). XRPL is not supported on this route."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid response: JSON forensics dataset (payment settled via x402). Envelope {service, paid, settlement_tx, data}; data follows the endpoint-specific schema below.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BurnsResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required: PAYMENT-REQUIRED header carries base64 x402 v2 PaymentRequired (USDC on Base, CAIP-2 eip155:8453, scheme exact); pay via PAYMENT-SIGNATURE header"
+          },
+          "400": {
+            "description": "Bad request: missing/invalid endpoint, address, contract, chain or token alias (see error + hint in body)"
+          }
+        },
+        "operationId": "getForensicsBurns"
       }
     }
   },
@@ -1848,6 +2386,428 @@
           "truncated": {
             "type": "boolean",
             "description": "true when any batch was lost after retries; activity counts are withheld in that case"
+          }
+        }
+      },
+      "MicroWindow": {
+        "type": "object",
+        "description": "Block window actually scanned for log-derived routes.",
+        "properties": {
+          "blocks": {
+            "type": "integer"
+          },
+          "window_min": {
+            "type": "integer"
+          },
+          "exact": {
+            "type": "boolean"
+          },
+          "failed_batches": {
+            "type": "integer"
+          }
+        }
+      },
+      "SupplyResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "integer",
+            "nullable": true
+          },
+          "total_supply": {
+            "type": "string",
+            "description": "Raw base units as a decimal string.",
+            "nullable": true
+          },
+          "total_supply_display": {
+            "type": "number",
+            "nullable": true
+          },
+          "supply_24h_ago": {
+            "type": "string",
+            "nullable": true
+          },
+          "supply_24h_change": {
+            "type": "string",
+            "nullable": true
+          },
+          "supply_24h_change_display": {
+            "type": "number",
+            "nullable": true
+          },
+          "issuer_controlled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "reads": {
+            "type": "object",
+            "properties": {
+              "total_supply": {
+                "type": "string"
+              },
+              "supply_24h_ago": {
+                "type": "string"
+              }
+            }
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ActivityResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "transfers": {
+            "type": "integer"
+          },
+          "unique_wallets": {
+            "type": "integer"
+          },
+          "transfers_per_min": {
+            "type": "number",
+            "nullable": true
+          },
+          "wallets_per_transfer": {
+            "type": "number",
+            "nullable": true
+          },
+          "largest_transfer": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "tx": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              }
+            }
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RegistryResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "canonical": {
+            "type": "boolean"
+          },
+          "known_external": {
+            "type": "boolean"
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "registry_chain": {
+            "type": "string",
+            "nullable": true
+          },
+          "registry": {
+            "type": "string"
+          },
+          "registry_size": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "HoldersResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "description": "Sampling method statement."
+          },
+          "candidates_examined": {
+            "type": "integer"
+          },
+          "top_holders": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "balance": {
+                  "type": "number"
+                },
+                "pct_of_supply": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "top1_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "top10_pct": {
+            "type": "number",
+            "nullable": true
+          },
+          "total_supply": {
+            "type": "string",
+            "nullable": true
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "reads_failed": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MintsResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "mint_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "total_minted": {
+            "type": "number",
+            "nullable": true
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tx": {
+                  "type": "string"
+                },
+                "block": {
+                  "type": "integer"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "wallet": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "events_returned": {
+            "type": "integer"
+          },
+          "events_capped_at": {
+            "type": "integer"
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "BurnsResponse": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "contract": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_quality": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "burn_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "total_burned": {
+            "type": "number",
+            "nullable": true
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tx": {
+                  "type": "string"
+                },
+                "block": {
+                  "type": "integer"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "wallet": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "events_returned": {
+            "type": "integer"
+          },
+          "events_capped_at": {
+            "type": "integer"
+          },
+          "window": {
+            "$ref": "#/components/schemas/MicroWindow"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
           }
         }
       }
