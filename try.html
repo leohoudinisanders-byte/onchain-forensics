@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try it free — On-chain Forensics</title>
+<meta name="description" content="Paste a token address and get a free on-chain verdict with a shareable card. Base, Ethereum and Solana. No wallet, no API key.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; --warn:#ffb020; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; line-height:1.6; }
+  .wrap { max-width:900px; margin:0 auto; padding:40px 20px 80px; }
+  a { color:var(--accent2); }
+  h1 { font-size:1.7rem; letter-spacing:-.02em; }
+  h2 { font-size:1.15rem; margin-bottom:.6rem; }
+  p { color:var(--dim); }
+  .top { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:8px; }
+  .back { font-size:.85rem; color:var(--dim); text-decoration:none; }
+  .tabs { display:flex; gap:8px; margin:26px 0 14px; flex-wrap:wrap; }
+  .tab { background:var(--card); border:1px solid var(--line); color:var(--dim); padding:9px 14px; border-radius:8px; cursor:pointer; font-size:.9rem; font-family:inherit; }
+  .tab.on { border-color:var(--accent2); color:var(--txt); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  input { flex:1 1 320px; background:#0e1626; border:1px solid var(--line); color:var(--txt); padding:13px 14px; border-radius:8px; font-family:ui-monospace,Menlo,monospace; font-size:.9rem; }
+  input:focus { outline:none; border-color:var(--accent2); }
+  button { background:var(--accent); color:#04150c; border:0; padding:13px 20px; border-radius:8px; font-weight:600; cursor:pointer; font-size:.92rem; font-family:inherit; }
+  button:disabled { opacity:.55; cursor:default; }
+  .hint { font-size:.8rem; color:#6c7c96; margin-top:8px; }
+  .out { margin-top:26px; }
+  .cardbox { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .cardbox img { display:block; width:100%; height:auto; }
+  .meta { padding:18px; }
+  .tier { display:inline-block; font-family:ui-monospace,Menlo,monospace; font-size:.75rem; letter-spacing:.08em; padding:5px 10px; border-radius:999px; background:#182036; }
+  .take { margin-top:12px; color:var(--txt); font-size:.95rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:16px; }
+  .stat { background:#0e1626; border:1px solid var(--line); border-radius:8px; padding:11px 12px; }
+  .stat b { display:block; font-size:1.05rem; font-family:ui-monospace,Menlo,monospace; }
+  .stat span { font-size:.72rem; letter-spacing:.08em; color:#6c7c96; text-transform:uppercase; }
+  .flags { margin-top:14px; font-family:ui-monospace,Menlo,monospace; font-size:.8rem; color:var(--warn); }
+  .acts { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .ghost { background:transparent; border:1px solid var(--line); color:var(--txt); font-weight:500; }
+  .err { background:#1b0f14; border:1px solid #3a1b26; color:#ffb3c1; padding:14px; border-radius:10px; font-size:.9rem; }
+  .offer { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-top:28px; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:.86rem; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); }
+  th { color:#6c7c96; font-weight:500; font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; }
+  code { font-family:ui-monospace,Menlo,monospace; font-size:.82rem; color:#9fb6ff; }
+  .spinner { display:inline-block; width:13px; height:13px; border:2px solid #04150c; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; margin-right:7px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Free token check</h1>
+    <a class="back" href="./">&larr; back to the API</a>
+  </div>
+  <p>Paste a token address. You get the same deterministic read the paid API returns, plus a shareable card. No wallet, no API key, no sign-up.</p>
+
+  <div class="tabs">
+    <button class="tab on" data-mode="evm">Base / Ethereum token</button>
+    <button class="tab" data-mode="sol">Solana token</button>
+    <button class="tab" data-mode="wallet">EVM wallet</button>
+  </div>
+
+  <div class="row">
+    <input id="addr" placeholder="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" spellcheck="false" autocomplete="off">
+    <button id="go">Run free check</button>
+  </div>
+  <div class="hint" id="hint">Base or Ethereum ERC-20 contract. 10 free token checks and 3 free wallet checks per visitor per day.</div>
+
+  <div class="out" id="out"></div>
+
+  <div class="offer">
+    <h2>Wire it into your agent</h2>
+    <p>Same reads, machine-payable, no account. Your agent gets an HTTP 402 with the price, pays in USDC on Base, retries once.</p>
+    <table>
+      <tr><th>Route</th><th>What it returns</th><th>Price</th></tr>
+      <tr><td><code>?endpoint=verdict</code></td><td>Activity window, smart-money concentration, mints and burns, verdict tier, plain take</td><td>$0.02</td></tr>
+      <tr><td><code>?endpoint=settlesafe</code></td><td>Pre-trade asset screen: canonical check, counterparty trust, settle pass or fail</td><td>$0.02</td></tr>
+      <tr><td><code>?endpoint=wallet</code></td><td>Wallet trust tier, funding history, bait-wallet detection</td><td>$0.05</td></tr>
+      <tr><td><code>?endpoint=token</code></td><td>Supply audit: mints, burns, transfer counts, holders</td><td>$0.05</td></tr>
+      <tr><td><code>/functions/verdictCard</code></td><td>The card on this page, as a shareable SVG or social-preview link</td><td>free</td></tr>
+      <tr><td><code>/functions/forensicsSolana</code></td><td>Solana mint forensics: authorities, top-holder concentration, activity</td><td>free preview</td></tr>
+    </table>
+    <div class="acts">
+      <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info"><button class="ghost">Endpoint map</button></a>
+      <a href="openapi.json"><button class="ghost">OpenAPI 3.1</button></a>
+      <a href="https://agentic.market"><button class="ghost">Listed on agentic.market</button></a>
+    </div>
+  </div>
+</div>
+
+<script>
+var API = "https://solene-fa2010da.base44.app/functions";
+var EVM = /^0x[0-9a-fA-F]{40}$/;
+var SOL = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+var mode = "evm";
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function b64url(obj) {
+  var bytes = new TextEncoder().encode(JSON.stringify(obj));
+  var bin = "";
+  for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function cardSvg(p) { return API + "/verdictCard?format=svg&d=" + b64url(p); }
+function cardPage(p) { return API + "/verdictCard?d=" + b64url(p); }
+
+var tabs = document.querySelectorAll(".tab");
+for (var i = 0; i < tabs.length; i++) {
+  tabs[i].addEventListener("click", function () {
+    for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove("on");
+    this.classList.add("on");
+    mode = this.getAttribute("data-mode");
+    $("addr").placeholder = mode === "sol" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      : mode === "wallet" ? "0x8EBf296c6273760ed9604C428f7EC13255E46fb9"
+      : "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+    $("hint").textContent = mode === "sol" ? "Any Solana SPL mint. 5 free Solana checks per visitor per day."
+      : mode === "wallet" ? "Base or Ethereum wallet address. 3 free wallet checks per visitor per day."
+      : "Base or Ethereum ERC-20 contract. 10 free token checks and 3 free wallet checks per visitor per day.";
+    $("out").innerHTML = "";
+  });
+}
+
+$("go").addEventListener("click", run);
+$("addr").addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+
+async function run() {
+  var raw = $("addr").value.trim();
+  $("out").innerHTML = "";
+  if (mode === "sol" && !SOL.test(raw)) return fail("That does not look like a Solana mint (32-44 base58 characters).");
+  if (mode !== "sol" && !EVM.test(raw)) return fail("That does not look like an EVM address (0x followed by 40 hex characters).");
+
+  var btn = $("go");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Reading chain';
+  try {
+    var payload = null, envelope = null;
+    if (mode === "sol") {
+      payload = await get(API + "/forensicsSolana?mint=" + encodeURIComponent(raw));
+    } else {
+      var ep = mode === "wallet" ? "wallet" : "verdict";
+      envelope = await get(API + "/forensicsApi?endpoint=" + ep + "&address=" + encodeURIComponent(raw) + "&chain=base&trial=1");
+      payload = envelope.data || envelope;
+    }
+    render(payload, envelope);
+  } catch (e) {
+    fail(e.message || String(e));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Run free check";
+  }
+}
+
+async function get(url) {
+  var r = await fetch(url, { headers: { Accept: "application/json" } });
+  var j = null;
+  try { j = await r.json(); } catch (e) { j = null; }
+  if (r.status === 429 && j && j.error === "free_tier_exhausted") {
+    throw new Error("You have used today's free checks of this type. They reset at midnight UTC, or your agent can pay $0.02 and skip the limit.");
+  }
+  if (!r.ok) throw new Error((j && (j.detail || j.error)) || ("HTTP " + r.status));
+  return j;
+}
+
+function stats(p) {
+  var out = [];
+  function n(v) { return Number(v).toLocaleString("en-US"); }
+  if (p.total_supply) out.push(["Supply", n(p.total_supply)]);
+  if (p.token && p.token.supply) out.push(["Supply", n(p.token.supply)]);
+  if (p.transfers_recent) out.push(["Transfers", n(p.transfers_recent)]);
+  if (p.unique_wallets_recent) out.push(["Wallets", n(p.unique_wallets_recent)]);
+  if (p.concentration_top_wallet_share != null) out.push(["Top wallet", Number(p.concentration_top_wallet_share).toFixed(2) + "%"]);
+  if (p.holders && p.holders.top10_pct != null) out.push(["Top 10 hold", p.holders.top10_pct + "%"]);
+  if (p.holders && p.holders.top1_pct != null) out.push(["Top holder", p.holders.top1_pct + "%"]);
+  if (p.token && p.token.mint_authority !== undefined) out.push(["Mint auth", p.token.mint_authority ? "LIVE" : "renounced"]);
+  if (p.token && p.token.freeze_authority !== undefined) out.push(["Freeze auth", p.token.freeze_authority ? "LIVE" : "renounced"]);
+  if (p.activity_score_0_100 != null) out.push(["Activity", p.activity_score_0_100 + "/100"]);
+  if (p.market && p.market.price_usd) out.push(["Price", "$" + Number(p.market.price_usd).toPrecision(4)]);
+  if (p.market && p.market.liquidity_usd) out.push(["Liquidity", "$" + Math.round(p.market.liquidity_usd).toLocaleString("en-US")]);
+  return out.slice(0, 9);
+}
+
+function render(p, envelope) {
+  var tier = p.tier || p.verdict_tier || p.trust_tier || "REVIEW";
+  var take = p.plain_take || p.bottom_line || p.share_text || "";
+  var name = p.token_symbol || p.token_name || p.symbol || p.name || "";
+  var tierColor = /HIGH_RISK|SUSPICIOUS|NOT_RECOM/.test(tier) ? "#ff5470"
+    : /CONCENTRATED|DORMANT|CAUTION|UNVERIFIED|LIGHT/.test(tier) ? "#ffb020"
+    : /HEALTHY|KNOWN_CANONICAL|REGULATED|TRUSTED|RED_HOT/.test(tier) ? "#2fbf71" : "#7aa2ff";
+  var flags = (p.flags || p.risk_flags || []).map(function (f) { return typeof f === "string" ? f : (f && f.flag); }).filter(Boolean);
+  var quality = p.data_quality || p.logs_coverage || "";
+  var free = (envelope && envelope.free_trial) ? envelope.free_trial : (p.free_trial || null);
+  var statHtml = stats(p).map(function (kv) {
+    return '<div class="stat"><b>' + esc(kv[1]) + "</b><span>" + esc(kv[0]) + "</span></div>";
+  }).join("");
+
+  $("out").innerHTML =
+    '<div class="cardbox">' +
+      '<img alt="' + esc(name + " " + tier) + ' card" src="' + cardSvg(p) + '">' +
+      '<div class="meta">' +
+        '<span class="tier" style="color:' + tierColor + '">' + esc(tier) + "</span>" +
+        (name ? "&nbsp;<b>" + esc(name) + "</b>" : "") +
+        '<p class="take">' + esc(take) + "</p>" +
+        '<div class="grid">' + statHtml + "</div>" +
+        (flags.length ? '<div class="flags">flags: ' + esc(flags.join("  /  ")) + "</div>" : "") +
+        (quality ? '<div class="hint">Data quality: ' + esc(typeof quality === "object" ? JSON.stringify(quality) : quality) + "</div>" : "") +
+        (free ? '<div class="hint">Free checks left today: ' + esc(free.remaining) + " of " + esc(free.limit || free.remaining) + "</div>" : "") +
+        '<div class="acts">' +
+          '<a href="' + cardPage(p) + '" target="_blank" rel="noopener"><button class="ghost">Share this card</button></a>' +
+          '<button class="ghost" id="copy">Copy JSON</button>' +
+          '<a href="' + cardSvg(p) + '" target="_blank" rel="noopener"><button class="ghost">Open image</button></a>' +
+        "</div>" +
+      "</div>" +
+    "</div>";
+
+  var c = $("copy");
+  if (c) c.addEventListener("click", async function () {
+    try { await navigator.clipboard.writeText(JSON.stringify(p, null, 2)); c.textContent = "Copied"; }
+    catch (e) { c.textContent = "Copy blocked"; }
+  });
+}
+
+function fail(msg) {
+  $("out").innerHTML = '<div class="err"><b>No verdict.</b> ' + esc(msg) + "<br><br>" +
+    '<a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info">Endpoint map</a> &middot; ' +
+    "paid routes skip the free limit at $0.02 to $0.25.</div>";
+}
+</script>
+</body>
+</html>
