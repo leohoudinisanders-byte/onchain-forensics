@@ -105,7 +105,9 @@
   <table>
     <tr><th>Endpoint</th><th>Price</th><th>What you get</th></tr>
 <tr><td><code>memo</code></td><td>$0.25</td><td>Composed due-diligence memo: executive summary, supply forensics, wallet flows, settle-safe screen, severity-ranked red-flag table, bottom-line settlement recommendation. Optional counterparty trust screen.</td></tr>
-    <tr><td><code>verdict</code></td><td>$0.02</td><td>Token activity score, verdict tier, mints/burns, transfers, unique wallets, largest transfer, concentration share, flags, plain-English take.</td></tr>
+    <tr><td><code>verdict</code></td><td>$0.02</td><td>Token activity score, verdict tier, mints/burns, transfers, unique wallets, largest transfer, concentration share, flags, letter grade (A to F), a one-line roast, plain-English take.</td></tr>
+    <tr><td><code>deployer</code></td><td>$0.05</td><td>Who launched this contract: deploying address, creation tx, deployment block and time, deployer wallet age and transaction count, OFAC screen on the deployer, and a launch window when a chain has no indexer coverage. Unresolved deployers are reported as null, never guessed.</td></tr>
+    <tr><td><code>trust</code></td><td>$0.02</td><td>One-word trust answer: TRUSTED / CAUTION / HIGH_RISK / UNVERIFIABLE with reason codes, plus the exact checks that ran and the ones that did not.</td></tr>
     <tr><td><code>token</code></td><td>$0.05</td><td>Exact 24h net supply change with full mint/burn event detail.</td></tr>
     <tr><td><code>wallet</code></td><td>$0.05</td><td>Wallet flow analysis: transfers in/out, net, top counterparties.</td></tr>
     <tr><td><code>canton</code></td><td>$0.05</td><td>Canton Network (CC) burn/mint snapshot: 24h ratio, cumulative, net emissions.</td></tr>
