@@ -57,6 +57,17 @@
 </header>
 
 <section>
+  <h2>Buyer proof, before you pay</h2>
+  <p style="color:var(--dim);font-size:.95rem">This is a live paid API that an independent third party has bought from and audited. Nothing here is self-reported.</p>
+  <ul>
+    <li><b>Independently audited delivery.</b> paidfor.dev buys from hundreds of x402 sellers every six hours and publishes who delivers. Its public record for this API: <b>0 failed deliveries</b> across every paid call it made (6 calls at $0.02, last checked 2 Nov 2026). <a href="https://paidfor.dev/seller/solene-fa2010da.base44.app" style="color:var(--accent2)">See the record</a>.</li>
+    <li><b>Challenge speed.</b> A 402 challenge returns in under a second (measured 0.44&ndash;0.50s), so an agent learns the exact price and terms in one round trip before committing funds.</li>
+    <li><b>Free before paid.</b> Every visitor gets the full endpoint map at zero cost from the <a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=info" style="color:var(--accent2)">info route</a>, and 3 verdict + 1 token/wallet call per day without a wallet.</li>
+    <li><b>Reproducible output.</b> No LLM calls anywhere in the pipeline. The same block and the same inputs return the same memo, so a paid result can be re-run and checked.</li>
+  </ul>
+</section>
+
+<section>
   <h2>Pricing</h2>
   <div class="grid">
     <div class="card">
@@ -199,6 +210,9 @@
   <ul>
     <li><a href="openapi.json" style="color:var(--accent2)">/openapi.json</a> — OpenAPI 3.1 spec (this site)</li>
     <li><a href="https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=openapi" style="color:var(--accent2)">Live endpoint copy</a> — always in sync with the deployed API</li>
+    <li><a href="llms.txt" style="color:var(--accent2)">/llms.txt</a> &mdash; agent-facing summary (capabilities, prices, example calls)</li>
+    <li><a href=".well-known/x402.json" style="color:var(--accent2)">/.well-known/x402.json</a> &mdash; x402 v2 discovery document</li>
+    <li><a href="agents.json" style="color:var(--accent2)">/agents.json</a> &mdash; machine-readable agent manifest</li>
   </ul>
 </section>
 
