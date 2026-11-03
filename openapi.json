@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "On-chain Forensics API",
-  "version": "2.15.0",
+  "version": "2.16.1",
   "description": "Pay-per-call on-chain forensics and derivatives API for AI agents: token verdicts, supply and holder audits, contract introspection, wallet history and risk screens, tokenized-equity reads, Solana mint forensics, and perpetual funding plus options positioning. USDC on Base via x402. 33 paid routes, each with its own resource URL and its own typed 200 response. data_quality is always COMPLETE, PARTIAL or UNAVAILABLE; a failed read is never reported as a zero.33 routes Now also reads Robinhood Chain (chain=robinhood, chainId 4663), including its 203-token Stock Token registry: state and 24h-ago archive reads via dRPC, Transfer activity and exact holder rankings via the chain indexer. Activity windows there are indexer-backed (~30 min); every payload reports the window and the indexer lag it actually achieved.",
   "x-payment": {
    "protocol": "x402",
@@ -2911,18 +2911,18 @@
        "F",
        "?"
       ],
-      "description": "Letter grade derived deterministically from the verdict tier, the 0-100 activity score and the flags. No LLM is involved."
+      "description": "Letter grade. It grades STRUCTURE, not busyness: risk flags cap it (concentrated flow, or concentrated flow plus fresh mints) and wallet diversity floors it, so a quiet but widely distributed market grades C rather than F. Minting alone does not cap the grade, because canonical assets mint on every deposit. Deterministic: no LLM, same input gives the same grade."
      },
      "grade_label": {
       "type": "string",
-      "description": "Short human label for the grade, e.g. LIVE AND BROAD, THIN BUT REAL, DORMANT, UNVERIFIABLE."
+      "description": "Short human label: LIVE AND BROAD, HEALTHY, THIN BUT REAL, QUIET, ALMOST NO FLOW, ONESIDED FLOW, RISKY SUPPLY, DORMANT, NOT A TOKEN, UNVERIFIABLE."
      },
      "grade_reason_codes": {
       "type": "array",
       "items": {
        "type": "string"
       },
-      "description": "Which flags moved the grade: CONCENTRATED_FLOW, FRESH_MINTS, WHALE_MOVE, BURNS_PRESENT, DORMANT, LOGS_UNAVAILABLE."
+      "description": "Which signals moved the grade: CONCENTRATED_FLOW, FRESH_MINTS, WHALE_MOVE, BURNS_PRESENT, THIN_SAMPLE, ZERO_TRANSFERS_IN_WINDOW, NO_BYTECODE, NO_ERC20_SURFACE, LOGS_UNAVAILABLE."
      },
      "roast": {
       "type": "string",
