@@ -213,6 +213,11 @@
     a suspicious consumer can re-verify any response against their own RPC at the same block. Settle-safe responses
     embed an rpc_verification evidence trail (per-node read outcomes), and 402s bind payment to a resource URL,
     so data and payment can be replayed and audited on-chain.</li>
+    <li><strong>Reads are not built on shared gateways.</strong> Base and Ethereum reads are served from a
+    dedicated provider endpoint (Alchemy) whose key this service controls, with the public gateway rotation kept
+    only as a fallback. Public gateways under load answer eth_call with short or empty results; those are detected
+    as malformed and re-read instead of being reported as a zero balance. Every payload states whether its scan
+    window was complete, partial or unavailable.</li>
     <li><strong>Payments cannot be silently redirected.</strong> The payTo address is a fixed constant in the deployed
     service, echoed in every PAYMENT-REQUIRED challenge and in the free directory (?endpoint=info). Payments are
     EIP-3009 signed authorizations verified and settled by independent facilitators (Coinbase CDP primary, with
