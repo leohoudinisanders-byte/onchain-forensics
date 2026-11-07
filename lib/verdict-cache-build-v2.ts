@@ -245,6 +245,8 @@ Deno.serve(async (req) => {
         if (candidates.length) sourceUsed = "dexscreener-boosts";
       }
 
+      // Base tokens lead the queue: faster reads, and they are what x402 callers ask about.
+      candidates.sort((a, b) => (a.chain === b.chain ? 0 : a.chain === "base" ? -1 : 1));
       const fresh = candidates.filter((r) => !known.has(`${r.chain}:${r.address}`)).slice(0, budgetLeft);
       for (const batch of chunk(fresh, 20)) {
         if (Date.now() - started > TIME_BUDGET_MS * 0.35) break;
