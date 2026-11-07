@@ -22,7 +22,7 @@ import { verdictForensics, setPreferPublic } from "https://esm.sh/gh/leohoudinis
 
 const ENGINE_VERSION = "verdict-engine-v2-free";
 const TIME_BUDGET_MS = 30_000;      // a batch can overrun badly, so stop well short of the ceiling
-const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
+const PARALLEL = 4;                 // measured: 3-way gave 24 builds per run with zero failures, 6-way tripped host cooling
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
 const PENDING_TARGET = 150;          // stop discovering once this much work is queued
 const STALE_AFTER_MIN = 360;        // refresh rows older than 6 hours (RPC quota is the binding constraint)
