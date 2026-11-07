@@ -1,5 +1,17 @@
 # On-chain Forensics API
 
+
+## Install inside your agent (no code)
+
+    npx -y github:leohoudinisanders-byte/forensics-mcp
+
+On-chain Forensics ships an MCP server (stdio, zero dependencies, six tools: token_verdict,
+token_mints, settlesafe_check, token_profile, wallet_profile, forensics_catalog). Load it in
+Claude Desktop, Cursor, Claude Code, LangChain or any MCP client. When the free allowance on a
+route is spent the tool returns the decoded x402 challenge instead of an error, so you always
+know the exact price before paying. Latency numbers and our deprecation policy:
+https://onchainforensics.dev/status.html
+
 > Decision-grade on-chain forensics for AI agents. Ask the question you are actually asking: should I touch this token or wallet? Pay per call in USDC on Base via x402, no API keys, no signup. Verdict returns a letter grade and a one-line roast, so a caller gets a call to make, not a dashboard to read.
 
 ## Start here (cheapest path to a decision)
