@@ -44,8 +44,11 @@ than signing a payment per call:
 - `POST https://solene-fa2010da.base44.app/functions/forensicsCredits?plan=pack25` at **$25.00** returns
   an `api_key` (shown once, stored only as a hash) with **$27.50 of credit**, which is 27,500 cached
   verdicts or 27 batch screens of 25. `pack1` is $1.00 for $1.10 of credit; `pack100` is $100.00 for
-  $120.00 (20 percent bonus). A `pack_test` tier at $0.02 exists for integration testing. Batch credit
-  is charged at the same size ladder as x402: 25 addresses $1.00, 100 $3.00, 250 $6.00, 500 $10.00.
+  $120.00 and `pack250` is $250.00 for $300.00 (20 percent bonus on both, the $250 pack is sized for
+  500-token batch volume: 30 top-tier screens). A `pack_test` tier at $0.02 exists for integration
+  testing. Batch credit is charged at the same size ladder as x402: 25 addresses $1.00, 100 $3.00,
+  250 $6.00, 500 $10.00, and a screen larger than the chain's servable cache is refused rather than
+  billed for partial data.
 - Spend it with `X-Credit-Key: fxp_...`: `POST {"action":"redeem","route":"verdict","address":"0x...","chain":"base"}`
   or `route:"batch"` with up to 500 addresses (billed by size on the same ladder). Credit is spent at
   list price and never expires.
