@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Risk alerts for tokens you actually hold · On-chain Forensics</title>
+<meta name="description" content="Get an email when a token you hold or are about to buy gets riskier. $29 for 30 days, paid in USDC over x402. Same deterministic engine as the verdict API, delivered instead of queried.">
+<style>
+  :root{--ink:#1a1815;--muted:#6b6660;--line:#e6e2dc;--bg:#faf9f7}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:56px 24px 72px}
+  .kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin:14px 0 12px}
+  .sub{font-size:18px;color:#3d3a36;margin:0 0 28px}
+  .price{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 30px}
+  .card{flex:1 1 220px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card b{font-size:26px;letter-spacing:-.02em}
+  .card span{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:34px 0 12px;font-weight:600}
+  ul{margin:0;padding-left:20px;color:#3d3a36} li{margin:7px 0}
+  pre{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .cta{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;padding:13px 22px;border-radius:8px;font-weight:600;margin:8px 10px 8px 0}
+  .note{background:#fff;border-left:3px solid var(--ink);padding:14px 18px;border-radius:0 8px 8px 0;color:#3d3a36;font-size:15px;margin:22px 0}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  a{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">On-chain Forensics · alerts</div>
+  <h1>Know the moment a token you hold gets riskier.</h1>
+  <p class="sub">One email when a watchlist token's grade drops, or a red flag appears: readable supply lost, liquidity drained, holder concentration spiking. Plus a daily digest of what turned risky across Base and Ethereum. Same deterministic grading engine the verdict API runs, delivered instead of queried.</p>
+  <div class="price">
+    <div class="card"><b>$29</b> / 30 days<span>Daily digest plus same-day red flags, up to 50 tokens on your watchlist.</span></div>
+    <div class="card"><b>$75</b> / 90 days<span>Same, three months, 14 percent off.</span></div>
+  </div>
+  <a class="cta" href="#subscribe">Subscribe in one request</a>
+  <a class="cta" href="samples.html" style="background:#fff;color:#1a1815;border:1px solid var(--line)">See real verdict data</a>
+  <h2>What lands in your inbox</h2>
+  <ul>
+    <li><b>Same day:</b> a watched token drops a full grade. The subject line names it and says how far.</li>
+    <li><b>Daily 07:00 CT:</b> everything on your list that got worse, plus the wider feed's new F grades.</li>
+    <li><b>Quiet by default:</b> no email when nothing changed. No newsletter, no upsell spam.</li>
+  </ul>
+  <h2 id="subscribe">How to subscribe</h2>
+  <p class="sub" style="font-size:15px;margin-bottom:10px">Payment is USDC on Base over x402, the same rail the rest of this API settles on. The email is required before payment, so you cannot pay for alerts we cannot deliver.</p>
+<pre>curl -X POST "https://api.onchainforensics.dev/functions/alertsSubscribe" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","plan":"month","watchlist":["0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"]}'</pre>
+  <p class="sub" style="font-size:15px">That returns a 402 challenge for $29.00. Pay it with any x402 client and you get back an <code>alerts_key</code> and an <code>expires_at</code>. Check status any time:</p>
+<pre>curl -X POST "https://api.onchainforensics.dev/functions/alertsSubscribe" \
+  -H "Content-Type: application/json" -H "X-Alerts-Key: fxa_..." \
+  -d '{"action":"status"}'</pre>
+  <div class="note">No custodial account, no card on file. USDC in, thirty days of alerts out. Renew by paying again with the same email; the subscription extends rather than stacking.</div>
+  <h2>Why trust the grade</h2>
+  <ul>
+    <li>Deterministic rules over live chain reads: readable supply, transfer activity, holder spread, mint and freeze authority.</li>
+    <li>No LLM in the loop, so the same token grades the same way twice.</li>
+    <li>Grades A to F with a 0 to 100 activity score, refreshed every five minutes for 400+ tokens.</li>
+  </ul>
+  <footer>
+    On-chain Forensics · <a href="https://onchainforensics.dev">onchainforensics.dev</a> · <a href=".well-known/x402">x402 manifest</a> · <a href="openapi.json">OpenAPI</a><br>
+    The verdict API stays pay-per-call at $0.001. This page is the subscription version of the same data.
+  </footer>
+</div>
+</body>
+</html>
