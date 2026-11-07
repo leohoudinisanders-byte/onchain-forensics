@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — On-chain Forensics</title>
+<meta name="description" content="How to reach On-chain Forensics support, response targets, what counts as a defect on our side, and how paid calls are re-run or refunded.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+  header { padding:56px 0 28px; }
+  h1 { font-size:2.1rem; letter-spacing:-0.02em; }
+  .tagline { color:var(--dim); font-size:1.05rem; margin-top:8px; max-width:680px; }
+  section { padding:30px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.35rem; margin-bottom:16px; letter-spacing:-0.01em; }
+  h3 { font-size:1.02rem; margin:18px 0 8px; }
+  p, li { color:var(--dim); font-size:.94rem; margin-bottom:10px; }
+  ul { padding-left:22px; }
+  a { color:var(--accent2); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px; }
+  .card h3 { margin-top:0; color:var(--txt); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:8px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; }
+  td code, p code, li code { background:#182338; padding:2px 7px; border-radius:6px; font-size:.85em; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .price { font-size:1.6rem; font-weight:700; color:var(--accent); }
+  footer { padding:36px 0 64px; border-top:1px solid var(--line); color:var(--dim); font-size:.82rem; }
+  footer a { color:var(--dim); text-decoration:underline; }
+  .note { font-size:.85rem; color:var(--dim); }
+  .pill { display:inline-block; font-size:.75rem; padding:3px 10px; border:1px solid var(--line); border-radius:999px; color:var(--dim); margin-right:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Support</h1>
+  <p class="tagline">Who to contact, what we will fix, and how fast. Support is staffed by a human and the agent that operates the service, and every paid call is answerable.</p>
+</header>
+
+<section>
+  <h2>Contact</h2>
+  <div class="card">
+    <h3>Email</h3>
+    <p><a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a> reaches the operator directly. Include the route you called, the timestamp, the <code>payTo</code> or transaction hash if it was paid, and the response you got. A paid call that returned a wrong or empty answer is refunded or re-run at our cost.</p>
+    <h3>Status and incidents</h3>
+    <p>Live version, latency, and settlement state: <a href="status.html">status page</a>. Route inventory and schemas: <a href="openapi.json">openapi.json</a>. Machine-readable service description: <a href="agents.json">agents.json</a>.</p>
+    <h3>Security reports</h3>
+    <p>Send to the same address with "security" in the subject. See the <a href="security.html">security page</a> for scope and what we do with reports.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Response targets</h2>
+  <table>
+    <tr><th>Type</th><th>Target</th></tr>
+    <tr><td>Service down or paid call failing</td><td>Same business day</td></tr>
+    <tr><td>Wrong or incomplete answer on a paid call</td><td>Same business day, with a re-run or refund</td></tr>
+    <tr><td>Schema or integration question</td><td>Two business days</td></tr>
+    <tr><td>Licensing or volume pricing</td><td>Two business days</td></tr>
+    <tr><td>Security report</td><td>Acknowledged within one business day</td></tr>
+  </table>
+  <p class="note">Targets are business days, US Central. We do not promise a 24/7 phone desk and will not pretend to have one.</p>
+</section>
+
+<section>
+  <h2>What counts as a bug on our side</h2>
+  <ul>
+    <li>A paid call returning an empty, null, or zero value where the chain was readable. We treat that as a defect, not a data point: unreadable reads are reported as <code>partial</code> or <code>unavailable</code> in the payload, never as a zero.</li>
+    <li>A 402 challenge that does not settle, or a settlement that is taken without an answer.</li>
+    <li>A response that does not match the published schema in <a href="openapi.json">openapi.json</a>.</li>
+    <li>A grade that ignores a material fact you can point to on-chain. Send the address, the block, and the fact; we will re-measure and publish the correction.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>What we cannot help with</h2>
+  <p>We do not give investment advice, we do not tell you to buy or sell, and we do not recover funds. The service measures on-chain facts and publishes them; what you do with that is yours.</p>
+</section>
+
+</div>
+<footer class="wrap">
+  <p><a href="index.html">Home</a> &middot; <a href="pricing.html">Pricing</a> &middot; <a href="licensing.html">Licensing</a> &middot; <a href="support.html">Support</a> &middot; <a href="security.html">Security</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="status.html">Status</a> &middot; <a href="samples.html">Samples</a> &middot; <a href="openapi.json">OpenAPI</a></p>
+  <p>On-chain Forensics, operated by Solene. Business inquiries and support: <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>. Payments are USDC on Base over x402; no accounts, no cards.</p>
+</footer>
+</body>
+</html>
