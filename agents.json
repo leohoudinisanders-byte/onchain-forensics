@@ -129,8 +129,9 @@
     "route": "verdictFast",
     "price_usd": 0.001,
     "url": "https://solene-fa2010da.base44.app/functions/verdictFast?address=0x<token>&chain=base",
-    "why": "Sub-cent and low latency: precomputed hourly, answered from a key lookup instead of a 1 to 14 second chain scan. Same grade and roast as the $0.02 live verdict.",
+    "why": "Sub-cent and low latency: precomputed continuously in the background, answered from a key lookup instead of a 1 to 14 second chain scan. Same grade and roast as the $0.02 live verdict.",
     "free_coverage_index": "https://solene-fa2010da.base44.app/functions/verdictFast?list=1",
-    "miss_policy": "No charge when a token is not in the feed; the response says cache_miss and points at the live $0.02 route."
+    "miss_policy": "No charge when a token is not in the feed; the response says cache_miss and points at the live $0.02 route.",
+    "growth": "The universe is discovered automatically from the Uniswap token list and built in time-budgeted shards; coverage expands every ten minutes."
   }
 }
