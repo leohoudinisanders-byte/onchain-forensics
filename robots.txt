@@ -25,3 +25,5 @@ Allow: /
 # agents.json   https://onchainforensics.dev/agents.json
 # openapi.json  https://onchainforensics.dev/openapi.json
 # x402 manifest https://onchainforensics.dev/.well-known/x402
+
+Sitemap: https://onchainforensics.dev/sitemap.xml
