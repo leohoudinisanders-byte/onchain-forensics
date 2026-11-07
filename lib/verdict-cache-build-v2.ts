@@ -274,11 +274,15 @@ Deno.serve(async (req) => {
       return Response.json({ ok: true, diag: true, results });
     }
 
-    // Free way: public hosts carry the load, Alchemy only pays out if every free node fails.
-    setPreferPublic(body?.paid === true ? false : true);
+    // Measured Nov 6: from our egress nearly every free Base host refuses log reads (tenderly 429,
+    // publicnode 429, drpc 429, llamarpc 403, 1rpc plan-limit, blastapi caps at 10 blocks). So the
+    // private node stays primary, and free hosts are used only when explicitly requested.
+    setPreferPublic(body?.free === true);
 
     const ent = base44.asServiceRole.entities.TokenVerdictCache;
-    const report: Record<string, unknown> = { engine: ENGINE_VERSION };
+    const parallel = Math.max(1, Math.min(16, Number(body?.parallel ?? PARALLEL)));
+    const budgetMs = Math.max(8000, Math.min(40000, Number(body?.budget_ms ?? TIME_BUDGET_MS)));
+    const report: Record<string, unknown> = { engine: ENGINE_VERSION, parallel, budget_ms: budgetMs };
 
     // ---- 1) Seed curated majors on first ever run -------------------------------------
     const all = await ent.list("-computed_at", 2000);
@@ -369,8 +373,8 @@ Deno.serve(async (req) => {
     const isQuota = (msg: string) =>
       /usage limit|rate limit|429|compute units|exceeded/i.test(msg);
 
-    for (const batch of chunk(work, PARALLEL)) {
-      if (Date.now() - started > TIME_BUDGET_MS) break;
+    for (const batch of chunk(work, parallel)) {
+      if (Date.now() - started > budgetMs) break;
       if (quotaHit) break;   // the RPC plan is exhausted: stop burning time, resume next run
       await Promise.all(batch.map(async (row: any) => {
         const t0 = Date.now();
@@ -435,7 +439,7 @@ Deno.serve(async (req) => {
           if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ${msg.slice(0, 80)}`);
         }
       }));
-      await new Promise((r) => setTimeout(r, 150));
+      await new Promise((r) => setTimeout(r, 400));  // pacing: bursts trip per-second CU caps
     }
 
     // ---- 4) Coverage snapshot --------------------------------------------------------
