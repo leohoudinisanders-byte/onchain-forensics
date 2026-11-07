@@ -22,9 +22,9 @@ import { verdictForensics } from "https://esm.sh/gh/leohoudinisanders-byte/oncha
 
 const ENGINE_VERSION = "verdict-engine-v2";
 const TIME_BUDGET_MS = 42_000;      // leave headroom under the ~49s function ceiling
-const PARALLEL = 8;                 // enough to matter, low enough to stay inside Alchemy limits
+const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
-const PENDING_TARGET = 40;          // stop discovering once this much work is queued
+const PENDING_TARGET = 150;          // stop discovering once this much work is queued
 const STALE_AFTER_MIN = 120;        // refresh rows older than 2 hours
 
 // Curated majors: always present even if volume ranking drops them out.
@@ -136,6 +136,37 @@ async function discoverBoosted(): Promise<Row[]> {
   } catch { return []; }
 }
 
+// Uniswap's default token list is the one discovery source our deployed egress can actually
+// reach (GeckoTerminal 429s and DexScreener returns Cloudflare 1015 from datacenter IPs), so it
+// is primary. It is fetched once per invocation and gives Base 196 + Ethereum 485 real tokens.
+let UNI_CACHE: Array<{ chain: string; address: string; symbol: string; name: string }> | null = null;
+async function uniswapTokens(): Promise<Array<{ chain: string; address: string; symbol: string; name: string }>> {
+  if (UNI_CACHE) return UNI_CACHE;
+  const out: Array<{ chain: string; address: string; symbol: string; name: string }> = [];
+  try {
+    const res = await fetch("https://tokens.uniswap.org", {
+      headers: { "User-Agent": UA, Accept: "application/json" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (res.ok) {
+      const d = await res.json();
+      const seen = new Set<string>();
+      for (const t of (d?.tokens ?? [])) {
+        const chain = t?.chainId === 8453 ? "base" : t?.chainId === 1 ? "ethereum" : "";
+        if (!chain) continue;
+        const address = String(t.address || "").toLowerCase();
+        if (!/^0x[a-f0-9]{40}$/.test(address)) continue;
+        const key = `${chain}:${address}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ chain, address, symbol: String(t.symbol || ""), name: String(t.name || "") });
+      }
+    }
+  } catch { /* fall through to an empty list */ }
+  UNI_CACHE = out;
+  return out;
+}
+
 async function probe(url: string): Promise<Record<string, unknown>> {
   const t0 = Date.now();
   try {
@@ -185,41 +216,50 @@ Deno.serve(async (req) => {
       report.seeded = SEED.length;
     }
 
-    // ---- 2) Discovery: grow the universe while queue is thin --------------------------
+    // ---- 2) Discovery: grow the universe while the queue is thin -----------------------
+    // Primary source: Uniswap token list (reachable from our egress, 681 EVM tokens across the
+    // two chains we serve). Bytes are inserted as PENDING rows in bounded batches so one run
+    // never spends its whole budget writing queue entries.
     const pendingNow = (all ?? []).filter((r: any) => r.grade === "PENDING").length;
     let discovered = 0;
+    let sourceUsed = "none";
     if (pendingNow < PENDING_TARGET) {
       const counts: Record<string, number> = { base: 0, ethereum: 0 };
       for (const r of all ?? []) if (counts[r.chain] !== undefined) counts[r.chain]++;
-      for (const chain of ["base", "ethereum"]) {
-        if (counts[chain] >= MAX_UNIVERSE_PER_CHAIN[chain]) continue;
-        // walk pages round-robin; stop early if the queue fills
-        for (let page = 1; page <= 3; page++) {
-          if (Date.now() - started > TIME_BUDGET_MS * 0.4) break;
-          let rows = await discoverPage(chain, page);
-          if (!rows.length && page === 1) {
-            // primary source unavailable for this page: fall back once, then stop paging
-            rows = await discoverTokenList(chain);
-            if (!rows.length) rows = (await discoverBoosted()).filter((r) => r.chain === chain);
-          }
-          if (!rows.length) break;
-          const fresh = rows.filter((r) => !known.has(`${r.chain}:${r.address}`));
-          for (const batch of chunk(fresh, 10)) {
-            await Promise.all(batch.map((r) =>
-              ent.create({
-                chain: r.chain, address: r.address, cache_key: `${r.chain}:${r.address}`,
-                symbol: r.symbol || "", name: r.name || "",
-                grade: "PENDING", engine_version: ENGINE_VERSION,
-              }).catch(() => null)
-            ));
-            for (const r of batch) known.add(`${r.chain}:${r.address}`);
-            discovered += batch.length;
-          }
-          await new Promise((r) => setTimeout(r, 1_200)); // be kind to their limiter
-          if (discovered >= PENDING_TARGET) break;
+      const budgetLeft = PENDING_TARGET - pendingNow;
+
+      let candidates: Row[] = (await uniswapTokens()).filter((t) => counts[t.chain] < MAX_UNIVERSE_PER_CHAIN[t.chain]);
+      if (candidates.length) sourceUsed = "uniswap-list";
+
+      if (!candidates.length) {
+        // Fallbacks: GeckoTerminal top pools, then DexScreener boosts. Both may be rate-limited
+        // from this egress; a single attempt each keeps a failed source cheap.
+        for (const chain of ["base", "ethereum"]) {
+          if (counts[chain] >= MAX_UNIVERSE_PER_CHAIN[chain]) continue;
+          candidates = candidates.concat(await discoverPage(chain, 1));
         }
+        if (candidates.length) sourceUsed = "geckoterminal";
+      }
+      if (!candidates.length) {
+        candidates = await discoverBoosted();
+        if (candidates.length) sourceUsed = "dexscreener-boosts";
+      }
+
+      const fresh = candidates.filter((r) => !known.has(`${r.chain}:${r.address}`)).slice(0, budgetLeft);
+      for (const batch of chunk(fresh, 20)) {
+        if (Date.now() - started > TIME_BUDGET_MS * 0.35) break;
+        await Promise.all(batch.map((r) =>
+          ent.create({
+            chain: r.chain, address: r.address, cache_key: `${r.chain}:${r.address}`,
+            symbol: r.symbol || "", name: r.name || "",
+            grade: "PENDING", engine_version: ENGINE_VERSION,
+          }).catch(() => null)
+        ));
+        for (const r of batch) known.add(`${r.chain}:${r.address}`);
+        discovered += batch.length;
       }
     }
+    report.source = sourceUsed;
     report.discovered = discovered;
 
     // ---- 3) Build: work the queue in parallel batches inside the time budget ----------
