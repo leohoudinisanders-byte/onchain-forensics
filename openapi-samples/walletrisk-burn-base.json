@@ -1,0 +1,49 @@
+{
+ "service": "onchain-forensics",
+ "paid": "$0.00 (free trial call 1 of 5)",
+ "settlement_tx": null,
+ "free_trial": {
+  "used": 1,
+  "remaining": 4,
+  "limit": 5,
+  "resets": "2026-11-07"
+ },
+ "data": {
+  "endpoint": "walletrisk",
+  "chain": "base-mainnet",
+  "wallet": "0x000000000000000000000000000000000000dead",
+  "generated_at": "2026-11-07T00:25:06.590Z",
+  "risk_tier": "NO_ADVERSE_FINDINGS",
+  "risk_pass": true,
+  "flags": [],
+  "address": {
+   "is_contract": false,
+   "bytecode_size": 0,
+   "nonce": 0,
+   "native_balance": 4.584840095343594
+  },
+  "sanctions_screen": {
+   "source": "OFAC SDN digital-currency addresses (EVM format)",
+   "snapshot": "2026-11-02",
+   "list_size": 94,
+   "address_match": false,
+   "sdn_name": null,
+   "counterparty_matches": []
+  },
+  "counterparty_scan": {
+   "assets": [
+    "USDC",
+    "WETH"
+   ],
+   "window": {
+    "blocks": 800,
+    "window_min": 27,
+    "from_block": 54102758,
+    "to_block": 54103558
+   },
+   "transfers_scanned": 0
+  },
+  "data_quality": "COMPLETE",
+  "note": "A pass means nothing adverse was found in the checks actually run: the OFAC snapshot, the scanned transfer window, and the nonce/balance pattern. It is not a guarantee of clean provenance beyond that window, and it is not a substitute for a compliance vendor's list set."
+ }
+}
