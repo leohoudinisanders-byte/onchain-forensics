@@ -175,7 +175,11 @@ Deno.serve(async (req: Request) => {
   const paymentHeader = req.headers.get("PAYMENT-SIGNATURE") || req.headers.get("X-PAYMENT");
 
   // Free first-call sample: cache hit only, once per caller per day, no parameter required.
-  if (!paymentHeader && !SAMPLE_OFF) {
+  // Indexers and payment validators must keep seeing the plain 402, or a paid route can be judged
+  // free-to-use; the sample is for callers that actually intend to use the data.
+  const ua = (req.headers.get("user-agent") || "").toLowerCase();
+  const sampleExcluded = /coinbase|x402|bazaar|validator|crawler|bot\b|spider|scanner|awal/.test(ua);
+  if (!paymentHeader && !SAMPLE_OFF && !sampleExcluded) {
     const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
     const today = new Date().toISOString().slice(0, 10);
     if (ip) {
