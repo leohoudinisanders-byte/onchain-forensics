@@ -1,6 +1,17 @@
 # On-chain Forensics API
 
 
+## Free developer key (no card, no payment signature)
+
+    curl -X POST https://api.onchainforensics.dev/functions/devKeys \
+      -H "Content-Type: application/json" -d '{"email":"you@example.com"}'
+
+Returns a key (shown once) worth 10,000 calls per calendar month on the cached verdict tier.
+Send it as the X-Dev-Key header. One key per email, one per caller per day, resets on the 1st (UTC).
+Above the cap, prepaid packs at /functions/forensicsCredits ($25 for 25,000 calls) use the same header
+pattern. The MCP server picks the key up from FORENSICS_DEV_KEY and needs no other setup.
+
+
 ## Install inside your agent (no code)
 
     npx -y github:leohoudinisanders-byte/forensics-mcp
