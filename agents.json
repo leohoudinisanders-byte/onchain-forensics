@@ -133,5 +133,14 @@
     "free_coverage_index": "https://solene-fa2010da.base44.app/functions/verdictFast?list=1",
     "miss_policy": "No charge when a token is not in the feed; the response says cache_miss and points at the live $0.02 route.",
     "growth": "The universe is discovered automatically from the Uniswap token list and built in time-budgeted shards; coverage expands every ten minutes."
+  },
+  "free_developer_key": {
+    "how": "POST /functions/devKeys with {\"email\":\"you@example.com\"}",
+    "url": "https://api.onchainforensics.dev/functions/devKeys",
+    "quota": "10000 calls per calendar month, no card, no payment signature",
+    "covers": "the cached verdict tier (/functions/verdictFast)",
+    "header": "X-Dev-Key",
+    "limits": "one key per email, one key per caller per day, resets on the 1st (UTC)",
+    "upgrade": "prepaid packs at /functions/forensicsCredits remove the cap"
   }
 }
