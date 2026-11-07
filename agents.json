@@ -142,5 +142,19 @@
     "header": "X-Dev-Key",
     "limits": "one key per email, one key per caller per day, resets on the 1st (UTC)",
     "upgrade": "prepaid packs at /functions/forensicsCredits remove the cap"
+  },
+  "grade_directory": {
+    "hub": "https://onchainforensics.dev/t/",
+    "ethereum": "https://onchainforensics.dev/t/ethereum/",
+    "base": "https://onchainforensics.dev/t/base/",
+    "per_token_pattern": "https://onchainforensics.dev/t/<chain>/<symbol>-<address8>.html",
+    "what_it_is": "500 tokens graded in public: activity score 0-100 over the last 500 blocks, letter grade A-F, band, and percentile against the chain median. Free to read; no key, no payment.",
+    "why_it_exists": "Pick a token worth paying to check, then call verdict for the live number."
+  },
+  "license_feed": {
+    "url": "https://onchainforensics.dev/licensing.html",
+    "for": "wallets, bots, trading terminals, data vendors",
+    "pilot_usd": 100,
+    "monthly_from_usd": 250
   }
 }
