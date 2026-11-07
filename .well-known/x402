@@ -1,0 +1,817 @@
+{
+  "x402Version": 2,
+  "serviceName": "On-chain Forensics",
+  "operator": "Leo Sanders",
+  "description": "Due-diligence forensics for AI agents, pay-per-call over x402 v2 in USDC on Base. 34 routes: cached verdict cards at $0.001, live token verdicts and settle-safe screens at $0.02, wallet risk and token profiles at $0.05, composed memos at $0.25. Free trial served before payment, no API key, no signup.",
+  "homepage": "https://onchainforensics.dev",
+  "docs": "https://onchainforensics.dev/llms.txt",
+  "openapi": "https://onchainforensics.dev/openapi.json",
+  "agentCard": "https://onchainforensics.dev/agents.json",
+  "payment": {
+    "scheme": "exact",
+    "network": "eip155:8453",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+    "assetName": "USD Coin",
+    "assetVersion": "2"
+  },
+  "freeTrial": "Every route serves a first-call free trial before the paywall, per caller, then returns 402 with a machine-readable accepts block.",
+  "resources": [
+    {
+      "resource": "https://api.onchainforensics.dev/functions/verdictFast",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Cached verdict in milliseconds: same grade and roast, $0.001",
+      "tags": [
+        "token-verdict",
+        "cached",
+        "low-latency"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "1000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsActivity",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How active is this token in the last window?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsBurns",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How much supply was burned in this window?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsContract",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Who owns this contract, and is it paused?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsHolders",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How concentrated is holder supply?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsRegistry",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Is this token on a known registry?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSupply",
+      "type": "http",
+      "x402Version": 2,
+      "description": "What is total supply right now?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsTransfers",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How many transfers and unique wallets in the window?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWalletAge",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How old is this wallet?",
+      "tags": [
+        "micro-read",
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "10000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsApi",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Route map and pricing for all 33 routes",
+      "tags": [
+        "directory"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsEquitySettlesafe",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Can I settle this tokenized equity against a counterparty?",
+      "tags": [
+        "rwa",
+        "tokenized-equity",
+        "settlement-safety"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsEquityVerdict",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Is this tokenized equity token safe to hold?",
+      "tags": [
+        "rwa",
+        "tokenized-equity",
+        "token-verdict"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsMints",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Who is adding supply in this window, and how much?",
+      "tags": [
+        "micro-read"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSettlesafe",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Can I accept or settle against this token right now?",
+      "tags": [
+        "settlement-safety",
+        "pre-trade-check"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSolanaAuthorities",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Can the issuer mint or freeze this SPL token?",
+      "tags": [
+        "solana"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSolanaHolders",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How concentrated is this SPL mint?",
+      "tags": [
+        "solana"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSolanaLaunch",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How was this SPL token launched?",
+      "tags": [
+        "solana"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSolanaLiquidity",
+      "type": "http",
+      "x402Version": 2,
+      "description": "How much liquidity does this SPL token have?",
+      "tags": [
+        "solana"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsTrust",
+      "type": "http",
+      "x402Version": 2,
+      "description": "One word: TRUSTED, CAUTION, HIGH_RISK or UNVERIFIABLE",
+      "tags": [
+        "trust-score"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsVerdict",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Is this token alive and how risky? Letter grade, roast, risk flags",
+      "tags": [
+        "token-verdict",
+        "token-security"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWalletCounterparties",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Who does this wallet transact with?",
+      "tags": [
+        "micro-read",
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWalletFlows",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Where did this wallet's money come from and go?",
+      "tags": [
+        "micro-read",
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWalletFunding",
+      "type": "http",
+      "x402Version": 2,
+      "description": "What funded this wallet first?",
+      "tags": [
+        "micro-read",
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "20000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsEquity",
+      "type": "http",
+      "x402Version": 2,
+      "description": "What is the issuance behind this tokenized equity?",
+      "tags": [
+        "rwa",
+        "tokenized-equity"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "30000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsCanton",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Canton emission and burn-mint snapshot",
+      "tags": [
+        "canton"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsDeployer",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Who launched this contract, and from which wallet?",
+      "tags": [
+        "deployer",
+        "provenance"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsDerivs",
+      "type": "http",
+      "x402Version": 2,
+      "description": "What are funding, open interest and skew doing?",
+      "tags": [
+        "derivatives"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsLinea",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Linea burn-vault stats",
+      "tags": [
+        "linea"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsOptions",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Where is option skew pointing?",
+      "tags": [
+        "derivatives"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsToken",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Full token profile: supply, concentration, whale moves",
+      "tags": [
+        "token-profile"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWallet",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Is this wallet worth trusting with settlement?",
+      "tags": [
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsWalletRisk",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Is this wallet risky, and is it on an OFAC list?",
+      "tags": [
+        "wallet-risk"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "50000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsMemo",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Should I hold or settle against this token or wallet? Composed memo",
+      "tags": [
+        "due-diligence"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "250000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainforensics.dev/functions/forensicsSweep",
+      "type": "http",
+      "x402Version": 2,
+      "description": "Does this wallet actually hold what it claims?",
+      "tags": [
+        "portfolio-check"
+      ],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amount": "250000",
+          "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    }
+  ]
+}
