@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "On-chain Forensics API",
-    "version": "2.17.6",
+    "version": "2.17.7",
     "description": "Decision-grade on-chain forensics, pay per call from $0.01. Ask the question you are actually asking: should I touch this token or wallet? Every route is tagged by the question it answers, priced in x-price-usd, and states data_quality COMPLETE, PARTIAL or UNAVAILABLE so an unreadable chain is never reported as a zero. Free trial calls with trial=1. Pay-per-call on-chain forensics and derivatives API for AI agents: token verdicts, supply and holder audits, contract introspection, wallet history and risk screens, tokenized-equity reads, Solana mint forensics, and perpetual funding plus options positioning. USDC on Base via x402. 33 paid routes, each with its own resource URL and its own typed 200 response. data_quality is always COMPLETE, PARTIAL or UNAVAILABLE; a failed read is never reported as a zero.33 routes Now also reads Robinhood Chain (chain=robinhood, chainId 4663), including its 203-token Stock Token registry: state and 24h-ago archive reads via dRPC, Transfer activity and exact holder rankings via the chain indexer. Activity windows there are indexer-backed (~30 min); every payload reports the window and the indexer lag it actually achieved. Read reliability: Base and Ethereum reads are served from a dedicated provider endpoint (Alchemy) controlled by this service, with public gateways as fallback; short or empty eth_call results are rejected as malformed and re-read rather than reported as zeros.",
     "x-payment": {
       "protocol": "x402",
@@ -2949,6 +2949,176 @@
           },
           "400": {
             "description": "missing_addresses or too_many_addresses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/functions/forensicsCredits": {
+      "post": {
+        "tags": [
+          "credit-packs"
+        ],
+        "summary": "How do I stop signing a payment for every call? Buy credits once, then spend them from a key.",
+        "description": "Prepaid credit packs for high-volume agents. One x402 payment mints a key (returned once, stored only as a SHA-256 hash) that spends down against the cached tiers without a signature per request. Tiers: pack1 $1.00 for $1.10 of credit, pack25 $25.00 for $27.50, pack100 $100.00 for $120.00. Credit is spent at list price (verdict $0.001, batch $1.00) and never expires. Live scan routes stay pay-per-call because each one spends real node reads. Actions: purchase (default, x402 paid), balance (free, send X-Credit-Key), redeem (spend credit).",
+        "operationId": "forensicsCredits",
+        "x-price-usd": 1.0,
+        "x-answers": "Can I prepay for API usage instead of settling every call on-chain?",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "purchase",
+                      "balance",
+                      "redeem"
+                    ],
+                    "default": "purchase"
+                  },
+                  "plan": {
+                    "type": "string",
+                    "enum": [
+                      "pack1",
+                      "pack25",
+                      "pack100"
+                    ],
+                    "description": "Credit tier to buy"
+                  },
+                  "credit_key": {
+                    "type": "string",
+                    "description": "fxp_... key, or send the X-Credit-Key header"
+                  },
+                  "route": {
+                    "type": "string",
+                    "enum": [
+                      "verdict",
+                      "batch"
+                    ],
+                    "description": "Route to spend credit on"
+                  },
+                  "address": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$",
+                    "description": "Token contract for route=verdict"
+                  },
+                  "addresses": {
+                    "type": "array",
+                    "maxItems": 25,
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Token contracts for route=batch"
+                  },
+                  "chain": {
+                    "type": "string",
+                    "enum": [
+                      "base",
+                      "ethereum"
+                    ],
+                    "default": "base"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Purchase result (api_key, credit_usd, settlement_tx) or redeemed payload with credits block",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "service": {
+                      "type": "string"
+                    },
+                    "plan": {
+                      "type": "string"
+                    },
+                    "paid": {
+                      "type": "string"
+                    },
+                    "settlement_tx": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "api_key": {
+                      "type": "string",
+                      "description": "Shown once at purchase"
+                    },
+                    "credit_usd": {
+                      "type": "number"
+                    },
+                    "balance_usd": {
+                      "type": "number"
+                    },
+                    "credits": {
+                      "type": "object",
+                      "properties": {
+                        "plan": {
+                          "type": "string"
+                        },
+                        "price_micro_usd": {
+                          "type": "number"
+                        },
+                        "balance_usd": {
+                          "type": "number"
+                        },
+                        "calls_served": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unknown_plan, missing_address, too_many_addresses or route_not_credit_eligible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "missing_credit_key or unknown_credit_key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required to buy a pack, or credit_balance_low on redeem",
             "content": {
               "application/json": {
                 "schema": {
