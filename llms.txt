@@ -13,6 +13,21 @@
 
 Three calls, $0.06, and you can decide whether to trade, settle against it, or walk away. Every verdict payload already returns the next two calls with ready-to-fire URLs, so an agent never has to guess what to buy next.
 
+## Prepaid credit packs: pay once, then stop signing
+
+If an agent is going to make hundreds or thousands of calls, buying credit once is cheaper in effort
+than signing a payment per call:
+
+- `POST https://solene-fa2010da.base44.app/functions/forensicsCredits?plan=pack25` at **$25.00** returns
+  an `api_key` (shown once, stored only as a hash) with **$27.50 of credit**, which is 27,500 cached
+  verdicts or 27 batch screens. `pack1` is $1.00 for $1.10 of credit; `pack100` is $100.00 for $120.00
+  (20 percent bonus). A `pack_test` tier at $0.02 exists for integration testing.
+- Spend it with `X-Credit-Key: fxp_...`: `POST {"action":"redeem","route":"verdict","address":"0x...","chain":"base"}`
+  or `route:"batch"` with up to 25 addresses. Credit is spent at list price and never expires.
+- Check the balance free: `POST {"action":"balance"}` with the same header.
+- Cached tiers only (verdict $0.001, batch $1.00). Live scan routes stay pay-per-call over x402,
+  because each one spends real node reads.
+
 ## The cheap tier: $0.001 cached verdicts and $1.00 batch screens
 
 Use these two when the job is screening rather than one-off checks. Both are answered from an hourly
