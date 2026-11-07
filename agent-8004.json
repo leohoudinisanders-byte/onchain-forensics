@@ -1,0 +1,89 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "On-chain Forensics",
+  "description": "Decision-first on-chain forensics over x402. Ask 'should I touch this token or wallet?' and get a graded answer: activity score 0-100, letter grade A-F, risk flags, and a reason, measured from chain reads with no LLM in the decision path. 500 tokens graded and published at onchainforensics.dev/t/. Paid per call in USDC, with a free developer key and a free embeddable badge.",
+  "image": "https://onchainforensics.dev/og.png",
+  "version": "1.0.0",
+  "active": true,
+  "x402Support": true,
+  "operator": {
+    "name": "Leo Sanders",
+    "url": "https://onchainforensics.dev/"
+  },
+  "services": [
+    {
+      "name": "x402 API gateway",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/forensicsGateway",
+      "price_usd": "0.02",
+      "description": "Entry point. 'Should I touch this token or wallet?' returns the graded decision plus next calls."
+    },
+    {
+      "name": "verdict",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/forensicsVerdict",
+      "price_usd": "0.02",
+      "description": "Token or wallet activity verdict: grade, score, risk flags, roast."
+    },
+    {
+      "name": "settlesafe",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/forensicsSettlesafe",
+      "price_usd": "0.02",
+      "description": "Can this asset settle a payment? ERC-20 readability, canonical/counterfeit check, decimals."
+    },
+    {
+      "name": "memo",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/forensicsMemo",
+      "price_usd": "0.25",
+      "description": "Composed due-diligence answer for one token or wallet: supply, activity, asset verification, minting, concentration."
+    },
+    {
+      "name": "sweep",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/forensicsSweep",
+      "price_usd": "0.25",
+      "description": "Wallet portfolio sweep: real holdings, dormant dust, and what is worth ignoring."
+    },
+    {
+      "name": "batch",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/verdictBatch",
+      "price_usd": "3.00-10.00",
+      "description": "Screen 25 to 500 tokens from cache. Ladder: 25/$1.00, 100/$3.00, 250/$6.00, 500/$10.00."
+    },
+    {
+      "name": "free embeddable badge",
+      "endpoint": "https://solene-fa2010da.base44.app/functions/verdictBadge",
+      "price_usd": "0",
+      "description": "SVG grade badge for any contract, no key, degrades to NOT GRADED instead of breaking a page."
+    },
+    {
+      "name": "MCP server",
+      "endpoint": "https://github.com/leohoudinisanders-byte/forensics-mcp",
+      "price_usd": "0",
+      "description": "Six forensics tools for any MCP-capable agent: npx -y onchain-forensics-mcp"
+    }
+  ],
+  "payment": {
+    "network": "eip155:8453",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "asset_symbol": "USDC",
+    "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+    "scheme": "exact"
+  },
+  "registrations": [],
+  "supportedTrust": [
+    "reputation"
+  ],
+  "links": {
+    "directory": "https://onchainforensics.dev/t/",
+    "badge_docs": "https://onchainforensics.dev/badge.html",
+    "openapi": "https://onchainforensics.dev/openapi.json",
+    "agent_card": "https://onchainforensics.dev/agents.json",
+    "llms": "https://onchainforensics.dev/llms.txt"
+  },
+  "tags": [
+    "forensics",
+    "token-grading",
+    "due-diligence",
+    "x402",
+    "onchain-data",
+    "risk"
+  ]
+}
