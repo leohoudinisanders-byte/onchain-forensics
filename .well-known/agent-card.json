@@ -1,0 +1,253 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "On-chain Forensics",
+  "description": "Decision-first on-chain forensics. Ask whether a token or wallet is worth touching and get a graded, measured answer instead of raw data: activity score 0-100, letter grade A-F, risk flags and a reason. Reads are made on a private node, data_quality never turns an unreadable chain into a zero, and no LLM sits in the decision path. Payable per call in USDC over x402 on Base (eip155:8453); free tier available with a developer key.",
+  "url": "https://solene-fa2010da.base44.app/functions/forensicsGateway",
+  "preferredTransport": "HTTP+JSON",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "On-chain Forensics",
+    "url": "https://onchainforensics.dev/"
+  },
+  "documentationUrl": "https://onchainforensics.dev/llms.txt",
+  "iconUrl": "https://onchainforensics.dev/og.png",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": []
+  },
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "securitySchemes": {
+    "x402": {
+      "type": "http",
+      "scheme": "x402",
+      "description": "HTTP 402 payment in USDC on Base. Each call is priced individually; a free developer key is available for evaluation."
+    }
+  },
+  "security": [
+    {
+      "x402": []
+    }
+  ],
+  "skills": [
+    {
+      "id": "token-verdict",
+      "name": "Token verdict",
+      "description": "Is this token alive and how risky is it? Returns grade (A-F), score 0-100, risk flags and a one-line roast, from transfer and distinct-wallet activity in the recent window.",
+      "tags": [
+        "token",
+        "risk",
+        "due-diligence",
+        "grade"
+      ],
+      "examples": [
+        "Should I touch $DEGEN on Base?",
+        "Grade this token before I buy"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "wallet-verdict",
+      "name": "Wallet verdict",
+      "description": "Does this wallet actually hold what it claims? Returns real holdings, dormancy and concentration rather than a raw balance scrape.",
+      "tags": [
+        "wallet",
+        "holdings",
+        "forensics"
+      ],
+      "examples": [
+        "What is really in this wallet?",
+        "Is this wallet dormant?"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "settlesafe",
+      "name": "Settlement safety check",
+      "description": "Can this asset settle a payment? Checks ERC-20 readability, canonical versus counterfeit contract, and decimals before money moves.",
+      "tags": [
+        "payments",
+        "settlement",
+        "erc20",
+        "counterfeit"
+      ],
+      "examples": [
+        "Is this token safe to accept as payment?"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "memo",
+      "name": "Token or wallet memo",
+      "description": "Composed due-diligence answer for one token or wallet: supply, activity, asset verification, who is minting, concentration, and a bottom line. States PARTIAL explicitly when a read is incomplete.",
+      "tags": [
+        "report",
+        "due-diligence",
+        "memo"
+      ],
+      "examples": [
+        "Write me a due-diligence memo on this token"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "sweep",
+      "name": "Portfolio sweep",
+      "description": "Portfolio-level sweep: real holdings, dormant dust, and what is worth ignoring. Never returns an empty portfolio when the read failed.",
+      "tags": [
+        "portfolio",
+        "holdings",
+        "sweep"
+      ],
+      "examples": [
+        "Sweep this wallet and tell me what matters"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "batch-screen",
+      "name": "Batch token screen",
+      "description": "Screen 25 to 500 tokens at once from cache. Ladder: 25 for $1, 100 for $3, 250 for $6, 500 for $10.",
+      "tags": [
+        "batch",
+        "screening",
+        "bulk"
+      ],
+      "examples": [
+        "Screen these 200 tokens for dead or thin activity"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "token-directory",
+      "name": "Graded token directory",
+      "description": "Free browsable directory of 500 graded tokens across Ethereum and Base, one page per token with grade, rank and percentile against the chain median.",
+      "tags": [
+        "directory",
+        "free",
+        "search",
+        "seo"
+      ],
+      "examples": [
+        "Which Base tokens are graded F?",
+        "Show me the token ranking"
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "text/html"
+      ]
+    },
+    {
+      "id": "grade-badge",
+      "name": "Embeddable grade badge",
+      "description": "Free SVG badge returning the grade for any contract, cached, no key, degrades to NOT GRADED instead of a broken image.",
+      "tags": [
+        "badge",
+        "embed",
+        "free"
+      ],
+      "examples": [
+        "Give me a badge for this contract"
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/svg+xml"
+      ]
+    }
+  ],
+  "additionalInterfaces": [
+    {
+      "transport": "HTTP+JSON",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsVerdict"
+    },
+    {
+      "transport": "HTTP+JSON",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsSettlesafe"
+    },
+    {
+      "transport": "HTTP+JSON",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsMemo"
+    },
+    {
+      "transport": "HTTP+JSON",
+      "url": "https://solene-fa2010da.base44.app/functions/forensicsSweep"
+    }
+  ],
+  "payments": {
+    "protocol": "x402",
+    "network": "eip155:8453",
+    "network_name": "Base",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "asset_symbol": "USDC",
+    "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
+    "pricing": {
+      "verdict_usd": "0.02",
+      "settlesafe_usd": "0.02",
+      "wallet_usd": "0.05",
+      "memo_usd": "0.25",
+      "sweep_usd": "0.25",
+      "batch_usd": "1.00-10.00",
+      "badge_usd": "0",
+      "directory_usd": "0"
+    }
+  },
+  "links": {
+    "directory": "https://onchainforensics.dev/t/",
+    "badge": "https://onchainforensics.dev/badge.html",
+    "licensing": "https://onchainforensics.dev/licensing.html",
+    "openapi": "https://onchainforensics.dev/openapi.json",
+    "agent_card_erc8004": "https://onchainforensics.dev/agent-8004.json",
+    "mcp": "https://github.com/leohoudinisanders-byte/forensics-mcp"
+  },
+  "tags": [
+    "forensics",
+    "token-grading",
+    "due-diligence",
+    "risk",
+    "x402",
+    "onchain-data",
+    "base",
+    "ethereum"
+  ]
+}
