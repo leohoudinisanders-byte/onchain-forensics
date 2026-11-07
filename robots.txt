@@ -1,0 +1,27 @@
+# On-chain Forensics - a paid API for AI agents. Crawling is welcome.
+User-agent: *
+Allow: /
+Disallow: /functions/
+
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: cohere-ai
+Allow: /
+
+# Machine-readable entry points
+# llms.txt      https://onchainforensics.dev/llms.txt
+# agents.json   https://onchainforensics.dev/agents.json
+# openapi.json  https://onchainforensics.dev/openapi.json
+# x402 manifest https://onchainforensics.dev/.well-known/x402
