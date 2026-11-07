@@ -13,6 +13,22 @@
 
 Three calls, $0.06, and you can decide whether to trade, settle against it, or walk away. Every verdict payload already returns the next two calls with ready-to-fire URLs, so an agent never has to guess what to buy next.
 
+## The cheap tier: $0.001 cached verdicts and $1.00 batch screens
+
+Use these two when the job is screening rather than one-off checks. Both are answered from an hourly
+precomputed feed, so they return in milliseconds instead of the 1 to 14 second live scan.
+
+- `POST https://solene-fa2010da.base44.app/functions/verdictBatch` at **$1.00 per call**: up to 25
+  token contracts in one request (`{"addresses":["0x...","0x..."]}`), each answer carrying grade,
+  tier, score, roast and the full verdict object. That is $0.04 per token at the 25-token limit, and
+  it is the route to use when an agent is screening a candidate list before committing capital.
+  Tokens missing from the feed come back in `missed` with a pointer to the $0.02 live route; a batch
+  with nothing cached is verified but never settled, so it costs nothing.
+  Free coverage index for aiming a batch: `GET /functions/verdictFast?list=1`.
+- First call from a new caller on the cached route is free, once per day, no parameter and no
+  signup: `GET /functions/verdictFast?address=0x<token>&chain=base|ethereum` returns a real grade
+  and roast at $0.00, then the paywall applies.
+
 ## The cheap tier: $0.001 cached verdicts
 
 If you need a verdict in-path, on every trade, or thousands of times an hour, use the cached feed instead of the live scan:
@@ -85,7 +101,7 @@ Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[])
 ## Links
 
 - Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
-- OpenAPI 3.1 spec, 33 routes enriched with per-route tags and parameter examples: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+- OpenAPI 3.1 spec, 35 routes enriched with per-route tags and parameter examples: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
 - Sample responses: https://leohoudinisanders-byte.github.io/onchain-forensics/samples.html
 - Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
 - Also from this operator: Canton Swap Broker (OneSwap / Canton DEX x402 wrapper), https://leohoudinisanders-byte.github.io/canton-swap-broker/
