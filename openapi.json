@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "On-chain Forensics API",
-  "version": "2.17.8",
+  "version": "2.17.9",
   "description": "Decision-grade on-chain forensics, pay per call from $0.01. Ask the question you are actually asking: should I touch this token or wallet? Every route is tagged by the question it answers, priced in x-price-usd, and states data_quality COMPLETE, PARTIAL or UNAVAILABLE so an unreadable chain is never reported as a zero. Free trial calls with trial=1. Pay-per-call on-chain forensics and derivatives API for AI agents: token verdicts, supply and holder audits, contract introspection, wallet history and risk screens, tokenized-equity reads, Solana mint forensics, and perpetual funding plus options positioning. USDC on Base via x402. 33 paid routes, each with its own resource URL and its own typed 200 response. data_quality is always COMPLETE, PARTIAL or UNAVAILABLE; a failed read is never reported as a zero.33 routes Now also reads Robinhood Chain (chain=robinhood, chainId 4663), including its 203-token Stock Token registry: state and 24h-ago archive reads via dRPC, Transfer activity and exact holder rankings via the chain indexer. Activity windows there are indexer-backed (~30 min); every payload reports the window and the indexer lag it actually achieved. Read reliability: Base and Ethereum reads are served from a dedicated provider endpoint (Alchemy) controlled by this service, with public gateways as fallback; short or empty eth_call results are rejected as malformed and re-read rather than reported as zeros.",
   "x-payment": {
    "protocol": "x402",
@@ -3025,7 +3025,7 @@
      "credit-packs"
     ],
     "summary": "How do I stop signing a payment for every call? Buy credits once, then spend them from a key.",
-    "description": "Prepaid credit packs for high-volume agents. One x402 payment mints a key (returned once, stored only as a SHA-256 hash) that spends down against the cached tiers without a signature per request. Tiers: pack1 $1.00 for $1.10 of credit, pack25 $25.00 for $27.50, pack100 $100.00 for $120.00. Credit is spent at list price (verdict $0.001; batch priced by size: 25 addresses $1.00, 100 $3.00, 250 $6.00, 500 $10.00) and never expires. Live scan routes stay pay-per-call because each one spends real node reads. Actions: purchase (default, x402 paid), balance (free, send X-Credit-Key), redeem (spend credit).",
+    "description": "Prepaid credit packs for high-volume agents. One x402 payment mints a key (returned once, stored only as a SHA-256 hash) that spends down against the cached tiers without a signature per request. Tiers: pack1 $1.00 for $1.10 of credit, pack25 $25.00 for $27.50, pack100 $100.00 for $120.00, pack250 $250.00 for $300.00 (sized for 500-token batch volume). Credit is spent at list price (verdict $0.001; batch priced by size: 25 addresses $1.00, 100 $3.00, 250 $6.00, 500 $10.00) and never expires. Live scan routes stay pay-per-call because each one spends real node reads. Actions: purchase (default, x402 paid), balance (free, send X-Credit-Key), redeem (spend credit).",
     "operationId": "forensicsCredits",
     "x-price-usd": 1.0,
     "x-answers": "Can I prepay for API usage instead of settling every call on-chain?",
@@ -3050,9 +3050,10 @@
           "enum": [
            "pack1",
            "pack25",
-           "pack100"
+           "pack100",
+           "pack250"
           ],
-          "description": "Credit tier to buy"
+          "description": "Credit tier to buy. Packs grant 10 percent bonus credit at $1, 20 percent at $100 and $250."
          },
          "credit_key": {
           "type": "string",
