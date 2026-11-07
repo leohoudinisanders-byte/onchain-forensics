@@ -274,7 +274,12 @@ Deno.serve(async (req) => {
 
     // Base first: those reads are faster and they are the tokens x402 callers ask about most.
     const chainRank = (c: string) => (c === "base" ? 0 : 1);
-    const ordered = [...pending].sort((a: any, b: any) => chainRank(a.chain) - chainRank(b.chain));
+    const isRetry = (r: any) => String(r.data_quality || "").startsWith("UNGRADEABLE");
+    const ordered = [...pending].sort((a: any, b: any) => {
+      const ra = isRetry(a) ? 1 : 0, rb = isRetry(b) ? 1 : 0;
+      if (ra !== rb) return ra - rb;        // fresh tokens first, retries only if time remains
+      return chainRank(a.chain) - chainRank(b.chain);
+    });
     const work: any[] = ordered.length ? ordered : staleRows;
     const mode = pending.length ? "pending" : "refresh";
     report.mode = mode;
@@ -299,10 +304,22 @@ Deno.serve(async (req) => {
           const got = String(verdict?.token_symbol ?? "").trim();
           if (!verdict || !verdict.grade) { failed++; failures.push(`${row.chain}:${row.address.slice(0, 10)} no_grade`); return; }
           if (String(verdict.grade) === "?" || verdict.activity_status === "UNAVAILABLE") {
-            // An unreadable chain is not a verdict. Leave the row queued so a later run retries,
-            // and never let a "?" grade be served as a paid cached answer.
+            // An unreadable chain is not a verdict. Retry a couple of times in case the window was
+            // genuinely quiet, then retire the row: a token with no readable activity will never
+            // produce a verdict and must stop consuming RPC quota every run.
+            const attempts = Number((String(row.data_quality || "").match(/^UNGRADEABLE_(\d+)$/) || [])[1] || 0) + 1;
             retried++;
-            if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ungradeable_requeued`);
+            if (attempts >= 3) {
+              await ent.update(row.id, {
+                grade: "STALE",
+                data_quality: `UNGRADEABLE_${attempts}`,
+                roast: "no readable activity window after 3 attempts; retired from the feed",
+              }).catch(() => null);
+              if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} retired_unreadable`);
+            } else {
+              await ent.update(row.id, { data_quality: `UNGRADEABLE_${attempts}` }).catch(() => null);
+              if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ungradeable_retry_${attempts}`);
+            }
             return;
           }
           if (row.symbol && got && got.toUpperCase() !== row.symbol.toUpperCase()) {
