@@ -21,7 +21,7 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.54";
 import { verdictForensics, setPreferPublic } from "https://esm.sh/gh/leohoudinisanders-byte/onchain-forensics@42f5ca7c77dc3a91151dbe802bb88364c4ee8590/lib/verdict-engine-v2.js";
 
 const ENGINE_VERSION = "verdict-engine-v2-free";
-const TIME_BUDGET_MS = 28_000;      // a batch can overrun badly, so stop well short of the ceiling
+const TIME_BUDGET_MS = 30_000;      // a batch can overrun badly, so stop well short of the ceiling
 const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
 const PENDING_TARGET = 150;          // stop discovering once this much work is queued
