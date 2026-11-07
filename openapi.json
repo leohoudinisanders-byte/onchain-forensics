@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "On-chain Forensics API",
-  "version": "2.17.4",
+  "version": "2.17.5",
   "description": "Decision-grade on-chain forensics, pay per call from $0.01. Ask the question you are actually asking: should I touch this token or wallet? Every route is tagged by the question it answers, priced in x-price-usd, and states data_quality COMPLETE, PARTIAL or UNAVAILABLE so an unreadable chain is never reported as a zero. Free trial calls with trial=1. Pay-per-call on-chain forensics and derivatives API for AI agents: token verdicts, supply and holder audits, contract introspection, wallet history and risk screens, tokenized-equity reads, Solana mint forensics, and perpetual funding plus options positioning. USDC on Base via x402. 33 paid routes, each with its own resource URL and its own typed 200 response. data_quality is always COMPLETE, PARTIAL or UNAVAILABLE; a failed read is never reported as a zero.33 routes Now also reads Robinhood Chain (chain=robinhood, chainId 4663), including its 203-token Stock Token registry: state and 24h-ago archive reads via dRPC, Transfer activity and exact holder rankings via the chain indexer. Activity windows there are indexer-backed (~30 min); every payload reports the window and the indexer lag it actually achieved. Read reliability: Base and Ethereum reads are served from a dedicated provider endpoint (Alchemy) controlled by this service, with public gateways as fallback; short or empty eth_call results are rejected as malformed and re-read rather than reported as zeros.",
   "x-payment": {
    "protocol": "x402",
@@ -30,7 +30,7 @@
     "https://facilitator.payai.network"
    ]
   },
-  "x-enriched": "Per-route tags, question-form summaries, typed parameter enums and examples, and x-price-usd on every operation (Nov 6, 2026)."
+  "x-enriched": "Per-route tags, question-form summaries, typed parameter enums and examples, x-price-usd, plus the $0.001 cached verdict tier (Nov 6, 2026)."
  },
  "servers": [
   {
@@ -2733,6 +2733,67 @@
     "x-price-usd": 0.02,
     "x-answers": "One word: TRUSTED, CAUTION, HIGH_RISK or UNVERIFIABLE",
     "x-data-quality": "Every response states data_quality COMPLETE, PARTIAL or UNAVAILABLE."
+   }
+  },
+  "/functions/verdictFast": {
+   "get": {
+    "tags": [
+     "token-verdict",
+     "cached",
+     "low-latency"
+    ],
+    "summary": "Cached verdict in milliseconds: same grade and roast, $0.001",
+    "operationId": "verdictFast",
+    "x-price-usd": 0.001,
+    "x-answers": "Same verdict as the live route, precomputed hourly and answered from a key lookup.",
+    "x-data-quality": "Carries the cached payload's own data_quality; cache age is reported per response.",
+    "parameters": [
+     {
+      "name": "address",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^0x[a-fA-F0-9]{40}$",
+       "example": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "description": "EVM token contract."
+     },
+     {
+      "name": "chain",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "base",
+        "ethereum"
+       ],
+       "default": "base"
+      },
+      "description": "Chain of the token."
+     },
+     {
+      "name": "list",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "1"
+       ]
+      },
+      "description": "Free: return the whole cache with grades and timestamps, no payment."
+     }
+    ],
+    "responses": {
+     "402": {
+      "description": "x402 v2 payment required, $0.001 in USDC on Base"
+     },
+     "200": {
+      "description": "Cached verdict. A cache miss returns 200 with cache_miss true and charges nothing."
+     }
+    }
    }
   }
  },
