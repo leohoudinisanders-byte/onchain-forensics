@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security and data integrity — On-chain Forensics</title>
+<meta name="description" content="How On-chain Forensics reads chain data: private RPCs, no model in the decision path, unreadable data never reported as zero, hashed keys, and no card data at rest.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+  header { padding:56px 0 28px; }
+  h1 { font-size:2.1rem; letter-spacing:-0.02em; }
+  .tagline { color:var(--dim); font-size:1.05rem; margin-top:8px; max-width:680px; }
+  section { padding:30px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.35rem; margin-bottom:16px; letter-spacing:-0.01em; }
+  h3 { font-size:1.02rem; margin:18px 0 8px; }
+  p, li { color:var(--dim); font-size:.94rem; margin-bottom:10px; }
+  ul { padding-left:22px; }
+  a { color:var(--accent2); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px; }
+  .card h3 { margin-top:0; color:var(--txt); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:8px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; }
+  td code, p code, li code { background:#182338; padding:2px 7px; border-radius:6px; font-size:.85em; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .price { font-size:1.6rem; font-weight:700; color:var(--accent); }
+  footer { padding:36px 0 64px; border-top:1px solid var(--line); color:var(--dim); font-size:.82rem; }
+  footer a { color:var(--dim); text-decoration:underline; }
+  .note { font-size:.85rem; color:var(--dim); }
+  .pill { display:inline-block; font-size:.75rem; padding:3px 10px; border:1px solid var(--line); border-radius:999px; color:var(--dim); margin-right:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Security and data integrity</h1>
+  <p class="tagline">What we protect, how the reads are done, and the guarantees behind a number you receive.</p>
+</header>
+
+<section>
+  <h2>How the answers are produced</h2>
+  <ul>
+    <li><b>Private RPC reads.</b> Chain data is read through a private provider with a multi-RPC fallback, not a public endpoint that may lag. Worst-case latency and error rates are published on the <a href="status.html">status page</a>.</li>
+    <li><b>No model in the decision path.</b> Grades and flags are computed deterministically from chain state and published thresholds. There is no LLM between the chain and the number, so the same block produces the same answer.</li>
+    <li><b>Measured window is disclosed.</b> Every verdict carries the block range and timestamp it was computed from, so you can tell a fresh read from a cached one.</li>
+    <li><b>Unreadable is not zero.</b> If a read fails, the payload says <code>partial</code> or <code>unavailable</code>. We never convert a failed read into a zero balance, a zero transfer count, or a clean bill of health.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Secrets and credentials</h2>
+  <ul>
+    <li>Provider API keys and signing material live in a managed secret store and are never shipped to a client, a browser, or a log line.</li>
+    <li>Developer keys are stored as SHA-256 hashes only. The plaintext key is shown once at issue time and cannot be retrieved later.</li>
+    <li>Prepaid credit balances are keyed by hash, and every redemption is recorded against the key prefix, not the plaintext.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Payments</h2>
+  <ul>
+    <li>Payments are USDC on Base through x402. There are no accounts, no passwords, and no card data anywhere in the system, so there is no card data to breach.</li>
+    <li>Each payment is an EIP-3009 authorization signed by the payer and verified against the on-chain nonce, which makes replay of a captured payment fail by construction.</li>
+    <li>Settlement is checked before an answer is released; a settlement that does not confirm does not unlock the response.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Data we hold</h2>
+  <ul>
+    <li>Public chain data (addresses, transactions, balances) that is already visible on-chain.</li>
+    <li>An email address, if you gave one for a developer key or a watchlist subscription, and a hash of that key.</li>
+    <li>Request metadata needed to run the service: route, timestamp, and a per-caller counter for the free daily allowance.</li>
+    <li>We do not sell data, do not run third-party ad trackers, and do not attach a paid call to an identity beyond the paying address.</li>
+  </ul>
+  <p>Full detail is in the <a href="privacy.html">privacy policy</a>.</p>
+</section>
+
+<section>
+  <h2>Reporting a vulnerability</h2>
+  <p>Email <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a> with "security" in the subject. Include reproduction steps and the affected URL. We acknowledge within one business day, will tell you what we fixed, and will not pursue anyone who tests within the rules on this page: no data destruction, no service disruption, no access to other users' data, and no testing of third-party infrastructure we do not own.</p>
+</section>
+
+</div>
+<footer class="wrap">
+  <p><a href="index.html">Home</a> &middot; <a href="pricing.html">Pricing</a> &middot; <a href="licensing.html">Licensing</a> &middot; <a href="support.html">Support</a> &middot; <a href="security.html">Security</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="status.html">Status</a> &middot; <a href="samples.html">Samples</a> &middot; <a href="openapi.json">OpenAPI</a></p>
+  <p>On-chain Forensics, operated by Solene. Business inquiries and support: <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>. Payments are USDC on Base over x402; no accounts, no cards.</p>
+</footer>
+</body>
+</html>
