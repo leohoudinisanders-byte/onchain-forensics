@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample responses, On-chain Forensics API</title>
+<meta name="description" content="Real, verbatim responses from the On-chain Forensics API. See what a verdict, settle screen, wallet risk read and micro read actually return before you pay.">
+<style>
+ :root { color-scheme: dark; }
+ body { margin:0; background:#0b0d10; color:#e6e8eb; font:16px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+ main { max-width:900px; margin:0 auto; padding:48px 20px 80px; }
+ h1 { font-size:26px; line-height:1.25; margin:0 0 10px; letter-spacing:-.02em; }
+ .lede { color:#9aa4b2; margin:0 0 8px; }
+ .note { color:#6f7a88; font-size:13px; margin:0 0 34px; }
+ .card { border:1px solid #1d2229; border-radius:12px; padding:18px 18px 14px; margin:0 0 18px; background:#0f1216; }
+ .row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+ .route { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#7dd3a0; }
+ .price { font-size:12px; color:#9aa4b2; }
+ h2 { font-size:17px; margin:6px 0 6px; font-weight:600; }
+ .blurb { color:#9aa4b2; font-size:14px; margin:0 0 12px; }
+ .head { margin:0; font-size:15px; color:#e6e8eb; }
+ .sub { margin:2px 0 12px; color:#8b96a5; font-size:14px; font-style:italic; }
+ details summary { cursor:pointer; color:#8b96a5; font-size:13px; }
+ pre { overflow:auto; background:#080a0d; border:1px solid #171b21; border-radius:8px; padding:12px; font-size:12px; line-height:1.45; color:#c8d0da; max-height:420px; }
+ .src { font-size:12px; color:#5f6875; margin:10px 0 0; }
+ a { color:#7dd3a0; }
+ footer { color:#5f6875; font-size:13px; border-top:1px solid #1d2229; padding-top:16px; margin-top:30px; }
+</style></head>
+<body><main>
+ <h1>What you actually get back</h1>
+ <p class="lede">Six real responses, unedited, captured from free trial calls. No mockups.</p>
+ <p class="note">Every payload states data_quality (COMPLETE, PARTIAL or UNAVAILABLE). Grades and roasts are deterministic functions of on-chain reads: the same block gives the same answer. Add trial=1 to any route for free daily calls.</p>
+ 
+  <article class="card">
+    <div class="row">
+      <span class="route">verdict</span><span class="price">$0.02</span>
+    </div>
+    <h2>Is this token alive and how risky?</h2>
+    <p class="blurb">USDC on Base, a blue chip: grade A, RED_HOT.</p>
+    <p class="head">Grade A · RED_HOT · score 90/100</p>
+    <p class="sub">1,388 transfers across 954 wallets in 33 minutes. It actually has a market.</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 3 of 10)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 3,
+  &quot;remaining&quot;: 7,
+  &quot;limit&quot;: 10,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;verdict&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;contract&quot;: &quot;0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&quot;,
+  &quot;token_name&quot;: &quot;USD Coin&quot;,
+  &quot;token_symbol&quot;: &quot;USDC&quot;,
+  &quot;total_supply&quot;: &quot;4202123433.5438&quot;,
+  &quot;verdict_tier&quot;: &quot;RED_HOT&quot;,
+  &quot;activity_score_0_100&quot;: 90,
+  &quot;window_min&quot;: 11,
+  &quot;transfers_recent&quot;: 1388,
+  &quot;unique_wallets_recent&quot;: 954,
+  &quot;mints_recent&quot;: 3,
+  &quot;burns_recent&quot;: 4,
+  &quot;largest_transfer&quot;: {
+   &quot;value&quot;: &quot;10000000.0000&quot;,
+   &quot;block&quot;: 54103259
+  },
+  &quot;concentration_top_wallet_share&quot;: 0.016,
+  &quot;activity_status&quot;: &quot;OK&quot;,
+  &quot;logs_batches_failed&quot;: 0,
+  &quot;logs_coverage&quot;: {
+   &quot;window_blocks&quot;: 1000,
+   &quot;scanned_blocks&quot;: 320,
+   &quot;chunks&quot;: 32,
+   &quot;logs_per_block&quot;: 4.4,
+   &quot;chunk_blocks&quot;: 10,
+   &quot;exact&quot;: true,
+   &quot;truncated&quot;: false
+  },
+  &quot;evaluated_blocks&quot;: {
+   &quot;latest_block&quot;: 54103547,
+   &quot;from_block&quot;: 54103228,
+   &quot;window_min&quot;: 11
+  },
+  &quot;flags&quot;: [
+   &quot;FRESH_MINTS&quot;,
+   &quot;BURNS_PRESENT&quot;
+  ],
+  &quot;grade&quot;: &quot;A&quot;,
+  &quot;grade_label&quot;: &quot;LIVE AND BROAD&quot;,
+  &quot;grade_reason_codes&quot;: [
+   &quot;FRESH_MINTS&quot;,
+   &quot;BURNS_PRESENT&quot;
+  ],
+  &quot;roast&quot;: &quot;1,388 transfers across 954 wallets in 33 minutes. It actually has a market.&quot;,
+  &quot;plain_take&quot;: &quot;USD Coin (USDC) moved 1,388 transfers across 954 unique wallets in the last 33 minutes on base-mainnet, with activity spread across many wallets. Fresh supply was minted 3 time(s) in the window.&quot;,
+  &quot;share_text&quot;: &quot;USD Coin (USDC) on base-mainnet: 1,388 transfers / 954 wallets in 33min \u2014 RED_HOT (score 90/100). Verdict by onchain-forensics.&quot;,
+  &quot;next_calls&quot;: [
+   {
+    &quot;route&quot;: &quot;settlesafe&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Can I settle against this token right now without eating a honeypot or a pause?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsApi?endpoint=settlesafe&amp;address=0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&amp;chain=base&quot;
+   },
+   {
+    &quot;route&quot;: &quot;mints&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Who is adding supply in this window, and how much?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsMints?token=0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&amp;chain=base&quot;
+   }
+  ]
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/verdict-usdc-base.json">samples/verdict-usdc-base.json</a></p>
+  </article>
+  <article class="card">
+    <div class="row">
+      <span class="route">verdict</span><span class="price">$0.02</span>
+    </div>
+    <h2>Is this token alive and how risky?</h2>
+    <p class="blurb">DEGEN on Base: grade D, THIN. Real, just quiet.</p>
+    <p class="head">Grade D · THIN · score 25/100</p>
+    <p class="sub">Quiet: 7 transfers from 7 wallets in 33 minutes. Real, just not busy.</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 4 of 10)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 4,
+  &quot;remaining&quot;: 6,
+  &quot;limit&quot;: 10,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;verdict&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;contract&quot;: &quot;0x4ed4e862860bed51a9570b96d89af5e1b0efefed&quot;,
+  &quot;token_name&quot;: &quot;Degen&quot;,
+  &quot;token_symbol&quot;: &quot;DEGEN&quot;,
+  &quot;total_supply&quot;: &quot;35891197361.0586&quot;,
+  &quot;verdict_tier&quot;: &quot;THIN&quot;,
+  &quot;activity_score_0_100&quot;: 25,
+  &quot;window_min&quot;: 11,
+  &quot;transfers_recent&quot;: 7,
+  &quot;unique_wallets_recent&quot;: 7,
+  &quot;mints_recent&quot;: 0,
+  &quot;burns_recent&quot;: 0,
+  &quot;largest_transfer&quot;: {
+   &quot;value&quot;: &quot;5.0000&quot;,
+   &quot;block&quot;: 54103671
+  },
+  &quot;concentration_top_wallet_share&quot;: 0.214,
+  &quot;activity_status&quot;: &quot;OK&quot;,
+  &quot;logs_batches_failed&quot;: 0,
+  &quot;logs_coverage&quot;: {
+   &quot;window_blocks&quot;: 1000,
+   &quot;scanned_blocks&quot;: 320,
+   &quot;chunks&quot;: 32,
+   &quot;logs_per_block&quot;: 0,
+   &quot;chunk_blocks&quot;: 10,
+   &quot;exact&quot;: true,
+   &quot;truncated&quot;: false
+  },
+  &quot;evaluated_blocks&quot;: {
+   &quot;latest_block&quot;: 54103706,
+   &quot;from_block&quot;: 54103387,
+   &quot;window_min&quot;: 11
+  },
+  &quot;flags&quot;: [],
+  &quot;grade&quot;: &quot;D&quot;,
+  &quot;grade_label&quot;: &quot;QUIET&quot;,
+  &quot;grade_reason_codes&quot;: [],
+  &quot;roast&quot;: &quot;Quiet: 7 transfers from 7 wallets in 33 minutes. Real, just not busy.&quot;,
+  &quot;plain_take&quot;: &quot;Degen (DEGEN) moved 7 transfers across 7 unique wallets in the last 33 minutes on base-mainnet, with activity spread across many wallets.&quot;,
+  &quot;share_text&quot;: &quot;Degen (DEGEN) on base-mainnet: 7 transfers / 7 wallets in 33min \u2014 THIN (score 25/100). Verdict by onchain-forensics.&quot;,
+  &quot;next_calls&quot;: [
+   {
+    &quot;route&quot;: &quot;settlesafe&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Can I settle against this token right now without eating a honeypot or a pause?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsApi?endpoint=settlesafe&amp;address=0x4ed4e862860bed51a9570b96d89af5e1b0efefed&amp;chain=base&quot;
+   },
+   {
+    &quot;route&quot;: &quot;mints&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Who is adding supply in this window, and how much?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsMints?token=0x4ed4e862860bed51a9570b96d89af5e1b0efefed&amp;chain=base&quot;
+   }
+  ]
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/verdict-degen-base.json">samples/verdict-degen-base.json</a></p>
+  </article>
+  <article class="card">
+    <div class="row">
+      <span class="route">verdict</span><span class="price">$0.02</span>
+    </div>
+    <h2>Is this token alive and how risky?</h2>
+    <p class="blurb">BRETT on Base: grade F, SUSPICIOUS_THIN. This is what a red flag looks like.</p>
+    <p class="head">Grade F · SUSPICIOUS_THIN · score 16/100</p>
+    <p class="sub">Almost no flow: 2 transfers from 3 wallets in 33 minutes. Nobody is here yet.</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 5 of 10)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 5,
+  &quot;remaining&quot;: 5,
+  &quot;limit&quot;: 10,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;verdict&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;contract&quot;: &quot;0x532f27101965dd16442e59d40670faf5ebb142e4&quot;,
+  &quot;token_name&quot;: &quot;Brett&quot;,
+  &quot;token_symbol&quot;: &quot;BRETT&quot;,
+  &quot;total_supply&quot;: &quot;9999997544.3400&quot;,
+  &quot;verdict_tier&quot;: &quot;SUSPICIOUS_THIN&quot;,
+  &quot;activity_score_0_100&quot;: 16,
+  &quot;window_min&quot;: 11,
+  &quot;transfers_recent&quot;: 2,
+  &quot;unique_wallets_recent&quot;: 3,
+  &quot;mints_recent&quot;: 0,
+  &quot;burns_recent&quot;: 0,
+  &quot;largest_transfer&quot;: {
+   &quot;value&quot;: &quot;1689619.5902&quot;,
+   &quot;block&quot;: 54103703
+  },
+  &quot;concentration_top_wallet_share&quot;: 0.5,
+  &quot;activity_status&quot;: &quot;OK&quot;,
+  &quot;logs_batches_failed&quot;: 0,
+  &quot;logs_coverage&quot;: {
+   &quot;window_blocks&quot;: 1000,
+   &quot;scanned_blocks&quot;: 320,
+   &quot;chunks&quot;: 32,
+   &quot;logs_per_block&quot;: 0,
+   &quot;chunk_blocks&quot;: 10,
+   &quot;exact&quot;: true,
+   &quot;truncated&quot;: false
+  },
+  &quot;evaluated_blocks&quot;: {
+   &quot;latest_block&quot;: 54103712,
+   &quot;from_block&quot;: 54103393,
+   &quot;window_min&quot;: 11
+  },
+  &quot;flags&quot;: [],
+  &quot;grade&quot;: &quot;F&quot;,
+  &quot;grade_label&quot;: &quot;ALMOST NO FLOW&quot;,
+  &quot;grade_reason_codes&quot;: [],
+  &quot;roast&quot;: &quot;Almost no flow: 2 transfers from 3 wallets in 33 minutes. Nobody is here yet.&quot;,
+  &quot;plain_take&quot;: &quot;Brett (BRETT) moved 2 transfers across 3 unique wallets in the last 33 minutes on base-mainnet, with activity spread across many wallets.&quot;,
+  &quot;share_text&quot;: &quot;Brett (BRETT) on base-mainnet: 2 transfers / 3 wallets in 33min \u2014 SUSPICIOUS_THIN (score 16/100). Verdict by onchain-forensics.&quot;,
+  &quot;next_calls&quot;: [
+   {
+    &quot;route&quot;: &quot;settlesafe&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Can I settle against this token right now without eating a honeypot or a pause?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsApi?endpoint=settlesafe&amp;address=0x532f27101965dd16442e59d40670faf5ebb142e4&amp;chain=base&quot;
+   },
+   {
+    &quot;route&quot;: &quot;mints&quot;,
+    &quot;price_usd&quot;: 0.02,
+    &quot;ask&quot;: &quot;Who is adding supply in this window, and how much?&quot;,
+    &quot;call&quot;: &quot;/functions/forensicsMints?token=0x532f27101965dd16442e59d40670faf5ebb142e4&amp;chain=base&quot;
+   }
+  ]
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/verdict-brett-base.json">samples/verdict-brett-base.json</a></p>
+  </article>
+  <article class="card">
+    <div class="row">
+      <span class="route">settlesafe</span><span class="price">$0.02</span>
+    </div>
+    <h2>Can I accept or settle against this token right now?</h2>
+    <p class="blurb">Tokenized equity, issuance and settle-risk screen.</p>
+    <p class="head">tokenized equity</p>
+    <p class="sub">COMPLETE</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 1 of 5)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 1,
+  &quot;remaining&quot;: 4,
+  &quot;limit&quot;: 5,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;equitysettlesafe&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;contract&quot;: &quot;0x14a5f2872396802c3cc8942a39ab3e4118ee5038&quot;,
+  &quot;generated_at&quot;: &quot;2026-11-07T00:25:07.299Z&quot;,
+  &quot;equity&quot;: {
+   &quot;registry_alias&quot;: &quot;btsla&quot;,
+   &quot;symbol&quot;: &quot;bTSLA&quot;,
+   &quot;underlying&quot;: &quot;TSLA&quot;,
+   &quot;issuer&quot;: &quot;Backed Finance (xStocks)&quot;,
+   &quot;instrument&quot;: &quot;backed_xstock&quot;,
+   &quot;registry_verified&quot;: true
+  },
+  &quot;issuance&quot;: {
+   &quot;total_supply&quot;: &quot;3000000000000000000000&quot;,
+   &quot;total_supply_display&quot;: 3000,
+   &quot;decimals&quot;: 18,
+   &quot;supply_24h_change_display&quot;: 0,
+   &quot;new_issuance_24h&quot;: false
+  },
+  &quot;controls&quot;: {
+   &quot;is_contract&quot;: true,
+   &quot;owner&quot;: &quot;0xd1966bd72695789ec9c245f0bf5a8512b56c1d80&quot;,
+   &quot;pause_capable&quot;: false,
+   &quot;paused&quot;: null,
+   &quot;issuer_controlled&quot;: true
+  },
+  &quot;settle_safe&quot;: {
+   &quot;pass&quot;: true,
+   &quot;asset_status&quot;: &quot;KNOWN_CANONICAL&quot;,
+   &quot;counterparty&quot;: null,
+   &quot;risk_flags&quot;: [],
+   &quot;registry_canonical&quot;: true
+  },
+  &quot;data_quality&quot;: &quot;COMPLETE&quot;,
+  &quot;note&quot;: &quot;Equity settlesafe adds issuer verification and pause state on top of the standard asset screen. It cannot see transfer-agent allowlists that live off-chain, so a pass is necessary but not sufficient for an equity pair.&quot;
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/settlesafe-btsla.json">samples/settlesafe-btsla.json</a></p>
+  </article>
+  <article class="card">
+    <div class="row">
+      <span class="route">walletrisk</span><span class="price">$0.05</span>
+    </div>
+    <h2>Is this wallet risky, and is it on an OFAC list?</h2>
+    <p class="blurb">The burn address: a wallet-route sample with data_quality COMPLETE.</p>
+    <p class="head">NO_ADVERSE_FINDINGS · risk_pass=True</p>
+    <p class="sub">COMPLETE</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 1 of 5)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 1,
+  &quot;remaining&quot;: 4,
+  &quot;limit&quot;: 5,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;walletrisk&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;wallet&quot;: &quot;0x000000000000000000000000000000000000dead&quot;,
+  &quot;generated_at&quot;: &quot;2026-11-07T00:25:06.590Z&quot;,
+  &quot;risk_tier&quot;: &quot;NO_ADVERSE_FINDINGS&quot;,
+  &quot;risk_pass&quot;: true,
+  &quot;flags&quot;: [],
+  &quot;address&quot;: {
+   &quot;is_contract&quot;: false,
+   &quot;bytecode_size&quot;: 0,
+   &quot;nonce&quot;: 0,
+   &quot;native_balance&quot;: 4.584840095343594
+  },
+  &quot;sanctions_screen&quot;: {
+   &quot;source&quot;: &quot;OFAC SDN digital-currency addresses (EVM format)&quot;,
+   &quot;snapshot&quot;: &quot;2026-11-02&quot;,
+   &quot;list_size&quot;: 94,
+   &quot;address_match&quot;: false,
+   &quot;sdn_name&quot;: null,
+   &quot;counterparty_matches&quot;: []
+  },
+  &quot;counterparty_scan&quot;: {
+   &quot;assets&quot;: [
+    &quot;USDC&quot;,
+    &quot;WETH&quot;
+   ],
+   &quot;window&quot;: {
+    &quot;blocks&quot;: 800,
+    &quot;window_min&quot;: 27,
+    &quot;from_block&quot;: 54102758,
+    &quot;to_block&quot;: 54103558
+   },
+   &quot;transfers_scanned&quot;: 0
+  },
+  &quot;data_quality&quot;: &quot;COMPLETE&quot;,
+  &quot;note&quot;: &quot;A pass means nothing adverse was found in the checks actually run: the OFAC snapshot, the scanned transfer window, and the nonce/balance pattern. It is not a guarantee of clean provenance beyond that window, and it is not a substitute for a compliance vendor&#x27;s list set.&quot;
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/walletrisk-burn-base.json">samples/walletrisk-burn-base.json</a></p>
+  </article>
+  <article class="card">
+    <div class="row">
+      <span class="route">mints</span><span class="price">$0.02</span>
+    </div>
+    <h2>Who is adding supply in this window, and how much?</h2>
+    <p class="blurb">A single-question micro read, answered with numbers and a window.</p>
+    <p class="head">window ? min</p>
+    <p class="sub">COMPLETE</p>
+    <details><summary>Full response (verbatim, free trial call)</summary><pre>{
+ &quot;service&quot;: &quot;onchain-forensics&quot;,
+ &quot;paid&quot;: &quot;$0.00 (free trial call 4 of 5)&quot;,
+ &quot;settlement_tx&quot;: null,
+ &quot;free_trial&quot;: {
+  &quot;used&quot;: 4,
+  &quot;remaining&quot;: 1,
+  &quot;limit&quot;: 5,
+  &quot;resets&quot;: &quot;2026-11-07&quot;
+ },
+ &quot;data&quot;: {
+  &quot;endpoint&quot;: &quot;mints&quot;,
+  &quot;chain&quot;: &quot;base-mainnet&quot;,
+  &quot;contract&quot;: &quot;0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&quot;,
+  &quot;generated_at&quot;: &quot;2026-11-07T00:25:29.105Z&quot;,
+  &quot;window&quot;: {
+   &quot;blocks&quot;: 320,
+   &quot;window_min&quot;: 11,
+   &quot;exact&quot;: true,
+   &quot;failed_batches&quot;: 0
+  },
+  &quot;data_quality&quot;: &quot;COMPLETE&quot;,
+  &quot;events&quot;: [
+   {
+    &quot;tx&quot;: &quot;0x8de2a740d3b29ba750fcbb81d411dce3521650358c6bd414e056d50ef6a60c6e&quot;,
+    &quot;block&quot;: 54103712,
+    &quot;amount&quot;: 0.687276,
+    &quot;wallet&quot;: &quot;0x62cfab16c8f521e4e5c345c1bf03c5da8f24fe1b&quot;
+   },
+   {
+    &quot;tx&quot;: &quot;0x5b651547193b44f0c41633dc7ee872889085a518f953708a087c0aadeb07b61a&quot;,
+    &quot;block&quot;: 54103708,
+    &quot;amount&quot;: 2482.116037,
+    &quot;wallet&quot;: &quot;0xdd13279a141b019d70c315faae77412f0903b678&quot;
+   },
+   {
+    &quot;tx&quot;: &quot;0x3f51b65ce7fd6dabf5483985afdfbd93e6a5a3e6630f64517270d3a2d51e36bb&quot;,
+    &quot;block&quot;: 54103630,
+    &quot;amount&quot;: 1331.391965,
+    &quot;wallet&quot;: &quot;0xa63f19d16b03bef7ccc82f064345f8eed500e742&quot;
+   },
+   {
+    &quot;tx&quot;: &quot;0x3f51b65ce7fd6dabf5483985afdfbd93e6a5a3e6630f64517270d3a2d51e36bb&quot;,
+    &quot;block&quot;: 54103630,
+    &quot;amount&quot;: 140.225196,
+    &quot;wallet&quot;: &quot;0xa63f19d16b03bef7ccc82f064345f8eed500e742&quot;
+   },
+   {
+    &quot;tx&quot;: &quot;0x3f51b65ce7fd6dabf5483985afdfbd93e6a5a3e6630f64517270d3a2d51e36bb&quot;,
+    &quot;block&quot;: 54103630,
+    &quot;amount&quot;: 6948.143528,
+    &quot;wallet&quot;: &quot;0xa63f19d16b03bef7ccc82f064345f8eed500e742&quot;
+   }
+  ],
+  &quot;events_returned&quot;: 5,
+  &quot;events_capped_at&quot;: 20,
+  &quot;mint_count&quot;: 5,
+  &quot;total_minted&quot;: 10902.564002
+ }
+}</pre></details>
+    <p class="src">source: <a href="samples/mints-usdc-base.json">samples/mints-usdc-base.json</a></p>
+  </article>
+ <footer>On-chain Forensics API · pay per call in USDC on Base via x402 · <a href="/llms.txt">llms.txt</a> · <a href="/openapi.json">openapi.json</a> · <a href="/try.html">live try page</a></footer>
+</main></body></html>
