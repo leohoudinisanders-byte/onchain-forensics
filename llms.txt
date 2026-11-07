@@ -1,34 +1,70 @@
 # On-chain Forensics API
 
-> Due-diligence forensics for AI agents, payable per call via x402 (USDC on Base). No API keys, no signup — the payment IS the auth. Deep research with receipts: working proof, not promises.
+> Decision-grade on-chain forensics for AI agents. Ask the question you are actually asking: should I touch this token or wallet? Pay per call in USDC on Base via x402, no API keys, no signup. Verdict returns a letter grade and a one-line roast, so a caller gets a call to make, not a dashboard to read.
+
+## Start here (cheapest path to a decision)
+
+1. verdict, $0.02, the core call. Ends in a letter grade A to F, risk flags and a one-line roast.
+   GET /functions/forensicsApi?endpoint=verdict&address=0x<token>&chain=base|ethereum
+2. settlesafe, $0.02, adds the settle question: is this token safe to accept right now, or is it paused, fee-trapped or clawback-capable.
+   GET /functions/forensicsApi?endpoint=settlesafe&address=0x<token>&chain=base|ethereum
+3. mints, $0.02, answers who is adding supply and how much in the window.
+   GET /functions/forensicsMints?token=0x<token>&chain=base|ethereum
+
+Three calls, $0.06, and you can decide whether to trade, settle against it, or walk away. Every verdict payload already returns the next two calls with ready-to-fire URLs, so an agent never has to guess what to buy next.
+
+## Try it free first
+
+Add trial=1 to verdict, settlesafe, token, wallet or any single-question read for free daily calls per IP. No payment header needed, no signup. If a free call answers your question, stop there.
+
+## Why this is different
+
+- Every payload states data_quality COMPLETE, PARTIAL or UNAVAILABLE. An unreadable chain is never reported as a zero, and an unattributable address is never reported as a guess.
+- Reads come from a dedicated provider endpoint (Alchemy) that this service controls, with public gateways only as fallback, so a rate-limited shared node cannot turn a real balance into an empty read.
+- No LLM in the decision path. Grades, tiers and roasts are deterministic functions of on-chain reads, so the same block gives the same answer.
+
+## Routes and prices (all x402 v2, exact scheme, eip155:8453)
 
 Base URLs:
 - Gateway (directory + routing): https://solene-fa2010da.base44.app/functions/forensicsGateway
 - Main API: https://solene-fa2010da.base44.app/functions/forensicsApi
 
-Endpoints (all x402 v2, exact scheme, eip155:8453, pay-per-call USDC):
-- info — FREE. Service card, endpoint catalog, pricing.
-- verdict — $0.02. Token verdict card: name, verdict tier (RED_HOT/HEAVY_FIRE/ACTIVE/THIN/SUSPICIOUS_THIN/DORMANT...), activity score 0-100, transfers, unique wallets, mints/burns, concentration, flags, plain_take. Params: address=0x..., chain=base|ethereum. First 3 calls/day per IP free (eval tier).
-- settlesafe — $0.02. FLAGSHIP pre-trade trust screen for tokenized equities/RWAs: counterparty + token screen (canonical registry, freeze/clawback flags), settle-risk verdict (KNOWN_CANONICAL etc.). Params vary: chain=base|ethereum|xrp, token alias (btsla, bcspx, rlusd, bitstamp-usd...) or address/issuer+currency.
-- token — $0.05. Full token profile: supply, holders concentration, top transfers, mint/burn history, whale moves. EVM: address+chain. Canton: served from verified entity snapshots.
-- wallet — $0.05. Wallet trust screen: counterparty flows, contract interaction risk, trust tier. EVM: address+chain. XRPL: account_info/tx/lines, trust tiers, issuer screens.
-- memo — $0.25 (or $0.35 with counterparty screen). Composed Token Due-Diligence Memo: multi-source verdict + narrative risk assessment, decision-grade.
-- canton — $0.05. Canton Network emission/burn-mint snapshot metrics.
-- linea — $0.05. Linea burn-vault stats.
+Decision routes:
+- info, FREE. Service card, endpoint catalog, pricing.
+- verdict, $0.02. Token verdict card: verdict tier (RED_HOT/HEAVY_FIRE/ACTIVE/THIN/SUSPICIOUS_THIN/DORMANT...), activity score 0-100, transfers, unique wallets, mints/burns, concentration, flags, plain_take, letter grade, roast, next_calls.
+- settlesafe, $0.02. Pre-trade trust screen for tokenized equities and RWAs: counterparty plus token screen (canonical registry, freeze and clawback flags), settle-risk verdict (KNOWN_CANONICAL and friends).
+- trust, $0.02. One word back: TRUSTED, CAUTION, HIGH_RISK, UNVERIFIABLE or NOT_APPLICABLE, with reason codes and which checks actually ran.
+- deployer, $0.05. Who launched the contract and from which wallet, plus deployer wallet age, tx count and an OFAC screen. On Base it returns LAUNCH_WINDOW_ONLY with a bracketed window and data_quality PARTIAL rather than guessing.
+- token, $0.05. Full token profile: supply, holder concentration, top transfers, mint and burn history, whale moves.
+- wallet, $0.05. Wallet trust screen: counterparty flows, contract interaction risk, trust tier.
+- memo, $0.25 ($0.35 with counterparty screen). Composed due-diligence memo: multi-source verdict plus narrative risk assessment.
+- canton, $0.05. Canton Network emission and burn-mint snapshot metrics.
+- linea, $0.05. Linea burn-vault stats.
 
-Chains: ERC-20s on Base + Ethereum (address+chain params); XRPL classic addresses (chain=xrp, issuer+currency or token alias); Canton Network via snapshots.
-Tokenized-equity/RWA aliases (19, all verified on-chain): btsla bcspx bcoin bnvda aapl nvda buidl usdy ousg ustb usyc ondo qnt xlm edel rlusd gatehub-usd bitstamp-usd bitstamp-eur.
+Single-question micro reads, $0.01 to $0.02: supply, activity, holders, contract owner, pause state, registry membership, 24h mints, 24h burns, wallet age, wallet funding origin, wallet flows, wallet risk.
 
-How to pay: send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[]), sign the EIP-3009 authorization with your wallet, retry with X-PAYMENT header. Settlement on Base mainnet, USDC. Facilitator chain: CDP (Coinbase) primary, Roundhouse + PayAI fallback.
+Derivatives and equity issuance, $0.05: perp funding, open interest, option skew, tokenized-equity issuance.
 
-MCP server (for Claude, ChatGPT and any MCP client):
+All 33 routes with typed schemas: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+
+Chains: ERC-20s on Base and Ethereum (address plus chain params); Robinhood Chain including its 203 stock tokens; XRPL classic addresses (chain=xrp, issuer plus currency or a token alias); Solana SPL mints; Canton Network via verified entity snapshots.
+
+Tokenized-equity and RWA aliases (19, all verified on-chain): btsla bcspx bcoin bnvda aapl nvda buidl usdy ousg ustb usyc ondo qnt xlm edel rlusd gatehub-usd bitstamp-usd bitstamp-eur.
+
+## How to pay
+
+Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[]), sign the EIP-3009 authorization with your wallet, retry with the X-PAYMENT header. Settlement on Base mainnet in USDC. Facilitator chain: CDP (Coinbase) primary, Roundhouse and PayAI fallback.
+
+## MCP server (Claude, ChatGPT, any MCP client)
+
 - Endpoint: https://solene-fa2010da.base44.app/functions/forensicsMcp (streamable HTTP, JSON-RPC 2.0)
 - Tools: forensics_info (free), token_verdict ($0.02), settle_safe ($0.02), wallet_screen ($0.05), token_profile ($0.05), diligence_memo ($0.25 / $0.35 with counterparty)
-- Same x402 pay-per-call: a paid tools/call returns HTTP 402 with PAYMENT-REQUIRED until paid; sign and retry with X-PAYMENT.
-- MCP tools are also indexed in the Coinbase x402 Bazaar (type: mcp, transport: streamable-http).
+- Same x402 pay-per-call: a paid tools/call returns HTTP 402 with PAYMENT-REQUIRED until paid, then sign and retry with X-PAYMENT.
+- Also indexed in the Coinbase x402 Bazaar (type: mcp, transport: streamable-http).
 
-Links:
+## Links
+
 - Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
 - OpenAPI 3.1 spec: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
 - Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
-- Also from this operator: Canton Swap Broker (OneSwap/Canton DEX x402 wrapper) — https://leohoudinisanders-byte.github.io/canton-swap-broker/
+- Also from this operator: Canton Swap Broker (OneSwap / Canton DEX x402 wrapper), https://leohoudinisanders-byte.github.io/canton-swap-broker/
