@@ -21,11 +21,11 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.54";
 import { verdictForensics } from "https://esm.sh/gh/leohoudinisanders-byte/onchain-forensics@3d8bc1c2f088b14b426a1f5cedb3926d10a0452c/lib/verdict-engine-v1.js";
 
 const ENGINE_VERSION = "verdict-engine-v2";
-const TIME_BUDGET_MS = 32_000;      // a batch can overrun by ~20s, so stop well short of the ceiling
+const TIME_BUDGET_MS = 28_000;      // a batch can overrun badly, so stop well short of the ceiling
 const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
 const PENDING_TARGET = 150;          // stop discovering once this much work is queued
-const STALE_AFTER_MIN = 120;        // refresh rows older than 2 hours
+const STALE_AFTER_MIN = 360;        // refresh rows older than 6 hours (RPC quota is the binding constraint)
 
 // Curated majors: always present even if volume ranking drops them out.
 const SEED: Array<{ chain: string; address: string; symbol: string; name: string }> = [
@@ -280,12 +280,17 @@ Deno.serve(async (req) => {
     report.mode = mode;
     report.queue = work.length;
 
-    let built = 0, failed = 0, skipped = 0;
+    let built = 0, failed = 0, skipped = 0, retried = 0;
+    let quotaHit = false;
     const grades: string[] = [];
     const failures: string[] = [];
 
+    const isQuota = (msg: string) =>
+      /usage limit|rate limit|429|compute units|exceeded/i.test(msg);
+
     for (const batch of chunk(work, PARALLEL)) {
       if (Date.now() - started > TIME_BUDGET_MS) break;
+      if (quotaHit) break;   // the RPC plan is exhausted: stop burning time, resume next run
       await Promise.all(batch.map(async (row: any) => {
         const t0 = Date.now();
         try {
@@ -293,6 +298,13 @@ Deno.serve(async (req) => {
           const ms = Date.now() - t0;
           const got = String(verdict?.token_symbol ?? "").trim();
           if (!verdict || !verdict.grade) { failed++; failures.push(`${row.chain}:${row.address.slice(0, 10)} no_grade`); return; }
+          if (String(verdict.grade) === "?" || verdict.activity_status === "UNAVAILABLE") {
+            // An unreadable chain is not a verdict. Leave the row queued so a later run retries,
+            // and never let a "?" grade be served as a paid cached answer.
+            retried++;
+            if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ungradeable_requeued`);
+            return;
+          }
           if (row.symbol && got && got.toUpperCase() !== row.symbol.toUpperCase()) {
             // A curated row whose symbol moved means my address is stale: retire it rather
             // than overwrite the name with whatever lives there now.
@@ -319,8 +331,15 @@ Deno.serve(async (req) => {
           built++;
           if (grades.length < 40) grades.push(`${got || row.address.slice(0, 8)}=${verdict.grade}`);
         } catch (e) {
+          const msg = String(e);
+          if (isQuota(msg)) {
+            quotaHit = true;
+            retried++;
+            if (failures.length < 15) failures.push(`quota: ${msg.slice(0, 90)}`);
+            return;
+          }
           failed++;
-          if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ${String(e).slice(0, 80)}`);
+          if (failures.length < 15) failures.push(`${row.chain}:${row.address.slice(0, 10)} ${msg.slice(0, 80)}`);
         }
       }));
       await new Promise((r) => setTimeout(r, 150));
@@ -346,6 +365,8 @@ Deno.serve(async (req) => {
       built,
       failed,
       skipped,
+      retried,
+      rpc_quota_hit: quotaHit,
       grades,
       failures,
       coverage: { cached: live.length, pending: rows.filter((r) => r.grade === "PENDING").length, by_chain: byChain, by_grade: byGrade },
