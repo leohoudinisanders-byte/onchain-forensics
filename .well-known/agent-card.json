@@ -4,7 +4,7 @@
   "description": "Decision-first on-chain forensics. Ask whether a token is worth touching and get a graded, measured answer instead of raw data: activity score 0-100, letter grade A-F, tier, risk flags and a reason. Answers come from a precomputed cache of measured chain reads, so the agent never invents data; unknown tokens are reported as NOT_CACHED with the exact paid call to grade them.",
   "url": "https://solene-fa2010da.base44.app/functions/a2a",
   "preferredTransport": "JSONRPC",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "provider": {
     "organization": "On-chain Forensics",
     "url": "https://onchainforensics.dev/"
@@ -12,7 +12,7 @@
   "documentationUrl": "https://onchainforensics.dev/llms.txt",
   "iconUrl": "https://onchainforensics.dev/og.png",
   "capabilities": {
-    "streaming": false,
+    "streaming": true,
     "pushNotifications": false,
     "stateTransitionHistory": false,
     "extensions": []
@@ -33,6 +33,7 @@
     }
   },
   "security": [],
+  "supportsAuthenticatedExtendedCard": false,
   "skills": [
     {
       "id": "token-verdict",
@@ -120,6 +121,11 @@
       "agent_card": "https://onchainforensics.dev/.well-known/agent-card.json",
       "mcp": "https://github.com/leohoudinisanders-byte/forensics-mcp"
     },
-    "notes": "Free answers cover already-graded tokens. Nothing is fabricated for an ungraded token."
+    "notes": "Free answers cover already-graded tokens. Nothing is fabricated for an ungraded token.",
+    "protocol_versions": {
+      "v0.3": "served by default (this document)",
+      "v1.0": "send header A2A-Version: 1.0, or read agent-card.v1.json"
+    },
+    "validation": "Cards parse strictly against the official a2a-sdk models (v0.3 pydantic AgentCard, v1.0 protobuf AgentCard). message/send, message/stream, tasks/get, tasks/cancel, tasks/resubscribe and the v1.0 PascalCase aliases all verified live."
   }
 }
