@@ -17,6 +17,15 @@ Three calls, $0.06, and you can decide whether to trade, settle against it, or w
 
 Add trial=1 to verdict, settlesafe, token, wallet or any single-question read for free daily calls per IP. No payment header needed, no signup. If a free call answers your question, stop there.
 
+## See real responses before paying
+
+Six verbatim responses captured from free trial calls, including the full grade range: USDC on Base grades A (RED_HOT), DEGEN grades D (THIN), BRETT grades F (SUSPICIOUS_THIN), plus a tokenized-equity settle screen, a wallet risk read and a mints micro read.
+
+- Rendered with grades and roasts: https://onchainforensics.dev/samples.html
+- Raw JSON, one file per call: https://onchainforensics.dev/openapi-samples/verdict-usdc-base.json, .../verdict-degen-base.json, .../verdict-brett-base.json, .../settlesafe-btsla.json, .../walletrisk-burn-base.json, .../mints-usdc-base.json
+
+Nothing is mocked. If a sample answers your question, you already know what the paid call looks like.
+
 ## Why this is different
 
 - Every payload states data_quality COMPLETE, PARTIAL or UNAVAILABLE. An unreadable chain is never reported as a zero, and an unattributable address is never reported as a guess.
@@ -65,6 +74,7 @@ Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[])
 ## Links
 
 - Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
-- OpenAPI 3.1 spec: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+- OpenAPI 3.1 spec, 33 routes enriched with per-route tags and parameter examples: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+- Sample responses: https://leohoudinisanders-byte.github.io/onchain-forensics/samples.html
 - Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
 - Also from this operator: Canton Swap Broker (OneSwap / Canton DEX x402 wrapper), https://leohoudinisanders-byte.github.io/canton-swap-broker/
