@@ -18,9 +18,9 @@
 // Admin-only (called by the Verdict Cache Build workflow). Public callers get 403.
 
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.54";
-import { verdictForensics } from "https://esm.sh/gh/leohoudinisanders-byte/onchain-forensics@3d8bc1c2f088b14b426a1f5cedb3926d10a0452c/lib/verdict-engine-v1.js";
+import { verdictForensics, setPreferPublic } from "https://esm.sh/gh/leohoudinisanders-byte/onchain-forensics@42f5ca7c77dc3a91151dbe802bb88364c4ee8590/lib/verdict-engine-v2.js";
 
-const ENGINE_VERSION = "verdict-engine-v2";
+const ENGINE_VERSION = "verdict-engine-v2-free";
 const TIME_BUDGET_MS = 28_000;      // a batch can overrun badly, so stop well short of the ceiling
 const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
@@ -167,6 +167,71 @@ async function uniswapTokens(): Promise<Array<{ chain: string; address: string; 
   return out;
 }
 
+// Which hosts can actually carry a log read from this egress? Free nodes vary wildly: some serve
+// eth_getLogs, some cap the range, some Cloudflare-block us. Measured, never assumed.
+const RPC_CANDIDATES: Record<string, string[]> = {
+  base: [
+    "https://base.gateway.tenderly.co",
+    "https://base-rpc.publicnode.com",
+    "https://base.blockpi.network/v1/rpc/public",
+    "https://base.meowrpc.com",
+    "https://base-mainnet.public.blastapi.io",
+    "https://developer-access-mainnet.base.org",
+    "https://base.drpc.org",
+    "https://base.llamarpc.com",
+    "https://1rpc.io/base",
+    "https://mainnet.base.org",
+    "https://gateway.tenderly.co/public/base",
+  ],
+  ethereum: [
+    "https://ethereum-rpc.publicnode.com",
+    "https://eth.llamarpc.com",
+    "https://eth.blockpi.network/v1/rpc/public",
+    "https://eth.drpc.org",
+    "https://1rpc.io/eth",
+    "https://eth-mainnet.public.blastapi.io",
+    "https://gateway.tenderly.co/public/mainnet",
+  ],
+};
+const USDC_LOGS: Record<string, string> = {
+  base: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+  ethereum: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+};
+
+async function probeRpc(url: string, chain: string): Promise<Record<string, unknown>> {
+  const t0 = Date.now();
+  const call = async (method: string, params: unknown[]) => {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "User-Agent": UA },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      signal: AbortSignal.timeout(12_000),
+    });
+    const body = await res.json().catch(() => ({}));
+    return { status: res.status, body };
+  };
+  try {
+    const head = await call("eth_blockNumber", []);
+    const latest = parseInt(String(head.body?.result || "0x0"), 16);
+    if (!latest) return { url, chain, head_status: head.status, error: String(head.body?.error?.message || "no_block").slice(0, 90), ms: Date.now() - t0 };
+    // 100-block USDC window: the smallest read the engine actually issues.
+    const from = "0x" + Math.max(0, latest - 100).toString(16);
+    const logs = await call("eth_getLogs", [{ address: USDC_LOGS[chain], fromBlock: from, toBlock: "latest" }]);
+    const ok = Array.isArray(logs.body?.result);
+    return {
+      url, chain,
+      block: latest,
+      logs_status: logs.status,
+      logs_ok: ok,
+      logs: ok ? logs.body.result.length : 0,
+      range_error: ok ? "" : String(logs.body?.error?.message || "unknown").slice(0, 70),
+      ms: Date.now() - t0,
+    };
+  } catch (e) {
+    return { url, chain, error: String(e).slice(0, 90), ms: Date.now() - t0 };
+  }
+}
+
 async function probe(url: string): Promise<Record<string, unknown>> {
   const t0 = Date.now();
   try {
@@ -190,6 +255,14 @@ Deno.serve(async (req) => {
 
     const url = new URL(req.url);
     const body = await req.clone().json().catch(() => ({} as any));
+    if (body?.rpc_diag) {
+      const out: unknown[] = [];
+      for (const chain of ["base", "ethereum"]) {
+        for (const u of RPC_CANDIDATES[chain]) out.push(await probeRpc(u, chain));
+      }
+      return Response.json({ ok: true, rpc_diag: true, hosts: out });
+    }
+
     if (body?.diag) {
       const urls = [
         "https://api.geckoterminal.com/api/v2/networks/base/pools?page=1&sort=h24_volume_usd_desc",
@@ -200,6 +273,9 @@ Deno.serve(async (req) => {
       for (const u of urls) results.push(await probe(u));
       return Response.json({ ok: true, diag: true, results });
     }
+
+    // Free way: public hosts carry the load, Alchemy only pays out if every free node fails.
+    setPreferPublic(body?.paid === true ? false : true);
 
     const ent = base44.asServiceRole.entities.TokenVerdictCache;
     const report: Record<string, unknown> = { engine: ENGINE_VERSION };
