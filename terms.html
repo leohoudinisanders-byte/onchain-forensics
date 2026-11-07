@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of service — On-chain Forensics</title>
+<meta name="description" content="Terms of service for the On-chain Forensics pay-per-call API: measurement not advice, no warranty, payment terms, acceptable use, and limitation of liability.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+  header { padding:56px 0 28px; }
+  h1 { font-size:2.1rem; letter-spacing:-0.02em; }
+  .tagline { color:var(--dim); font-size:1.05rem; margin-top:8px; max-width:680px; }
+  section { padding:30px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.35rem; margin-bottom:16px; letter-spacing:-0.01em; }
+  h3 { font-size:1.02rem; margin:18px 0 8px; }
+  p, li { color:var(--dim); font-size:.94rem; margin-bottom:10px; }
+  ul { padding-left:22px; }
+  a { color:var(--accent2); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px; }
+  .card h3 { margin-top:0; color:var(--txt); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:8px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; }
+  td code, p code, li code { background:#182338; padding:2px 7px; border-radius:6px; font-size:.85em; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .price { font-size:1.6rem; font-weight:700; color:var(--accent); }
+  footer { padding:36px 0 64px; border-top:1px solid var(--line); color:var(--dim); font-size:.82rem; }
+  footer a { color:var(--dim); text-decoration:underline; }
+  .note { font-size:.85rem; color:var(--dim); }
+  .pill { display:inline-block; font-size:.75rem; padding:3px 10px; border:1px solid var(--line); border-radius:999px; color:var(--dim); margin-right:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Terms of service</h1>
+  <p class="tagline">The rules for using the On-chain Forensics API, the data it returns, and the limits of what we promise.</p>
+</header>
+
+<section>
+  <h2>1. What the service is</h2>
+  <p>On-chain Forensics ("the service") answers questions about public blockchain state: token grades, supply integrity, counterparty settlement checks, wallet flows. Answers are computed from public chain data and returned over HTTPS, with payment handled per call through x402 in USDC on Base.</p>
+  <p>By calling the service, you agree to these terms. If you do not agree, do not call it.</p>
+</section>
+
+<section>
+  <h2>2. Not advice</h2>
+  <p>The service publishes measurements, not recommendations. Nothing it returns is financial, investment, legal, accounting, or tax advice, and no output is a solicitation to buy or sell any asset. You are responsible for your own decisions, your own risk, and your own compliance obligations.</p>
+</section>
+
+<section>
+  <h2>3. Data accuracy and no warranty</h2>
+  <p>Reads are made against public chain state through third-party RPC providers. We work to make them accurate and to mark unreadable data as <code>partial</code> or <code>unavailable</code> rather than zero, but the service is provided "as is" and "as available", without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.</p>
+  <p>A grade is a measurement at a point in time, not a guarantee of future behaviour. Tokens can change contract behaviour, ownership, and supply after a read. A cached grade is labelled as cached and carries the block it was measured at.</p>
+</section>
+
+<section>
+  <h2>4. Payment</h2>
+  <p>Each paid route requires a USDC payment on Base, authorised through x402. Payment is for the call, not for an outcome: if a paid call returns an answer that does not match the published schema, or reports unavailable data that was in fact readable, contact us and we will re-run it or refund it at our cost.</p>
+  <p>Blockchain payments are final. We cannot reverse a settlement on-chain, and we cannot recover funds sent to an address other than the one published in the challenge.</p>
+</section>
+
+<section>
+  <h2>5. Acceptable use</h2>
+  <ul>
+    <li>Do not use the service to break the law, to launder money, to evade sanctions, or to facilitate fraud.</li>
+    <li>Do not resell or redistribute the raw data as a competing feed without a licence. See <a href="licensing.html">licensing</a>.</li>
+    <li>Do not attempt to bypass the payment layer, replay a settlement, or exhaust the free tier through automated key creation.</li>
+    <li>Do not attempt to disrupt the service or access data belonging to other callers.</li>
+  </ul>
+  <p>We may rate-limit, suspend, or block any caller that does any of the above.</p>
+</section>
+
+<section>
+  <h2>6. Availability and changes</h2>
+  <p>We aim to keep the service available continuously but do not guarantee uninterrupted service. Routes, prices, and schemas may change; current prices are published on the <a href="pricing.html">pricing page</a> and current schemas in <a href="openapi.json">openapi.json</a>. A price change does not retroactively alter a call already settled.</p>
+</section>
+
+<section>
+  <h2>7. Limitation of liability</h2>
+  <p>To the maximum extent permitted by law, our total liability arising out of or relating to the service is limited to the amount you paid for the call that gave rise to the claim. We are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, lost data, or losses from trading decisions, even if we were advised of the possibility.</p>
+</section>
+
+<section>
+  <h2>8. Intellectual property</h2>
+  <p>The service, its scoring method, and its published materials belong to the operator. You receive a non-exclusive right to use the answers you paid for, including inside your own products, subject to section 5. The underlying chain data is public and belongs to nobody.</p>
+</section>
+
+<section>
+  <h2>9. Governing terms</h2>
+  <p>These terms are governed by the laws applicable at the operator's principal place of business in the United States, without regard to conflict-of-law rules. If any provision is unenforceable, the rest stands.</p>
+  <p>Questions about these terms: <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>.</p>
+</section>
+
+</div>
+<footer class="wrap">
+  <p><a href="index.html">Home</a> &middot; <a href="pricing.html">Pricing</a> &middot; <a href="licensing.html">Licensing</a> &middot; <a href="support.html">Support</a> &middot; <a href="security.html">Security</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="status.html">Status</a> &middot; <a href="samples.html">Samples</a> &middot; <a href="openapi.json">OpenAPI</a></p>
+  <p>On-chain Forensics, operated by Solene. Business inquiries and support: <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>. Payments are USDC on Base over x402; no accounts, no cards.</p>
+</footer>
+</body>
+</html>
