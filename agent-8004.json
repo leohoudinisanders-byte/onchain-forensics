@@ -67,7 +67,15 @@
     "payTo": "0x8EBf296c6273760ed9604C428f7EC13255E46fb9",
     "scheme": "exact"
   },
-  "registrations": [],
+  "registrations": [
+    {
+      "agentId": 897813,
+      "agentRegistry": "eip155:5042002:0x8004A818BFB912233c491871b3d84c89A494BD9e",
+      "chain": "arc-testnet",
+      "tx": "0x2fb359b71ccfc674a936ee1433f9e6a087106a35cb3a3a8709eb112b9851c492",
+      "registered_at": "2026-11-07"
+    }
+  ],
   "supportedTrust": [
     "reputation"
   ],
