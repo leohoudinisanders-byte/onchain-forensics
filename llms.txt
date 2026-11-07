@@ -14,7 +14,7 @@ pattern. The MCP server picks the key up from FORENSICS_DEV_KEY and needs no oth
 
 ## Install inside your agent (no code)
 
-    npx -y github:leohoudinisanders-byte/forensics-mcp
+    npx -y onchain-forensics-mcp
 
 On-chain Forensics ships an MCP server (stdio, zero dependencies, six tools: token_verdict,
 token_mints, settlesafe_check, token_profile, wallet_profile, forensics_catalog). Load it in
