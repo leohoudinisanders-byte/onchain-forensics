@@ -92,7 +92,8 @@ Deno.serve(async (req: Request) => {
   const address = (url.searchParams.get("address") || url.searchParams.get("token") || "").trim();
   const chain = (url.searchParams.get("chain") || "base").trim().toLowerCase();
 
-  if (!address) {
+  // The free coverage index needs no address, so the address guard must not swallow ?list=1.
+  if (!address && url.searchParams.get("list") !== "1") {
     return jsonResp({
       error: "missing_address",
       hint: "?address=0x<contract>&chain=base|ethereum",
