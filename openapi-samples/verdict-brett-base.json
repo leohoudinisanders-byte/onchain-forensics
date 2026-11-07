@@ -1,0 +1,68 @@
+{
+ "service": "onchain-forensics",
+ "paid": "$0.00 (free trial call 5 of 10)",
+ "settlement_tx": null,
+ "free_trial": {
+  "used": 5,
+  "remaining": 5,
+  "limit": 10,
+  "resets": "2026-11-07"
+ },
+ "data": {
+  "endpoint": "verdict",
+  "chain": "base-mainnet",
+  "contract": "0x532f27101965dd16442e59d40670faf5ebb142e4",
+  "token_name": "Brett",
+  "token_symbol": "BRETT",
+  "total_supply": "9999997544.3400",
+  "verdict_tier": "SUSPICIOUS_THIN",
+  "activity_score_0_100": 16,
+  "window_min": 11,
+  "transfers_recent": 2,
+  "unique_wallets_recent": 3,
+  "mints_recent": 0,
+  "burns_recent": 0,
+  "largest_transfer": {
+   "value": "1689619.5902",
+   "block": 54103703
+  },
+  "concentration_top_wallet_share": 0.5,
+  "activity_status": "OK",
+  "logs_batches_failed": 0,
+  "logs_coverage": {
+   "window_blocks": 1000,
+   "scanned_blocks": 320,
+   "chunks": 32,
+   "logs_per_block": 0,
+   "chunk_blocks": 10,
+   "exact": true,
+   "truncated": false
+  },
+  "evaluated_blocks": {
+   "latest_block": 54103712,
+   "from_block": 54103393,
+   "window_min": 11
+  },
+  "flags": [],
+  "grade": "F",
+  "grade_label": "ALMOST NO FLOW",
+  "grade_reason_codes": [],
+  "roast": "Almost no flow: 2 transfers from 3 wallets in 33 minutes. Nobody is here yet.",
+  "plain_take": "Brett (BRETT) moved 2 transfers across 3 unique wallets in the last 33 minutes on base-mainnet, with activity spread across many wallets.",
+  "share_text": "Brett (BRETT) on base-mainnet: 2 transfers / 3 wallets in 33min \u2014 SUSPICIOUS_THIN (score 16/100). Verdict by onchain-forensics.",
+  "next_calls": [
+   {
+    "route": "settlesafe",
+    "price_usd": 0.02,
+    "ask": "Can I settle against this token right now without eating a honeypot or a pause?",
+    "call": "/functions/forensicsApi?endpoint=settlesafe&address=0x532f27101965dd16442e59d40670faf5ebb142e4&chain=base"
+   },
+   {
+    "route": "mints",
+    "price_usd": 0.02,
+    "ask": "Who is adding supply in this window, and how much?",
+    "call": "/functions/forensicsMints?token=0x532f27101965dd16442e59d40670faf5ebb142e4&chain=base"
+   }
+  ]
+ }
+}
