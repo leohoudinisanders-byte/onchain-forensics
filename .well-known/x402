@@ -98,9 +98,12 @@
    "resource": "https://api.onchainforensics.dev/functions/forensicsCredits",
    "type": "http",
    "x402Version": 2,
-   "description": "How do I stop signing a payment for every call? Buy credits once, then spend them from a key.",
+   "description": "How do I stop signing a payment for every call? Buy credit once, then spend it from a key. Packs: pack1 $1.00 for $1.10 of credit, pack25 $25.00 for $27.50, pack100 $100.00 for $120.00, pack250 $250.00 for $300.00 (20 percent bonus from pack100 up). Credit buys cached verdicts at $0.001 and batch screens at the same size ladder the x402 batch route sells: 25 addresses $1.00, 100 $3.00, 250 $6.00, 500 $10.00, so a pack250 covers 30 top-tier screens. Keys are returned once as fxp_ and stored only as a hash; credit never expires and a cache miss deducts nothing. The quoted amount here is the pack1 entry price; send plan= to buy a larger pack.",
    "tags": [
-    "credit-packs"
+    "batch-credit",
+    "credit-packs",
+    "no-per-call-signature",
+    "prepaid"
    ],
    "accepts": [
     {
@@ -133,9 +136,10 @@
       "enum": [
        "pack1",
        "pack25",
-       "pack100"
+       "pack100",
+       "pack250"
       ],
-      "description": "Credit tier to buy"
+      "description": "Credit tier to buy. pack250 is sized for 500-token batch volume."
      },
      "credit_key": {
       "type": "string",
@@ -156,11 +160,11 @@
      },
      "addresses": {
       "type": "array",
-      "maxItems": 25,
+      "maxItems": 500,
       "items": {
        "type": "string"
       },
-      "description": "Token contracts for route=batch"
+      "description": "Token contracts for route=batch, 1 to 500. Credit is charged on the size ladder: 25 addresses $1.00, 100 $3.00, 250 $6.00, 500 $10.00."
      },
      "chain": {
       "type": "string",
