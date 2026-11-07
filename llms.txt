@@ -1,29 +1,26 @@
 # On-chain Forensics API
 
-
-## Free developer key (no card, no payment signature)
-
-    curl -X POST https://api.onchainforensics.dev/functions/devKeys \
-      -H "Content-Type: application/json" -d '{"email":"you@example.com"}'
-
-Returns a key (shown once) worth 10,000 calls per calendar month on the cached verdict tier.
-Send it as the X-Dev-Key header. One key per email, one per caller per day, resets on the 1st (UTC).
-Above the cap, prepaid packs at /functions/forensicsCredits ($25 for 25,000 calls) use the same header
-pattern. The MCP server picks the key up from FORENSICS_DEV_KEY and needs no other setup.
-
-
-## Install inside your agent (no code)
-
-    npx -y onchain-forensics-mcp
-
-On-chain Forensics ships an MCP server (stdio, zero dependencies, six tools: token_verdict,
-token_mints, settlesafe_check, token_profile, wallet_profile, forensics_catalog). Load it in
-Claude Desktop, Cursor, Claude Code, LangChain or any MCP client. When the free allowance on a
-route is spent the tool returns the decoded x402 challenge instead of an error, so you always
-know the exact price before paying. Latency numbers and our deprecation policy:
-https://onchainforensics.dev/status.html
-
 > Decision-grade on-chain forensics for AI agents. Ask the question you are actually asking: should I touch this token or wallet? Pay per call in USDC on Base via x402, no API keys, no signup. Verdict returns a letter grade and a one-line roast, so a caller gets a call to make, not a dashboard to read.
+
+## Published grades, one page per token (free to read)
+
+500 tokens on Ethereum and Base are graded in public: score 0-100 on transfer activity across the
+last 500 blocks, a letter grade A-F, the band, and the percentile against the chain median.
+
+- Directory, sortable and filterable: https://onchainforensics.dev/t/
+- Ethereum: https://onchainforensics.dev/t/ethereum/
+- Base: https://onchainforensics.dev/t/base/
+- One token, as a page: https://onchainforensics.dev/t/ethereum/<symbol>-<address8>.html
+  e.g. https://onchainforensics.dev/t/base/usdc-833589fc.html
+
+Read the directory to choose a token worth paying to check, then call verdict for the live number
+inside the last 500 blocks. The pages carry the measured timestamp so a stale grade is visible.
+
+## License the feed (wallets, bots, terminals)
+
+If your product has humans in it, do not put a payment prompt in front of them. Bulk snapshots,
+batch calls and a white-label endpoint: https://onchainforensics.dev/licensing.html
+Pilot $100 for 14 days, then $250 or $1,000 a month, paid in USDC on Base.
 
 ## Start here (cheapest path to a decision)
 
@@ -35,44 +32,6 @@ https://onchainforensics.dev/status.html
    GET /functions/forensicsMints?token=0x<token>&chain=base|ethereum
 
 Three calls, $0.06, and you can decide whether to trade, settle against it, or walk away. Every verdict payload already returns the next two calls with ready-to-fire URLs, so an agent never has to guess what to buy next.
-
-## Prepaid credit packs: pay once, then stop signing
-
-If an agent is going to make hundreds or thousands of calls, buying credit once is cheaper in effort
-than signing a payment per call:
-
-- `POST https://solene-fa2010da.base44.app/functions/forensicsCredits?plan=pack25` at **$25.00** returns
-  an `api_key` (shown once, stored only as a hash) with **$27.50 of credit**, which is 27,500 cached
-  verdicts or 27 batch screens of 25. `pack1` is $1.00 for $1.10 of credit; `pack100` is $100.00 for
-  $120.00 and `pack250` is $250.00 for $300.00 (20 percent bonus on both, the $250 pack is sized for
-  500-token batch volume: 30 top-tier screens). A `pack_test` tier at $0.02 exists for integration
-  testing. Batch credit is charged at the same size ladder as x402: 25 addresses $1.00, 100 $3.00,
-  250 $6.00, 500 $10.00, and a screen larger than the chain's servable cache is refused rather than
-  billed for partial data.
-- Spend it with `X-Credit-Key: fxp_...`: `POST {"action":"redeem","route":"verdict","address":"0x...","chain":"base"}`
-  or `route:"batch"` with up to 500 addresses (billed by size on the same ladder). Credit is spent at
-  list price and never expires.
-- Check the balance free: `POST {"action":"balance"}` with the same header.
-- Cached tiers only (verdict $0.001; batch $1.00/25, $3.00/100, $6.00/250, $10.00/500). Live scan
-  routes stay pay-per-call over x402, because each one spends real node reads.
-
-## The cheap tier: $0.001 cached verdicts and batch screens from $1.00
-
-Use these two when the job is screening rather than one-off checks. Both are answered from an hourly
-precomputed feed, so they return in milliseconds instead of the 1 to 14 second live scan.
-
-- `POST https://solene-fa2010da.base44.app/functions/verdictBatch` priced by size, one payment per call:
-  **25 tokens $1.00** (4.0 cents each), **100 $3.00** (3.0), **250 $6.00** (2.4), **500 $10.00** (2.0).
-  Send `{"addresses":["0x...","0x..."],"chain":"base"}`, optionally `"tier":"t100"`; otherwise the
-  server bills the smallest tier that fits. Each answer carries grade, tier, score, roast and the full
-  verdict object, so one signature screens a candidate list, a wallet, or an index basket before capital
-  moves. Tokens missing from the feed come back in `missed` with a pointer to the $0.02 live route; a
-  batch with nothing cached is verified but never settled, so it costs nothing. A request larger than
-  the chain's servable cache is refused with `coverage_exceeded` and the exact count, never billed.
-  Free coverage index for aiming a batch: `GET /functions/verdictFast?list=1`.
-- First call from a new caller on the cached route is free, once per day, no parameter and no
-  signup: `GET /functions/verdictFast?address=0x<token>&chain=base|ethereum` returns a real grade
-  and roast at $0.00, then the paywall applies.
 
 ## The cheap tier: $0.001 cached verdicts
 
@@ -146,7 +105,7 @@ Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[])
 ## Links
 
 - Landing: https://leohoudinisanders-byte.github.io/onchain-forensics/
-- OpenAPI 3.1 spec, 35 routes enriched with per-route tags and parameter examples: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
+- OpenAPI 3.1 spec, 33 routes enriched with per-route tags and parameter examples: https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json
 - Sample responses: https://leohoudinisanders-byte.github.io/onchain-forensics/samples.html
 - Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
 - Also from this operator: Canton Swap Broker (OneSwap / Canton DEX x402 wrapper), https://leohoudinisanders-byte.github.io/canton-swap-broker/
