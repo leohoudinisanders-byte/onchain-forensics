@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy policy — On-chain Forensics</title>
+<meta name="description" content="What On-chain Forensics collects (public chain data, request metadata, paying address, optional email), what it never does with it, retention, and your choices.">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root { --bg:#0b1220; --card:#111a2c; --line:#1e2a44; --txt:#e6edf7; --dim:#8fa3c0; --accent:#2fbf71; --accent2:#4f8cff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+  header { padding:56px 0 28px; }
+  h1 { font-size:2.1rem; letter-spacing:-0.02em; }
+  .tagline { color:var(--dim); font-size:1.05rem; margin-top:8px; max-width:680px; }
+  section { padding:30px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.35rem; margin-bottom:16px; letter-spacing:-0.01em; }
+  h3 { font-size:1.02rem; margin:18px 0 8px; }
+  p, li { color:var(--dim); font-size:.94rem; margin-bottom:10px; }
+  ul { padding-left:22px; }
+  a { color:var(--accent2); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px; }
+  .card h3 { margin-top:0; color:var(--txt); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:8px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; }
+  td code, p code, li code { background:#182338; padding:2px 7px; border-radius:6px; font-size:.85em; color:#bcd0f0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .price { font-size:1.6rem; font-weight:700; color:var(--accent); }
+  footer { padding:36px 0 64px; border-top:1px solid var(--line); color:var(--dim); font-size:.82rem; }
+  footer a { color:var(--dim); text-decoration:underline; }
+  .note { font-size:.85rem; color:var(--dim); }
+  .pill { display:inline-block; font-size:.75rem; padding:3px 10px; border:1px solid var(--line); border-radius:999px; color:var(--dim); margin-right:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Privacy policy</h1>
+  <p class="tagline">What we collect, why, how long we keep it, and the three things we will never do with it.</p>
+</header>
+
+<section>
+  <h2>What we collect</h2>
+  <table>
+    <tr><th>Data</th><th>When</th><th>Why</th></tr>
+    <tr><td>Public blockchain data: addresses, transactions, token state</td><td>Every call</td><td>It is the answer. It is already public on-chain.</td></tr>
+    <tr><td>Request metadata: route, timestamp, response status</td><td>Every call</td><td>Operate the service, enforce rate limits, measure uptime and errors.</td></tr>
+    <tr><td>Paying wallet address and transaction hash</td><td>Paid calls</td><td>Verify settlement, resolve disputes, issue refunds.</td></tr>
+    <tr><td>Email address</td><td>Only if you give one: developer key or watchlist subscription</td><td>Deliver the key or the alerts. Nothing else.</td></tr>
+    <tr><td>SHA-256 hash of an API key</td><td>At key issue</td><td>Authenticate without ever storing the key itself.</td></tr>
+  </table>
+  <p>We do not ask for a name, a company, a phone number, a billing address, or card details, because the service has no accounts and no cards.</p>
+</section>
+
+<section>
+  <h2>What we do not do</h2>
+  <ul>
+    <li>We do not sell or rent data about callers.</li>
+    <li>We do not run third-party advertising or cross-site tracking scripts on this site.</li>
+    <li>We do not use your calls to train a model. There is no model in the decision path at all.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Third parties we rely on</h2>
+  <ul>
+    <li><b>RPC providers</b> read chain state. They see the addresses being queried, as any node does.</li>
+    <li><b>Hosting</b> serves the API and this site, and keeps standard request logs.</li>
+    <li><b>Email</b> delivers developer keys and alerts if you supplied an address.</li>
+    <li><b>The payment facilitator</b> relays the USDC settlement you signed. It sees the payment, not your identity.</li>
+  </ul>
+  <p>We choose providers that process data on our instructions and do not permit them to use it for their own purposes.</p>
+</section>
+
+<section>
+  <h2>How long we keep it</h2>
+  <ul>
+    <li>Request logs and counters: short retention, enough to operate and rate-limit.</li>
+    <li>Payment records: kept while needed for accounting and dispute resolution.</li>
+    <li>Email addresses: kept until you ask us to delete them or the subscription lapses.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Your choices</h2>
+  <p>Ask us to delete the email address you gave us and we will, along with any key issued to it. Ask what we hold about you and we will tell you. Write to <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>.</p>
+  <p class="note">Because payments are on-chain, a payment record on a public chain cannot be deleted by us or by anyone. That is a property of the blockchain, not a choice we made.</p>
+</section>
+
+<section>
+  <h2>Children</h2>
+  <p>The service is not directed at anyone under 18 and we do not knowingly hold data about minors.</p>
+</section>
+
+</div>
+<footer class="wrap">
+  <p><a href="index.html">Home</a> &middot; <a href="pricing.html">Pricing</a> &middot; <a href="licensing.html">Licensing</a> &middot; <a href="support.html">Support</a> &middot; <a href="security.html">Security</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="status.html">Status</a> &middot; <a href="samples.html">Samples</a> &middot; <a href="openapi.json">OpenAPI</a></p>
+  <p>On-chain Forensics, operated by Solene. Business inquiries and support: <a href="mailto:Leohoudinisanders@gmail.com">Leohoudinisanders@gmail.com</a>. Payments are USDC on Base over x402; no accounts, no cards.</p>
+</footer>
+</body>
+</html>
