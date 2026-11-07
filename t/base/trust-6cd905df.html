@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Is TRUST safe? TRUST grade F (17/100) on Base</title>
+<meta name="description" content="TRUST on Base scores 17/100 for on-chain activity, grade F (thin), measured 2026-11-07. How it was measured and how to get the live verdict.">
+<link rel="canonical" href="https://onchainforensics.dev/t/base/trust-6cd905df.html">
+<meta property="og:title" content="Is TRUST safe? TRUST grade F (17/100) on Base">
+<meta property="og:description" content="TRUST on Base scores 17/100 for on-chain activity, grade F (thin), measured 2026-11-07. How it was measured and how to get the live verdict.">
+<meta property="og:type" content="article">
+<style>
+:root{--bg:#0e1116;--fg:#e8ecf1;--mut:#93a0af;--line:#232a33;--acc:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:32px 20px 64px}
+a{color:var(--acc)}
+h1{font-size:30px;line-height:1.2;margin:6px 0 10px}
+h2{font-size:19px;margin:32px 0 10px}
+.deck{color:var(--mut);font-size:17px;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:20px 0 8px}
+.cell{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.cell .k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.cell .v{font-size:20px;font-weight:600;margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+code,pre{background:#161b22;border:1px solid var(--line);border-radius:8px;padding:2px 6px;font-size:14px}
+pre{padding:14px;overflow-x:auto}
+.cta{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:28px 0}
+.cta a{font-weight:600}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+.nav{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;font-size:14px}
+input{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--line);background:#161b22;color:var(--fg);font-size:15px;margin:8px 0 0}
+.gA{color:#4ade80}.gB{color:#a3e635}.gC{color:#fbbf24}.gD{color:#fb923c}.gF{color:#f87171}
+</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Dataset", "name": "TRUST activity grade (base)", "description": "On-chain activity grade for TRUST on base: score 17/100, grade F, measured 2026-11-07.", "creator": {"@type": "Organization", "name": "On-chain Forensics", "url": "https://onchainforensics.dev/"}, "dateModified": "2026-11-07T19:50:04.234Z", "url": "https://onchainforensics.dev/t/base/trust-6cd905df.html", "variableMeasured": ["activity_score_0_100", "transfers", "unique_wallets", "grade"]}</script>
+</head><body><div class="wrap">
+<div class="nav"><a href="https://onchainforensics.dev/">On-chain Forensics</a><a href="https://onchainforensics.dev/t/">All token grades</a><a href="https://onchainforensics.dev/licensing.html">Licensing</a><a href="https://onchainforensics.dev/openapi.json">API spec</a></div>
+
+<p class="deck">Grade <b class="gF">F</b> · score 17/100 · Thin · measured 2026-11-07</p>
+<h1>TRUST on Base: grade F</h1>
+<p class="deck">TRUST scores <b>17</b> out of 100 on transfer activity across the last 500 base blocks, which grades it <b class="gF">F</b> in the thin band. That places it 12 points above the base median of 5, at the 79th percentile of the 198 base tokens this scanner tracks, ranked 42 of 198.</p>
+<div class="grid">
+<div class="cell"><div class="k">Grade</div><div class="v gF">F</div></div>
+<div class="cell"><div class="k">Activity score</div><div class="v">17/100</div></div>
+<div class="cell"><div class="k">Band</div><div class="v">Thin</div></div>
+<div class="cell"><div class="k">Chain</div><div class="v">Base</div></div>
+<div class="cell"><div class="k">Last measured</div><div class="v">2026-11-07</div></div>
+</div>
+<h2>What grade F means here</h2>
+<p>An F is the bottom band. The token is essentially unreadable as a market: one or two transfers, or none, across the whole window. Real activity, just not much of it. The token is trading and wallets are distinct, but the volume is thin enough that a size position would move the price or fail to fill.</p>
+<p>For TRUST specifically, the base median score is 5 across 198 tokens and the highest score on the chain is 94. TRUST sits +12 against that median, and it is one of 29 base tokens currently graded F.</p>
+<h2>How this was measured</h2>
+<p>The scanner reads transfer logs for the contract over the last 500 blocks and counts transfers, distinct sending and receiving wallets, mints, burns, and the share held by the largest wallet. Blocks are pulled in chunks against a private Alchemy endpoint with public gateways only as fallback, and coverage is recorded per call: if the reads do not cover the window, the response says PARTIAL instead of inventing a quiet token.</p>
+<p>A 500-block window means different wall-clock time per chain. On Base that is the recent past rather than a daily average, which is the point: activity is the one thing a price chart cannot show you and a token list cannot fake.</p>
+<h2>Get the live read</h2>
+<div class="cta">
+<p><b>Verdict, $0.02.</b> The same measurement on demand for TRUST or any contract, with the transfer count, wallet count, mint and burn activity, concentration, and a plain-English bottom line.</p>
+<pre>curl "https://onchainforensics.dev/functions/forensicsVerdict?address=0x6cd905df2ed214b22e0d48ff17cd4200c1c6d8a3&amp;chain=base"</pre>
+<p><b>Alerts, $29/month.</b> A daily digest when TRUST or anything on your watchlist changes grade, so you learn about a liquidity break from us instead of from the chart.</p>
+<p><b>Agent install.</b> <code>npx -y onchain-forensics-mcp</code> puts the grade check in front of a trade, and a free developer key covers 10,000 cached calls a month.</p>
+</div>
+<h2>Contract</h2>
+<table><tr><th>Field</th><th>Value</th></tr>
+<tr><td>Contract</td><td><code>0x6cd905df2ed214b22e0d48ff17cd4200c1c6d8a3</code></td></tr>
+<tr><td>Chain</td><td>base</td></tr>
+<tr><td>Symbol</td><td>TRUST</td></tr>
+<tr><td>Grade</td><td>F</td></tr>
+<tr><td>Tier</td><td>THIN</td></tr>
+<tr><td>Score</td><td>17/100</td></tr>
+<tr><td>Window</td><td>500 blocks</td></tr>
+<tr><td>Measured</td><td>2026-11-07T19:50:04.234Z</td></tr>
+</table>
+<p><a href="https://onchainforensics.dev/t/base/">More Base grades</a> · <a href="https://onchainforensics.dev/t/">All 500 graded tokens</a></p>
+
+<footer>Measured, not modelled. Grades come from on-chain reads over a private node with public fallback; an unreadable chain is reported as unreadable, never as a zero. Scores refresh roughly every six hours. nothing here is investment advice.</footer>
+</div></body></html>

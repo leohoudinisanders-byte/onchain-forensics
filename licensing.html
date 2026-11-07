@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>License the on-chain grade feed: wallets, bots and data vendors</title>
+<meta name="description" content="License on-chain activity grades for 683 tokens on Ethereum and Base. Bulk snapshots, batch calls, white-label endpoints. Pilot from $100, monthly from $250.">
+<link rel="canonical" href="https://onchainforensics.dev/licensing.html">
+<meta property="og:title" content="License the on-chain grade feed">
+<meta property="og:description" content="One feed, every graded token, inside your product. Pilot from $100.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0e1116;--fg:#e8ecf1;--mut:#93a0af;--line:#232a33;--acc:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:32px 20px 64px}
+a{color:var(--acc)}
+h1{font-size:30px;line-height:1.2;margin:6px 0 10px}
+h2{font-size:19px;margin:32px 0 10px}
+.deck{color:var(--mut);font-size:17px;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:20px 0 8px}
+.cell{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.cell .k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.cell .v{font-size:20px;font-weight:600;margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:500;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+code,pre{background:#161b22;border:1px solid var(--line);border-radius:8px;padding:2px 6px;font-size:14px}
+pre{padding:14px;overflow-x:auto}
+.cta{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:28px 0}
+.cta a{font-weight:600}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+.nav{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;font-size:14px}
+input{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--line);background:#161b22;color:var(--fg);font-size:15px;margin:8px 0 0}
+.gA{color:#4ade80}.gB{color:#a3e635}.gC{color:#fbbf24}.gD{color:#fb923c}.gF{color:#f87171}
+</style>
+</head><body><div class="wrap">
+<div class="nav"><a href="https://onchainforensics.dev/">On-chain Forensics</a><a href="https://onchainforensics.dev/t/">All token grades</a><a href="https://onchainforensics.dev/openapi.json">API spec</a><a href="https://onchainforensics.dev/status.html">Status</a></div>
+
+<p class="deck">For wallets, bots, trading terminals and data vendors who want the grade inside their own product instead of calling an API per user.</p>
+<h1>License the grade feed</h1>
+<p class="deck">Per-call pricing is built for agents paying their own way. A product with humans in it needs the whole graded universe on a schedule, under your brand, without a 402 landing in front of your users. That is what this is.</p>
+
+<h2>What you get</h2>
+<table>
+<tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Coverage</td><td>683 tokens graded today across Ethereum and Base (500 in the current published snapshot), one row per contract with grade A-F, activity score 0-100, band, transfer and wallet counts, mint/burn activity and top-wallet concentration</td></tr>
+<tr><td>Refresh</td><td>Rebuilt roughly every six hours, with a per-token measured timestamp so a stale row is visible rather than assumed</td></tr>
+<tr><td>Delivery</td><td>REST per token, batch up to 25 contracts per call, or a bulk JSON snapshot on your schedule</td></tr>
+<tr><td>Method</td><td>Transfer logs read in chunks against a private Alchemy endpoint with public gateways as fallback; incomplete coverage is returned as PARTIAL, never as a zero</td></tr>
+<tr><td>Stability</td><td>Field additions are not breaking changes. A grade changing is data, not a version bump. Ninety days notice and a Deprecation header before anything is removed</td></tr>
+</table>
+
+<h2>Pricing</h2>
+<table>
+<tr><th>Tier</th><th>Price</th><th>Included</th></tr>
+<tr><td>Pilot</td><td>$100 one time</td><td>14 days, 5,000 calls, no redistribution. Enough to wire it into a screen and see whether the grades move with the market you care about</td></tr>
+<tr><td>Starter</td><td>$250 / month</td><td>15,000 calls a month, weekly bulk snapshot, internal product use, named Slack or email contact</td></tr>
+<tr><td>Growth</td><td>$1,000 / month</td><td>100,000 calls a month, snapshot every six hours, redistribution to your own end users inside your product, and a shared incident channel</td></tr>
+<tr><td>Enterprise</td><td>Custom</td><td>Unlimited calls, hourly snapshot, white-label copy of the endpoint under your domain, additional chains or a custom measurement window, category exclusivity, written SLA</td></tr>
+</table>
+<p>Paid monthly in USDC on Base, or prepaid in credits. Cancel by not renewing; no lock-in and no auto-renew trap.</p>
+
+<h2>What it is not</h2>
+<p>These are activity measurements, not price predictions and not investment advice. We will not license a claim that a token is "safe", only what we can measure: whether it moved, how many wallets moved it, who is minting, and whether the reads were complete. A token can grade A and still go to zero on news; that is a different question from liquidity, and we are honest about which one we answer.</p>
+
+<h2>Why not just use the public endpoint</h2>
+<p>You can. Every route takes an x402 payment in USDC for $0.001 to $0.25, and a free developer key covers 10,000 cached calls a month. The license exists for the case where the payment prompt is the problem: your users should never see a 402, and you should not be signing a payment per screen refresh.</p>
+
+<div class="cta">
+<p><b>Start a pilot.</b> Email <a href="mailto:leohoudinisanders@gmail.com?subject=Grade%20feed%20license%20pilot">leohoudinisanders@gmail.com</a> with your product, the chains you care about, and roughly how many lookups a day it would need. You get a key and the snapshot format the same day.</p>
+<p><a href="https://onchainforensics.dev/t/">Browse all graded tokens</a> · <a href="https://onchainforensics.dev/openapi.json">API spec</a> · <a href="https://onchainforensics.dev/status.html">Measured latency</a></p>
+</div>
+
+<footer>Measured, not modelled. Nothing here is investment advice. On-chain Forensics, operated by Leo Sanders.</footer>
+</div></body></html>
