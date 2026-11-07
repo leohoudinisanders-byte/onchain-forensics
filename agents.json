@@ -53,17 +53,54 @@
     "mcp-server-tools"
   ],
   "routes": {
-    "verdict": { "price_usd": 0.02, "answers": "Is this token alive and how risky?" },
-    "settlesafe": { "price_usd": 0.02, "answers": "Can I settle against it right now?" },
-    "trust": { "price_usd": 0.02, "answers": "One word: TRUSTED, CAUTION, HIGH_RISK, UNVERIFIABLE." },
-    "mints": { "price_usd": 0.02, "answers": "Who is adding supply?" },
-    "deployer": { "price_usd": 0.05, "answers": "Who launched this contract, and from which wallet?" },
-    "token": { "price_usd": 0.05, "answers": "Full token profile: supply, concentration, whale moves." },
-    "wallet": { "price_usd": 0.05, "answers": "Is this wallet worth trusting with settlement?" },
-    "memo": { "price_usd": 0.25, "answers": "A composed due-diligence answer for one token or wallet." },
-    "sweep": { "price_usd": 0.25, "answers": "Does this wallet actually hold what it claims?" },
-    "canton": { "price_usd": 0.05, "answers": "Canton emission and burn-mint snapshot." },
-    "linea": { "price_usd": 0.05, "answers": "Linea burn-vault stats." }
+    "verdict": {
+      "price_usd": 0.02,
+      "answers": "Is this token alive and how risky?"
+    },
+    "settlesafe": {
+      "price_usd": 0.02,
+      "answers": "Can I settle against it right now?"
+    },
+    "trust": {
+      "price_usd": 0.02,
+      "answers": "One word: TRUSTED, CAUTION, HIGH_RISK, UNVERIFIABLE."
+    },
+    "mints": {
+      "price_usd": 0.02,
+      "answers": "Who is adding supply?"
+    },
+    "deployer": {
+      "price_usd": 0.05,
+      "answers": "Who launched this contract, and from which wallet?"
+    },
+    "token": {
+      "price_usd": 0.05,
+      "answers": "Full token profile: supply, concentration, whale moves."
+    },
+    "wallet": {
+      "price_usd": 0.05,
+      "answers": "Is this wallet worth trusting with settlement?"
+    },
+    "memo": {
+      "price_usd": 0.25,
+      "answers": "A composed due-diligence answer for one token or wallet."
+    },
+    "sweep": {
+      "price_usd": 0.25,
+      "answers": "Does this wallet actually hold what it claims?"
+    },
+    "canton": {
+      "price_usd": 0.05,
+      "answers": "Canton emission and burn-mint snapshot."
+    },
+    "linea": {
+      "price_usd": 0.05,
+      "answers": "Linea burn-vault stats."
+    },
+    "verdictFast": {
+      "price_usd": 0.001,
+      "answers": "Same verdict as above, cached, in milliseconds."
+    }
   },
   "chains": [
     "base",
@@ -87,5 +124,13 @@
   ],
   "operator": "Leo Sanders",
   "contact": "leohoudinisanders@gmail.com",
-  "mcpServer": "https://solene-fa2010da.base44.app/functions/forensicsMcp"
+  "mcpServer": "https://solene-fa2010da.base44.app/functions/forensicsMcp",
+  "cached_tier": {
+    "route": "verdictFast",
+    "price_usd": 0.001,
+    "url": "https://solene-fa2010da.base44.app/functions/verdictFast?address=0x<token>&chain=base",
+    "why": "Sub-cent and low latency: precomputed hourly, answered from a key lookup instead of a 1 to 14 second chain scan. Same grade and roast as the $0.02 live verdict.",
+    "free_coverage_index": "https://solene-fa2010da.base44.app/functions/verdictFast?list=1",
+    "miss_policy": "No charge when a token is not in the feed; the response says cache_miss and points at the live $0.02 route."
+  }
 }
