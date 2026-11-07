@@ -18,9 +18,9 @@ Three calls, $0.06, and you can decide whether to trade, settle against it, or w
 If you need a verdict in-path, on every trade, or thousands of times an hour, use the cached feed instead of the live scan:
 
 - `GET https://solene-fa2010da.base44.app/functions/verdictFast?address=0x<token>&chain=base|ethereum` at **$0.001**
-- Same letter grade A to F, roast, risk flags and next_calls as the $0.02 live verdict. Precomputed hourly, answered from a key lookup instead of a 1 to 14 second chain scan.
+- Same letter grade A to F, roast, risk flags and next_calls as the $0.02 live verdict. Precomputed continuously in the background, answered from a key lookup instead of a 1 to 14 second chain scan.
 - See exactly which tokens are in the feed for free: `?list=1` returns the whole cache with grades and timestamps.
-- A token that is not cached **costs you nothing**: the call returns `cache_miss: true` with a pointer to the live route, and no payment settles.
+- Coverage grows every ten minutes as the builder works through the token universe. If your token is not there yet, the call costs you nothing: the call returns `cache_miss: true` with a pointer to the live route, and no payment settles.
 
 Use the cached route for volume and in-path decisions; use `/functions/forensicsApi?endpoint=verdict` ($0.02) when you need the current block.
 
