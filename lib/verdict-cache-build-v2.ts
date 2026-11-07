@@ -21,7 +21,7 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.54";
 import { verdictForensics } from "https://esm.sh/gh/leohoudinisanders-byte/onchain-forensics@3d8bc1c2f088b14b426a1f5cedb3926d10a0452c/lib/verdict-engine-v1.js";
 
 const ENGINE_VERSION = "verdict-engine-v2";
-const TIME_BUDGET_MS = 42_000;      // leave headroom under the ~49s function ceiling
+const TIME_BUDGET_MS = 32_000;      // a batch can overrun by ~20s, so stop well short of the ceiling
 const PARALLEL = 10;                 // enough to matter, low enough to stay inside Alchemy limits
 const MAX_UNIVERSE_PER_CHAIN: Record<string, number> = { base: 700, ethereum: 500 };
 const PENDING_TARGET = 150;          // stop discovering once this much work is queued
@@ -270,7 +270,10 @@ Deno.serve(async (req) => {
       return (Date.now() - new Date(r.computed_at).getTime()) / 60000 > STALE_AFTER_MIN;
     });
 
-    const work: any[] = pending.length ? pending : staleRows;
+    // Base first: those reads are faster and they are the tokens x402 callers ask about most.
+    const chainRank = (c: string) => (c === "base" ? 0 : 1);
+    const ordered = [...pending].sort((a: any, b: any) => chainRank(a.chain) - chainRank(b.chain));
+    const work: any[] = ordered.length ? ordered : staleRows;
     const mode = pending.length ? "pending" : "refresh";
     report.mode = mode;
     report.queue = work.length;
