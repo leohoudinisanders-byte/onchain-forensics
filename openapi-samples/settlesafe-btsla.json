@@ -1,0 +1,48 @@
+{
+ "service": "onchain-forensics",
+ "paid": "$0.00 (free trial call 1 of 5)",
+ "settlement_tx": null,
+ "free_trial": {
+  "used": 1,
+  "remaining": 4,
+  "limit": 5,
+  "resets": "2026-11-07"
+ },
+ "data": {
+  "endpoint": "equitysettlesafe",
+  "chain": "base-mainnet",
+  "contract": "0x14a5f2872396802c3cc8942a39ab3e4118ee5038",
+  "generated_at": "2026-11-07T00:25:07.299Z",
+  "equity": {
+   "registry_alias": "btsla",
+   "symbol": "bTSLA",
+   "underlying": "TSLA",
+   "issuer": "Backed Finance (xStocks)",
+   "instrument": "backed_xstock",
+   "registry_verified": true
+  },
+  "issuance": {
+   "total_supply": "3000000000000000000000",
+   "total_supply_display": 3000,
+   "decimals": 18,
+   "supply_24h_change_display": 0,
+   "new_issuance_24h": false
+  },
+  "controls": {
+   "is_contract": true,
+   "owner": "0xd1966bd72695789ec9c245f0bf5a8512b56c1d80",
+   "pause_capable": false,
+   "paused": null,
+   "issuer_controlled": true
+  },
+  "settle_safe": {
+   "pass": true,
+   "asset_status": "KNOWN_CANONICAL",
+   "counterparty": null,
+   "risk_flags": [],
+   "registry_canonical": true
+  },
+  "data_quality": "COMPLETE",
+  "note": "Equity settlesafe adds issuer verification and pause state on top of the standard asset screen. It cannot see transfer-agent allowlists that live off-chain, so a pass is necessary but not sufficient for an equity pair."
+ }
+}
