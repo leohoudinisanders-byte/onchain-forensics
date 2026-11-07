@@ -1,25 +1,89 @@
 {
   "name": "On-chain Forensics API",
-  "description": "Due-diligence forensics for AI agents: token verdict cards ($0.02), settle-safe pre-trade screens for tokenized equities ($0.02), wallet trust screens ($0.05), composed due-diligence memos ($0.25+). x402 pay-per-call, USDC on Base, no API keys.",
+  "description": "Decision-grade on-chain forensics for AI agents. Ask the question you are actually asking: should I touch this token or wallet? Verdict returns a letter grade A to F with a one-line roast, risk flags and a data_quality verdict, so a caller gets a call to make rather than a dashboard to read. Pay per call in USDC on Base via x402, no API keys, no signup, free trial calls with trial=1.",
   "url": "https://solene-fa2010da.base44.app/functions/forensicsGateway",
   "docs": "https://leohoudinisanders-byte.github.io/onchain-forensics/llms.txt",
   "openapi": "https://leohoudinisanders-byte.github.io/onchain-forensics/openapi.json",
   "payment": "x402 v2, USDC on Base (eip155:8453), pay-per-call, exact scheme",
+  "starter": {
+    "why": "Three calls, 0.06 USD, enough to decide whether to trade, settle against it, or walk away.",
+    "bundle_price_usd": 0.06,
+    "calls": [
+      {
+        "route": "verdict",
+        "price_usd": 0.02,
+        "answers": "Is this token alive, who moves it, and does it grade as risky?",
+        "call": "https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=verdict&address=0x<token>&chain=base"
+      },
+      {
+        "route": "settlesafe",
+        "price_usd": 0.02,
+        "answers": "Can I accept or settle against this token right now without a honeypot, pause or clawback?",
+        "call": "https://solene-fa2010da.base44.app/functions/forensicsApi?endpoint=settlesafe&address=0x<token>&chain=base"
+      },
+      {
+        "route": "mints",
+        "price_usd": 0.02,
+        "answers": "Who is adding supply in this window, and how much?",
+        "call": "https://solene-fa2010da.base44.app/functions/forensicsMints?token=0x<token>&chain=base"
+      }
+    ]
+  },
+  "free_trial": {
+    "how": "Append trial=1 to verdict, settlesafe, token, wallet or any single-question read for free daily calls per IP. No payment header, no signup.",
+    "resets": "daily"
+  },
+  "guarantees": [
+    "Every payload states data_quality COMPLETE, PARTIAL or UNAVAILABLE; an unreadable chain is never reported as a zero and an unattributable address is never reported as a guess.",
+    "Reads come from a dedicated Alchemy endpoint this service controls, with public gateways only as fallback.",
+    "No LLM in the decision path: grades, tiers and roasts are deterministic functions of on-chain reads, so the same block gives the same answer."
+  ],
   "capabilities": [
     "token-verdict",
+    "letter-grade-and-roast",
     "settle-safe-screen",
     "wallet-trust-screen",
+    "deployer-provenance",
+    "one-word-trust-answer",
     "due-diligence-memo",
     "rwa-tokenized-equity-screens",
+    "single-question-micro-reads",
     "canton-snapshots",
     "linea-burn-stats",
     "mcp-server-tools"
   ],
+  "routes": {
+    "verdict": { "price_usd": 0.02, "answers": "Is this token alive and how risky?" },
+    "settlesafe": { "price_usd": 0.02, "answers": "Can I settle against it right now?" },
+    "trust": { "price_usd": 0.02, "answers": "One word: TRUSTED, CAUTION, HIGH_RISK, UNVERIFIABLE." },
+    "mints": { "price_usd": 0.02, "answers": "Who is adding supply?" },
+    "deployer": { "price_usd": 0.05, "answers": "Who launched this contract, and from which wallet?" },
+    "token": { "price_usd": 0.05, "answers": "Full token profile: supply, concentration, whale moves." },
+    "wallet": { "price_usd": 0.05, "answers": "Is this wallet worth trusting with settlement?" },
+    "memo": { "price_usd": 0.25, "answers": "A composed due-diligence answer for one token or wallet." },
+    "sweep": { "price_usd": 0.25, "answers": "Does this wallet actually hold what it claims?" },
+    "canton": { "price_usd": 0.05, "answers": "Canton emission and burn-mint snapshot." },
+    "linea": { "price_usd": 0.05, "answers": "Linea burn-vault stats." }
+  },
   "chains": [
     "base",
     "ethereum",
+    "robinhood-chain",
+    "solana",
     "xrp",
-    "canton"
+    "canton",
+    "linea"
+  ],
+  "tags": [
+    "forensics",
+    "token-verdict",
+    "trust-score",
+    "settlement-safety",
+    "pre-trade-check",
+    "due-diligence",
+    "rwa",
+    "x402",
+    "mcp"
   ],
   "operator": "Leo Sanders",
   "contact": "leohoudinisanders@gmail.com",
