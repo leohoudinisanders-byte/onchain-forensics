@@ -1,0 +1,104 @@
+{
+  "name": "On-chain Forensics",
+  "description": "Decision-first on-chain forensics. Ask whether a token is worth touching and get a graded, measured answer instead of raw data: activity score 0-100, letter grade A-F, tier, risk flags and a reason. Answers come from a precomputed cache of measured chain reads, so the agent never invents data; unknown tokens are reported as NOT_CACHED with the exact paid call to grade them.",
+  "supportedInterfaces": [
+    {
+      "url": "https://solene-fa2010da.base44.app/functions/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "provider": {
+    "organization": "On-chain Forensics",
+    "url": "https://onchainforensics.dev/"
+  },
+  "version": "1.1.0",
+  "documentationUrl": "https://onchainforensics.dev/llms.txt",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [],
+    "extendedAgentCard": false
+  },
+  "securitySchemes": {
+    "x402": {
+      "httpAuthSecurityScheme": {
+        "scheme": "x402",
+        "description": "Live grading of an ungraded token is paid in USDC on Base at $0.02 per call. Cached context answers are free."
+      }
+    }
+  },
+  "securityRequirements": [],
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "token-verdict",
+      "name": "Token verdict",
+      "description": "Is this token alive and how risky is it? Returns grade (A-F), score 0-100, tier, risk flags and a reason, measured from transfer and distinct-wallet activity.",
+      "tags": [
+        "token",
+        "risk",
+        "due-diligence",
+        "grade"
+      ],
+      "examples": [
+        "Should I touch $DEGEN on Base?",
+        "Grade token 0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+      ],
+      "inputModes": [
+        "application/json",
+        "text/plain"
+      ],
+      "outputModes": [
+        "application/json",
+        "text/plain"
+      ]
+    },
+    {
+      "id": "token-directory",
+      "name": "Graded token directory",
+      "description": "Free browsable directory of graded tokens on Ethereum and Base, one page per token with grade, rank and percentile against the chain median.",
+      "tags": [
+        "directory",
+        "free",
+        "search"
+      ],
+      "examples": [
+        "Which Base tokens are graded F?"
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "text/html"
+      ]
+    },
+    {
+      "id": "grade-badge",
+      "name": "Embeddable grade badge",
+      "description": "Free SVG badge returning the grade for any contract. Cached, no key, degrades to NOT GRADED instead of a broken image.",
+      "tags": [
+        "badge",
+        "embed",
+        "free"
+      ],
+      "examples": [
+        "Give me a badge for this contract"
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "image/svg+xml"
+      ]
+    }
+  ],
+  "iconUrl": "https://onchainforensics.dev/og.png"
+}
