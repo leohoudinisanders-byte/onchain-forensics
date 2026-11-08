@@ -109,3 +109,14 @@ Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[])
 - Sample responses: https://leohoudinisanders-byte.github.io/onchain-forensics/samples.html
 - Provider credibility: https://leohoudinisanders-byte.github.io/onchain-forensics/#provider
 - Also from this operator: Canton Swap Broker (OneSwap / Canton DEX x402 wrapper), https://leohoudinisanders-byte.github.io/canton-swap-broker/
+
+## Plugins (one command each, verified)
+
+- Demo + plugins: `npx -y github:leohoudinisanders-byte/forensics-agent-demo` (runs one live call, then prints the install lines)
+- MCP server: `npx -y github:leohoudinisanders-byte/forensics-mcp` (6 tools: verdict, mints, settlesafe, token profile, wallet profile, catalog)
+- elizaOS: `plugins/elizaos` in the demo repo - actions TOKEN_VERDICT and SETTLE_SAFE_CHECK
+- Coinbase AgentKit: `plugins/agentkit` in the demo repo - actions token_verdict and settlesafe_check
+
+Each plugin is dependency-free and calls the same HTTP API, so it works before you wire an x402 signer:
+with one, a call settles at $0.02; without one, the action returns the decoded challenge
+(price, payTo, network) instead of throwing.
