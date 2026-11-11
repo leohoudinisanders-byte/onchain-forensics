@@ -63,6 +63,11 @@ Nothing is mocked. If a sample answers your question, you already know what the 
 - Reads come from a dedicated provider endpoint (Alchemy) that this service controls, with public gateways only as fallback, so a rate-limited shared node cannot turn a real balance into an empty read.
 - No LLM in the decision path. Grades, tiers and roasts are deterministic functions of on-chain reads, so the same block gives the same answer.
 
+## Agent framework plugins
+elizaOS: `npm install plugin-onchain-forensics` — four actions (TOKEN_VERDICT, SETTLE_SAFE_CHECK,
+TOKEN_MINTS, WALLET_SCREEN) inside any eliza character, free trial calls each day, x402 signer optional.
+Repo: https://github.com/leohoudinisanders-byte/plugin-onchain-forensics
+
 ## Routes and prices (all x402 v2, exact scheme, eip155:8453)
 
 Base URLs:
