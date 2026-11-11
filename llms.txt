@@ -67,6 +67,10 @@ Nothing is mocked. If a sample answers your question, you already know what the 
 elizaOS: `npm install plugin-onchain-forensics` — four actions (TOKEN_VERDICT, SETTLE_SAFE_CHECK,
 TOKEN_MINTS, WALLET_SCREEN) inside any eliza character, free trial calls each day, x402 signer optional.
 Repo: https://github.com/leohoudinisanders-byte/plugin-onchain-forensics
+AgentKit (Coinbase): `npm install agentkit-provider-onchain-forensics` — the same four checks as
+action provider methods on any EVM wallet provider; never signs, free samples need no signer, and a
+spent free sample returns the priced x402 challenge as data instead of throwing.
+Repo: https://github.com/leohoudinisanders-byte/agentkit-provider-onchain-forensics
 
 ## Routes and prices (all x402 v2, exact scheme, eip155:8453)
 
