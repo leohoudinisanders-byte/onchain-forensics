@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grade ledger: 20 tokens graded before the fact, revisited Dec 11</title>
+<meta name="description" content="A pre-registered basket of 20 tokens graded A-F by the On-chain Forensics engine on Nov 11, 2026, with baseline prices and liquidity, to be re-measured on Dec 11, 2026.">
+<style>
+:root{--bg:#0a0d0b;--panel:#101612;--line:#1f2a23;--ink:#e8efe9;--dim:#8fa396;--accent:#3ddc84;--accent2:#7fb3ff;--warn:#ffb454}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:48px 22px 72px}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+nav{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--dim);margin-bottom:44px}
+nav a{color:var(--dim)}
+h1{font-size:clamp(28px,4.4vw,42px);line-height:1.15;letter-spacing:-.02em;margin:0 0 14px}
+.sub{font-size:18px;color:var(--dim);margin:0 0 34px;max-width:62ch}
+h2{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:44px 0 12px;font-weight:600}
+p{margin:0 0 14px;max-width:70ch}
+.kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:26px 0 8px}
+.stat{background:var(--panel);padding:16px 18px}
+.stat b{display:block;font-size:24px;letter-spacing:-.01em}
+.stat span{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+table{width:100%;border-collapse:collapse;margin:18px 0 8px;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.g{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:5px;font-weight:700;font-size:12px;background:#18251d;color:var(--accent)}
+.g.b{color:#a8e6bf}.g.c{color:var(--warn)}.g.f{color:#ff7d7d}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--dim)}
+.band{display:grid;grid-template-columns:60px 1fr;gap:10px;align-items:center;margin:10px 0}
+.bar{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--accent),#1f6b41)}
+.bar.f{background:linear-gradient(90deg,#ff7d7d,#5e2a2a)}
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:8px;padding:14px 16px;margin:20px 0;font-size:14px}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+@media(max-width:620px){td.hide,th.hide{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <a href="/">On-chain Forensics</a>
+  <a href="/t/">All graded tokens</a>
+  <a href="/licensing.html">License the feed</a>
+  <a href="/openapi.json">API spec</a>
+</nav>
+
+<span class="kicker">Pre-registered · Nov 11, 2026</span>
+<h1>Twenty tokens graded before the fact. Re-measured on December 11.</h1>
+<p class="sub">Anyone can publish a grade after a token dies. This page fixes the basket, the grades, the prices and the measurement rules in public <em>before</em> any outcome exists, then reports what happened. If the grades are noise, this page will say so.</p>
+
+<div class="stats">
+  <div class="stat"><b>20</b><span>tokens, fixed</span></div>
+  <div class="stat"><b>4</b><span>grade bands</span></div>
+  <div class="stat"><b>Dec 11</b><span>revisit date</span></div>
+  <div class="stat"><b>$0</b><span>paid promotion</span></div>
+</div>
+
+<h2>The rule that picked the basket</h2>
+<p>Top five tokens by engine score inside each grade band (A, B, C, F), deduplicated by contract address, taken from the live verdict engine's own cached outputs on November 11, 2026 between 11:00 and 16:30 UTC. The list was committed to the public repository before any price was captured and before any outcome was known. Nothing here was chosen after the fact.</p>
+<p>The grade is not a price prediction. It measures whether a token is actually alive (transfer flow), whether holders are broad (unique wallets), and whether you can get out (DEX depth). The test on December 11 is whether that structure held, not whether a coin went up.</p>
+
+<h2>The twenty tokens and their baseline</h2>
+<table>
+<thead>
+<tr><th>Grade</th><th>Token</th><th class="hide">Chain</th><th>Engine score</th><th class="num">Price at T0</th><th class="num">Liquidity at T0</th><th class="num hide">24h volume</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="g">A</span></td><td>USDC <span class="mono">0xa0b8…eb48</span></td><td class="hide">ethereum</td><td>100</td><td class="num">$0.9988</td><td class="num">$381.9M</td><td class="num hide">$920.6M</td></tr>
+<tr><td><span class="g">A</span></td><td>USDT <span class="mono">0xdac1…1ec7</span></td><td class="hide">ethereum</td><td>100</td><td class="num">$1.0028</td><td class="num">$390.0M</td><td class="num hide">$860.2M</td></tr>
+<tr><td><span class="g">A</span></td><td>WETH <span class="mono">0xc02a…6cc2</span></td><td class="hide">ethereum</td><td>100</td><td class="num">$2,075.69</td><td class="num">$813.1M</td><td class="num hide">$456.1M</td></tr>
+<tr><td><span class="g">A</span></td><td>PEPE <span class="mono">0x6982…1933</span></td><td class="hide">ethereum</td><td>100</td><td class="num">$0.00000497</td><td class="num">$16.3M</td><td class="num hide">$4.4M</td></tr>
+<tr><td><span class="g">A</span></td><td>USDC <span class="mono">0x8335…2913</span></td><td class="hide">base</td><td>89</td><td class="num">$0.9967</td><td class="num">$156.5M</td><td class="num hide">$614.8M</td></tr>
+<tr><td><span class="g b">B</span></td><td>DAI <span class="mono">0x6b17…1d0f</span></td><td class="hide">ethereum</td><td>81</td><td class="num">$0.9977</td><td class="num">$47.3M</td><td class="num hide">$6.2M</td></tr>
+<tr><td><span class="g b">B</span></td><td>WBTC <span class="mono">0x2260…c599</span></td><td class="hide">ethereum</td><td>80</td><td class="num">$73,841.50</td><td class="num">$189.1M</td><td class="num hide">$175.5M</td></tr>
+<tr><td><span class="g b">B</span></td><td>EURC <span class="mono">0x1aba…b33c</span></td><td class="hide">ethereum</td><td>77</td><td class="num">$1.1081</td><td class="num">$5.7M</td><td class="num hide">$6.1M</td></tr>
+<tr><td><span class="g b">B</span></td><td>LINK <span class="mono">0x5149…86ca</span></td><td class="hide">ethereum</td><td>74</td><td class="num">$10.4505</td><td class="num">$18.0M</td><td class="num hide">$2.3M</td></tr>
+<tr><td><span class="g b">B</span></td><td>UNI <span class="mono">0x1f98…f984</span></td><td class="hide">ethereum</td><td>73</td><td class="num">$6.5722</td><td class="num">$20.1M</td><td class="num hide">$9.2M</td></tr>
+<tr><td><span class="g c">C</span></td><td>USDS <span class="mono">0xdc03…384f</span></td><td class="hide">ethereum</td><td>68</td><td class="num">$1.0036</td><td class="num">$78.4M</td><td class="num hide">$193.1M</td></tr>
+<tr><td><span class="g c">C</span></td><td>AAVE <span class="mono">0x7fc6…dae9</span></td><td class="hide">ethereum</td><td>67</td><td class="num">$124.58</td><td class="num">$13.5M</td><td class="num hide">$3.8M</td></tr>
+<tr><td><span class="g c">C</span></td><td>ONDO <span class="mono">0xfaba…9be3</span></td><td class="hide">ethereum</td><td>67</td><td class="num">$0.3737</td><td class="num">$1.29M</td><td class="num hide">$694k</td></tr>
+<tr><td><span class="g c">C</span></td><td>SHIB <span class="mono">0x95ad…c4ce</span></td><td class="hide">ethereum</td><td>67</td><td class="num">$0.00000446</td><td class="num">$2.01M</td><td class="num hide">$68k</td></tr>
+<tr><td><span class="g c">C</span></td><td>CRV <span class="mono">0xd533…cd52</span></td><td class="hide">ethereum</td><td>67</td><td class="num">$0.2487</td><td class="num">$8.3M</td><td class="num hide">$513k</td></tr>
+<tr><td><span class="g f">F</span></td><td>BGB <span class="mono">0x54d2…0581</span></td><td class="hide">ethereum</td><td>24</td><td class="num">$1.6982</td><td class="num">$204k</td><td class="num hide">$15k</td></tr>
+<tr><td><span class="g f">F</span></td><td>AI (Gensyn) <span class="mono">0x4d70…8d48</span></td><td class="hide">ethereum</td><td>24</td><td class="num">$0.014057</td><td class="num">$272k</td><td class="num hide">$9k</td></tr>
+<tr><td><span class="g f">F</span></td><td>CXT <span class="mono">0x7abc…2c4d</span></td><td class="hide">ethereum</td><td>24</td><td class="num">$0.0012713</td><td class="num">$22k</td><td class="num hide">$3k</td></tr>
+<tr><td><span class="g f">F</span></td><td>GAIB <span class="mono">0xc19d…8e50</span></td><td class="hide">ethereum</td><td>24</td><td class="num">$0.016700</td><td class="num">$18k</td><td class="num hide">$0</td></tr>
+<tr><td><span class="g f">F</span></td><td>BLZ <span class="mono">0x5732…d668</span></td><td class="hide">ethereum</td><td>24</td><td class="num">$0.0078082</td><td class="num">$161k</td><td class="num hide">$10k</td></tr>
+</tbody>
+</table>
+<p class="mono">Baseline prices: GeckoTerminal public API, per-token pool aggregates, captured 2026-11-11 ~17:20 UTC. Engine timestamps per row are in the committed JSON.</p>
+
+<h2>What the bands already separate</h2>
+<p>Before any revisit, the grade bands separate on the thing they claim to measure. Median T0 liquidity falls three orders of magnitude from the top band to the bottom:</p>
+<div class="band"><span class="mono">A</span><div class="bar" style="width:100%"></div></div>
+<p class="mono">median liquidity $156.5M · 5 tokens</p>
+<div class="band"><span class="mono">B</span><div class="bar" style="width:16%"></div></div>
+<p class="mono">median liquidity $18.0M · 5 tokens</p>
+<div class="band"><span class="mono">C</span><div class="bar" style="width:7%"></div></div>
+<p class="mono">median liquidity $8.3M · 5 tokens</p>
+<div class="band"><span class="mono">F</span><div class="bar f" style="width:0.2%"></div></div>
+<p class="mono">median liquidity $161k · 5 tokens</p>
+
+<h2>What gets measured on December 11</h2>
+<p>Three numbers per token, captured the same way with the same source, thirty days later:</p>
+<p><strong>1. Survival.</strong> Does the token still have a DEX pair carrying at least $1,000 of liquidity? <strong>2. Liquidity retained.</strong> T30 liquidity divided by T0 liquidity. <strong>3. Price change.</strong> T30 price divided by T0 price, reported per band as a median, never as a single number.</p>
+<div class="note">
+<strong>What counts as the forecast failing.</strong> If the A and B bands lose more than 25% of their median liquidity, if either band drops a member to zero-liquidity, or if the F band's liquidity-retention median beats the A band's, this page will say the grade did not predict structure on this basket. That is published either way.
+</div>
+
+<h2>Substitutions, before any outcome</h2>
+<p>One change was made to the basket at T0 and is recorded here so it cannot be mistaken for hindsight: EPT (<span class="mono">0x3dc8…a77c</span>) had a DEX pool but no observable USD price at capture, so it was replaced by the next-ranked F-band token, BLZ. Both addresses are listed in the committed JSON.</p>
+
+<h2>Check any of this yourself</h2>
+<p>Every row above can be re-derived by calling the same endpoint the basket came from:</p>
+<pre><code>curl -s "https://onchainforensics.dev/functions/forensicsVerdict?address=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984&amp;chain=ethereum&amp;trial=1"</code></pre>
+<p>The committed data, including per-token engine timestamps and the exact selection rule, lives at <a href="https://github.com/leohoudinisanders-byte/onchain-forensics/blob/main/proof-ledger/grade-ledger-2026-11-11.json">proof-ledger/grade-ledger-2026-11-11.json</a>. The revisit lands on this page and in the same repository on December 11, 2026.</p>
+<p>If a letter grade is worth paying for, it is worth being checked in public. <a href="/licensing.html">The feed is licensable</a> for wallets, bots and data vendors.</p>
+
+<footer>
+  On-chain Forensics · <a href="/">onchainforensics.dev</a> · ledger committed 2026-11-11 · revisit 2026-12-11<br>
+  Grades measure transfer flow, holder breadth and DEX depth. They are not price predictions and nothing here is financial advice.
+</footer>
+</div>
+</body>
+</html>
