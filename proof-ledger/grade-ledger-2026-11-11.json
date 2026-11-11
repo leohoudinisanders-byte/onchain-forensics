@@ -1,0 +1,355 @@
+{
+  "ledger": "grade-ledger-2026-11-11",
+  "created_utc": "2026-11-11T17:15:00Z",
+  "revisit_date": "2026-12-11",
+  "selection_rule": "Top 5 by engine score within each grade band A, B, C and F, deduplicated by contract address, taken from the live verdict engine's cached outputs on 2026-11-11 between 11:00 and 16:30 UTC. Fixed and committed before any outcome was measured.",
+  "engine": "On-chain Forensics verdict engine (deterministic: transfer flow + holder breadth + DEX depth, no LLM in the decision path)",
+  "t0_source": "GeckoTerminal public API, per-token pool aggregates, captured 2026-11-11 ~17:15 UTC",
+  "tokens": [
+    {
+      "grade": "A",
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "chain": "ethereum",
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "tier": "RED_HOT",
+      "score": 100.0,
+      "engine_computed_at": "2026-11-11T13:55:05.822Z",
+      "t0_market": {
+        "price_usd": 0.9987979216,
+        "liquidity_usd": 381941889.80476266,
+        "fdv_usd": 45463267971.9958,
+        "market_cap_usd": 69650884637.6664,
+        "vol_24h_usd": 920615378.157817
+      }
+    },
+    {
+      "grade": "A",
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "chain": "ethereum",
+      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "tier": "RED_HOT",
+      "score": 100.0,
+      "engine_computed_at": "2026-11-11T13:55:05.814Z",
+      "t0_market": {
+        "price_usd": 1.0027916684,
+        "liquidity_usd": 390045252.2531331,
+        "fdv_usd": 84531945782.2306,
+        "market_cap_usd": 176448005500.508,
+        "vol_24h_usd": 860214724.85562
+      }
+    },
+    {
+      "grade": "A",
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "chain": "ethereum",
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "tier": "RED_HOT",
+      "score": 100.0,
+      "engine_computed_at": "2026-11-11T13:55:03.834Z",
+      "t0_market": {
+        "price_usd": 2075.69,
+        "liquidity_usd": 813088057.6424319,
+        "fdv_usd": 4347468848.87541,
+        "market_cap_usd": 4354947080.02088,
+        "vol_24h_usd": 456059779.313112
+      }
+    },
+    {
+      "grade": "A",
+      "symbol": "PEPE",
+      "name": "Pepe",
+      "chain": "ethereum",
+      "address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
+      "tier": "RED_HOT",
+      "score": 100.0,
+      "engine_computed_at": "2026-11-11T14:00:50.471Z",
+      "t0_market": {
+        "price_usd": 4.971508251e-06,
+        "liquidity_usd": 16258749.971005082,
+        "fdv_usd": 2057072652.73877,
+        "market_cap_usd": 2091463806.31926,
+        "vol_24h_usd": 4389045.5033413
+      }
+    },
+    {
+      "grade": "A",
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "chain": "base",
+      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      "tier": "RED_HOT",
+      "score": 89.0,
+      "engine_computed_at": "2026-11-11T13:35:22.648Z",
+      "t0_market": {
+        "price_usd": 0.996677225,
+        "liquidity_usd": 156547021.89876556,
+        "fdv_usd": 4418537922.78443,
+        "market_cap_usd": 69502978154.6734,
+        "vol_24h_usd": 614809940.676894
+      }
+    },
+    {
+      "grade": "B",
+      "symbol": "DAI",
+      "name": "Dai Stablecoin",
+      "chain": "ethereum",
+      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "tier": "HEAVY_FIRE",
+      "score": 81.0,
+      "engine_computed_at": "2026-11-11T13:55:05.822Z",
+      "t0_market": {
+        "price_usd": 0.9977003158,
+        "liquidity_usd": 47311908.602601565,
+        "fdv_usd": 4450410977.46534,
+        "market_cap_usd": 4461123206.09562,
+        "vol_24h_usd": 6165476.72290885
+      }
+    },
+    {
+      "grade": "B",
+      "symbol": "WBTC",
+      "name": "Wrapped BTC",
+      "chain": "ethereum",
+      "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "tier": "HEAVY_FIRE",
+      "score": 80.0,
+      "engine_computed_at": "2026-11-11T11:15:44.991Z",
+      "t0_market": {
+        "price_usd": 73841.502558213,
+        "liquidity_usd": 189143887.8751427,
+        "fdv_usd": 8575373447.56908,
+        "market_cap_usd": 8575374868.34162,
+        "vol_24h_usd": 175485871.220917
+      }
+    },
+    {
+      "grade": "B",
+      "symbol": "EURC",
+      "name": "Euro Coin",
+      "chain": "ethereum",
+      "address": "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c",
+      "tier": "HEAVY_FIRE",
+      "score": 77.0,
+      "engine_computed_at": "2026-11-11T14:30:48.718Z",
+      "t0_market": {
+        "price_usd": 1.1081222634,
+        "liquidity_usd": 5709422.28267073,
+        "fdv_usd": 371226523.605065,
+        "market_cap_usd": 518653280.075886,
+        "vol_24h_usd": 6105565.09290087
+      }
+    },
+    {
+      "grade": "B",
+      "symbol": "LINK",
+      "name": "ChainLink Token",
+      "chain": "ethereum",
+      "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "tier": "HEAVY_FIRE",
+      "score": 74.0,
+      "engine_computed_at": "2026-11-11T13:55:07.688Z",
+      "t0_market": {
+        "price_usd": 10.450518019,
+        "liquidity_usd": 17977680.504294336,
+        "fdv_usd": 10450516866.0829,
+        "market_cap_usd": 8013979433.75875,
+        "vol_24h_usd": 2300856.82319452
+      }
+    },
+    {
+      "grade": "B",
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "chain": "ethereum",
+      "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "tier": "HEAVY_FIRE",
+      "score": 73.0,
+      "engine_computed_at": "2026-11-11T13:55:07.571Z",
+      "t0_market": {
+        "price_usd": 6.5721503404,
+        "liquidity_usd": 20101805.417464677,
+        "fdv_usd": 5823019964.04491,
+        "market_cap_usd": 3994249973.67439,
+        "vol_24h_usd": 9197363.48778867
+      }
+    },
+    {
+      "grade": "C",
+      "symbol": "USDS",
+      "name": "USDS Stablecoin",
+      "chain": "ethereum",
+      "address": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
+      "tier": "ACTIVE",
+      "score": 68.0,
+      "engine_computed_at": "2026-11-11T11:01:05.333Z",
+      "t0_market": {
+        "price_usd": 1.0035598434,
+        "liquidity_usd": 78441044.12262326,
+        "fdv_usd": 5374876964.7806,
+        "market_cap_usd": 8612004549.82203,
+        "vol_24h_usd": 193124318.148242
+      }
+    },
+    {
+      "grade": "C",
+      "symbol": "AAVE",
+      "name": "Aave Token",
+      "chain": "ethereum",
+      "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+      "tier": "ACTIVE",
+      "score": 67.0,
+      "engine_computed_at": "2026-11-11T13:55:07.528Z",
+      "t0_market": {
+        "price_usd": 124.5802858524,
+        "liquidity_usd": 13535109.905343022,
+        "fdv_usd": 1993284534.59439,
+        "market_cap_usd": 1923617814.05592,
+        "vol_24h_usd": 3761959.65672161
+      }
+    },
+    {
+      "grade": "C",
+      "symbol": "ONDO",
+      "name": "Ondo",
+      "chain": "ethereum",
+      "address": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
+      "tier": "HEAVY_FIRE",
+      "score": 67.0,
+      "engine_computed_at": "2026-11-11T13:55:07.620Z",
+      "t0_market": {
+        "price_usd": 0.3736546899,
+        "liquidity_usd": 1292110.429039552,
+        "fdv_usd": 3736546895.8697,
+        "market_cap_usd": 1819448232.78192,
+        "vol_24h_usd": 694238.3656853
+      }
+    },
+    {
+      "grade": "C",
+      "symbol": "SHIB",
+      "name": "SHIBA INU",
+      "chain": "ethereum",
+      "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
+      "tier": "HEAVY_FIRE",
+      "score": 67.0,
+      "engine_computed_at": "2026-11-11T14:00:50.124Z",
+      "t0_market": {
+        "price_usd": 4.461568635e-06,
+        "liquidity_usd": 2005703.0121508038,
+        "fdv_usd": 4461268953.18495,
+        "market_cap_usd": 2628926300.94998,
+        "vol_24h_usd": 68314.34587824
+      }
+    },
+    {
+      "grade": "C",
+      "symbol": "CRV",
+      "name": "Curve DAO Token",
+      "chain": "ethereum",
+      "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+      "tier": "ACTIVE",
+      "score": 67.0,
+      "engine_computed_at": "2026-11-11T14:00:46.875Z",
+      "t0_market": {
+        "price_usd": 0.2487336573,
+        "liquidity_usd": 8328463.5587111,
+        "fdv_usd": 605315627.392575,
+        "market_cap_usd": 394498039.763345,
+        "vol_24h_usd": 512690.995520367
+      }
+    },
+    {
+      "grade": "F",
+      "symbol": "BGB",
+      "name": "BitgetToken",
+      "chain": "ethereum",
+      "address": "0x54d2252757e1672eead234d27b1270728ff90581",
+      "tier": "SUSPICIOUS_THIN",
+      "score": 24.0,
+      "engine_computed_at": "2026-11-11T11:30:32.152Z",
+      "t0_market": {
+        "price_usd": 1.698179296,
+        "liquidity_usd": 203931.94773572442,
+        "fdv_usd": 1541736181.80398,
+        "market_cap_usd": 1188711972.12802,
+        "vol_24h_usd": 14540.3523239426
+      }
+    },
+    {
+      "grade": "F",
+      "symbol": "AI",
+      "name": "Gensyn",
+      "chain": "ethereum",
+      "address": "0x4d7078ddd6ccfed2f85db5b7d3ff16828d378d48",
+      "tier": "SUSPICIOUS_THIN",
+      "score": 24.0,
+      "engine_computed_at": "2026-11-11T11:55:13.182Z",
+      "t0_market": {
+        "price_usd": 0.01405673148,
+        "liquidity_usd": 271713.8811883245,
+        "fdv_usd": 6232981.84369642,
+        "market_cap_usd": 18339470.5498585,
+        "vol_24h_usd": 8848.3470205156
+      }
+    },
+    {
+      "grade": "F",
+      "symbol": "CXT",
+      "name": "Covalent X Token",
+      "chain": "ethereum",
+      "address": "0x7abc8a5768e6be61a6c693a6e4eacb5b60602c4d",
+      "tier": "SUSPICIOUS_THIN",
+      "score": 24.0,
+      "engine_computed_at": "2026-11-11T14:20:26.110Z",
+      "t0_market": {
+        "price_usd": 0.001271256315,
+        "liquidity_usd": 22203.531103543923,
+        "fdv_usd": 1271256.31533917,
+        "market_cap_usd": 1235985.43261527,
+        "vol_24h_usd": 3153.7119875755
+      }
+    },
+    {
+      "grade": "F",
+      "symbol": "GAIB",
+      "name": "GAIB",
+      "chain": "ethereum",
+      "address": "0xc19d38925f9f645337b1d1f37baf3c0647a48e50",
+      "tier": "SUSPICIOUS_THIN",
+      "score": 24.0,
+      "engine_computed_at": "2026-11-11T14:31:07.002Z",
+      "t0_market": {
+        "price_usd": 0.01669996867,
+        "liquidity_usd": 18054.47686128531,
+        "fdv_usd": 15854852.4919752,
+        "market_cap_usd": 3420682.42241931,
+        "vol_24h_usd": 29.0799803221
+      }
+    },
+    {
+      "grade": "F",
+      "symbol": "BLZ",
+      "name": "Bluzelle Token",
+      "chain": "ethereum",
+      "address": "0x5732046a883704404f284ce41ffadd5b007fd668",
+      "tier": "SUSPICIOUS_THIN",
+      "score": 24.0,
+      "engine_computed_at": "2026-11-11T11:30:17.308Z",
+      "t0_market": {
+        "price_usd": 0.007808146313,
+        "liquidity_usd": 160788.79997138435,
+        "fdv_usd": 3904069.00956573,
+        "market_cap_usd": 3783543.68021301,
+        "vol_24h_usd": 9580.2288448585
+      },
+      "substituted_for": "EPT (0x3dc8e2d80b6215a1bccae4d38715c3520581e77c) \u2014 no observable DEX price at T0"
+    }
+  ],
+  "substitutions": [
+    "EPT replaced by BLZ before any outcome was measured: GeckoTerminal returned liquidity ($407) but no USD price for EPT at T0."
+  ],
+  "t0_captured_utc": "2026-11-11T17:20:00Z"
+}
