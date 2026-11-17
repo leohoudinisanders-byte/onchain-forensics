@@ -56,6 +56,32 @@
   </div>
 </header>
 
+<section class="wrap" style="padding-bottom:8px">
+  <h2 style="font-size:1.35rem;margin-bottom:6px">Three decisions. Pick one, pay one, stop.</h2>
+  <p style="color:var(--dim);margin-bottom:18px">Almost every question about an on-chain asset is one of these three. Each is a single call that ends in a decision, not a dashboard.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+    <div style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card)">
+      <div style="font-size:.78rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase">Decision 1 &middot; $0.02</div>
+      <div style="font-weight:600;margin:6px 0">Is this token real, alive and safe to touch?</div>
+      <div style="color:var(--dim);font-size:.92rem">A letter grade A to F, risk flags, a one-line roast and an explicit data_quality verdict.</div>
+      <div style="margin-top:10px;font-size:.8rem;color:var(--dim)"><code>/functions/forensicsVerdict</code></div>
+    </div>
+    <div style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card)">
+      <div style="font-size:.78rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase">Decision 2 &middot; $0.02</div>
+      <div style="font-weight:600;margin:6px 0">Can I accept or settle against this right now?</div>
+      <div style="color:var(--dim);font-size:.92rem">Catches paused, fee-trapped and clawback-capable assets before value moves.</div>
+      <div style="margin-top:10px;font-size:.8rem;color:var(--dim)"><code>/functions/forensicsSettlesafe</code></div>
+    </div>
+    <div style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card)">
+      <div style="font-size:.78rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase">Decision 3 &middot; $0.05</div>
+      <div style="font-weight:600;margin:6px 0">Does this wallet hold what it claims?</div>
+      <div style="color:var(--dim);font-size:.92rem">Reconciled holdings with an explicit holdings_status, never an empty portfolio.</div>
+      <div style="margin-top:10px;font-size:.8rem;color:var(--dim)"><code>/functions/forensicsWallet</code></div>
+    </div>
+  </div>
+  <p style="color:var(--dim);font-size:.92rem;margin-top:16px">Shortest path from an unknown token to a decision is the <b>$0.06 bundle</b>: verdict, then settlesafe, then mints. No signer and no card? <code>POST /functions/devKeys</code> with an email returns a free key for 10,000 cached verdict calls a month.</p>
+</section>
+
 <section style="border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:8px 0 4px">
   <p style="margin:1px 0 8px"><b>Token grades, published.</b> 500 tokens measured on Ethereum and Base, each on its own page with the score, the band, and how it was measured.</p>
   <p style="margin:0;color:var(--dim);font-size:.92rem">
