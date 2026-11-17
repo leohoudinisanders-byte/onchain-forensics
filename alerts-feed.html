@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Public grade changes · On-chain Forensics</title>
+<meta name="description" content="Every token the Forensics grading engine downgraded, in public. Watch your own three tokens free by email, or feed the whole stream to a reader or an agent.">
+<link rel="alternate" type="application/rss+xml" title="On-chain Forensics public grade changes" href="https://solene-fa2010da.base44.app/functions/alertsFeed?format=rss">
+<style>
+  :root{--ink:#1a1815;--muted:#6b6660;--line:#e6e2dc;--bg:#faf9f7;--good:#1a7f4b;--bad:#a3321f;--warn:#8a5a12}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:56px 24px 72px}
+  .kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin:14px 0 12px}
+  .sub{font-size:18px;color:#3d3a36;margin:0 0 26px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:36px 0 12px;font-weight:600}
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 26px}
+  .stat{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat b{display:block;font-size:26px;letter-spacing:-.02em}
+  .stat span{color:var(--muted);font-size:13px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .filters button{font:inherit;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;cursor:pointer;color:#3d3a36}
+  .filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .sym{font-weight:600}
+  .mono{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  .drop{color:var(--bad);font-weight:600}
+  .sev{font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:999px;border:1px solid var(--line)}
+  .sev-critical{color:var(--bad);border-color:#e7c3ba}
+  .sev-high{color:var(--warn);border-color:#e8d8b6}
+  .sev-medium{color:var(--muted)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 5px}
+  input[type=email],input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+  .row > div{flex:1 1 220px}
+  button.cta{font:inherit;font-weight:600;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:12px 20px;cursor:pointer}
+  button.cta:disabled{opacity:.6;cursor:default}
+  .msg{margin:14px 0 0;font-size:14px}
+  .msg.ok{color:var(--good)}
+  .msg.err{color:var(--bad)}
+  pre{background:#faf9f7;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  a{color:var(--ink)}
+  .note{background:#fff;border-left:3px solid var(--ink);padding:14px 18px;border-radius:0 8px 8px 0;color:#3d3a36;font-size:15px;margin:22px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">On-chain Forensics · public feed</div>
+  <h1>Every token this engine downgraded, in public.</h1>
+  <p class="sub">The grading engine re-reads hundreds of contracts every few minutes. This is the list of tokens whose grade fell, with nothing behind a paywall. Watch your own three tokens free by email, or point a reader at the raw feed.</p>
+
+  <div class="stats" id="stats">
+    <div class="stat"><b id="s-monitored">—</b><span>contracts monitored</span></div>
+    <div class="stat"><b id="s-window">—</b><span>grade changes in window</span></div>
+    <div class="stat"><b id="s-today">—</b><span>changes today (UTC)</span></div>
+  </div>
+
+  <h2>The feed</h2>
+  <div class="filters" id="filters">
+    <button data-days="1" aria-pressed="false">Last 24h</button>
+    <button data-days="3" aria-pressed="true">Last 3 days</button>
+    <button data-days="7" aria-pressed="false">Last 7 days</button>
+    <button data-chain="base" aria-pressed="false">Base only</button>
+    <button data-chain="ethereum" aria-pressed="false">Ethereum only</button>
+  </div>
+  <table>
+    <thead><tr><th>Token</th><th>Chain</th><th>Change</th><th>Score</th><th>Severity</th><th>When</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="6" class="mono">loading…</td></tr></tbody>
+  </table>
+
+  <h2>Watch your own tokens, free</h2>
+  <div class="card">
+    <p style="margin:0 0 16px;color:#3d3a36">Three contracts, one email a day, no card. You get the same grade drops this page shows, for the tokens you actually hold, the morning after they happen. Nothing is sent when nothing changed.</p>
+    <form id="free-form">
+      <div class="row">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+      </div>
+      <div class="row">
+        <div><label for="a1">Contract 1</label><input id="a1" type="text" placeholder="0x…" required></div>
+        <div><label for="a2">Contract 2 (optional)</label><input id="a2" type="text" placeholder="0x…"></div>
+        <div><label for="a3">Contract 3 (optional)</label><input id="a3" type="text" placeholder="0x…"></div>
+      </div>
+      <button class="cta" id="free-submit" type="submit">Start watching</button>
+      <p class="msg" id="free-msg" role="status"></p>
+    </form>
+    <div id="free-done" hidden>
+      <p style="margin:0 0 8px"><b>You are on the list.</b> Keep this key; it is the only handle to your watch and it is not emailed to you.</p>
+      <pre id="free-key"></pre>
+      <p style="margin:12px 0 0;color:var(--muted);font-size:14px">Next digest: 07:00 America/Chicago. Manage with <span class="mono">POST /functions/alertsFree?action=status</span> and the header <span class="mono">X-Alerts-Key</span>.</p>
+    </div>
+  </div>
+
+  <div class="note">Need it the same day, for more than three contracts, or with critical red flags pushed as they land? That is <a href="alerts.html">$29 for 30 days</a>: 50 contracts, same-day mail on a full-grade drop, paid in USDC over x402 with no account and no card.</div>
+
+  <h2>For readers and agents</h2>
+  <p class="sub" style="font-size:15px;margin-bottom:10px">The same data, structured, free, no key:</p>
+<pre># JSON, 3-day window
+curl "https://solene-fa2010da.base44.app/functions/alertsFeed?days=3&amp;limit=50"
+
+# RSS for a reader
+https://solene-fa2010da.base44.app/functions/alertsFeed?format=rss
+
+# filters
+?chain=base | ?chain=ethereum | ?min_severity=critical | ?days=7 | ?limit=200</pre>
+  <p class="sub" style="font-size:15px">A single token, on demand, is $0.02 through <span class="mono">/functions/forensicsVerdict</span>. The feed above is the public window on that same engine.</p>
+
+  <footer>
+    On-chain Forensics · <a href="https://onchainforensics.dev">onchainforensics.dev</a> · <a href="alerts.html">email alerts</a> · <a href="t/">all graded tokens</a> · <a href=".well-known/x402">x402 manifest</a> · <a href="openapi.json">OpenAPI</a><br>
+    Grades are deterministic readings of on-chain state, not price predictions. A downgrade is a reason to look, not an instruction to sell.
+  </footer>
+</div>
+
+<script>
+(function () {
+  var API = "https://solene-fa2010da.base44.app/functions/alertsFeed";
+  var FREE = "https://solene-fa2010da.base44.app/functions/alertsFree";
+  var state = { days: 3, chain: "" };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function ago(iso) {
+    var ms = Date.now() - Date.parse(iso);
+    if (!isFinite(ms) || ms < 0) return "just now";
+    var m = Math.round(ms / 60000);
+    if (m < 60) return m + "m ago";
+    var h = Math.round(m / 60);
+    if (h < 24) return h + "h ago";
+    return Math.round(h / 24) + "d ago";
+  }
+
+  function change(prev, grade) {
+    if (!prev) return "new " + grade;
+    if (prev === grade) return grade;
+    return '<span class="drop">' + esc(prev) + " → " + esc(grade) + "</span>";
+  }
+
+  function render(data) {
+    var t = data.totals || {};
+    document.getElementById("s-monitored").textContent = (data.tokens_monitored || 0).toLocaleString();
+    document.getElementById("s-window").textContent = (t.events_in_window || 0).toLocaleString();
+    var today = (t.by_day || {})[new Date().toISOString().slice(0, 10)] || 0;
+    document.getElementById("s-today").textContent = today.toLocaleString();
+
+    var rows = data.events || [];
+    var body = document.getElementById("rows");
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="6" class="mono">No grade changes in this window. That is the good news.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(function (r) {
+      return "<tr>" +
+        '<td><span class="sym">' + esc(r.symbol || "unknown") + '</span><br><span class="mono">' + esc(r.address.slice(0, 10)) + "…</span></td>" +
+        "<td>" + esc(r.chain) + "</td>" +
+        "<td>" + (r.prev_grade ? change(r.prev_grade, r.grade) : "<span class=\"drop\">new " + esc(r.grade) + "</span>") + "</td>" +
+        "<td>" + esc(r.score) + "</td>" +
+        '<td><span class="sev sev-' + esc(r.severity) + '">' + esc(r.severity) + "</span></td>" +
+        '<td class="mono">' + esc(ago(r.detected_at)) + "</td>" +
+        "</tr>";
+    }).join("");
+  }
+
+  function load() {
+    var url = API + "?days=" + state.days + "&limit=120" + (state.chain ? "&chain=" + state.chain : "");
+    fetch(url, { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(render)
+      .catch(function () {
+        document.getElementById("rows").innerHTML = '<tr><td colspan="6" class="mono">Feed did not load. Retry in a moment, or read it directly at /functions/alertsFeed.</td></tr>';
+      });
+  }
+
+  document.getElementById("filters").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button");
+    if (!b) return;
+    if (b.dataset.days) {
+      state.days = Number(b.dataset.days);
+      document.querySelectorAll("[data-days]").forEach(function (x) {
+        x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      });
+    }
+    if (b.dataset.chain) {
+      state.chain = state.chain === b.dataset.chain ? "" : b.dataset.chain;
+      document.querySelectorAll("[data-chain]").forEach(function (x) {
+        x.setAttribute("aria-pressed", x.dataset.chain === state.chain ? "true" : "false");
+      });
+    }
+    load();
+  });
+
+  var form = document.getElementById("free-form");
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var msg = document.getElementById("free-msg");
+    var btn = document.getElementById("free-submit");
+    var list = ["a1", "a2", "a3"].map(function (id) {
+      return document.getElementById(id).value.trim();
+    }).filter(Boolean);
+    var bad = list.filter(function (a) { return !/^0x[0-9a-fA-F]{40}$/.test(a); });
+    if (bad.length) {
+      msg.className = "msg err";
+      msg.textContent = "That does not look like a contract address: " + bad[0];
+      return;
+    }
+    btn.disabled = true;
+    msg.className = "msg";
+    msg.textContent = "Adding you…";
+    fetch(FREE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: document.getElementById("email").value.trim(), watchlist: list })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok || !res.j.alerts_key) {
+          msg.className = "msg err";
+          msg.textContent = (res.j && (res.j.detail || res.j.error)) || "Signup failed. Try again in a moment.";
+          btn.disabled = false;
+          return;
+        }
+        document.getElementById("free-key").textContent = "alerts_key: " + res.j.alerts_key;
+        form.hidden = true;
+        document.getElementById("free-done").hidden = false;
+      })
+      .catch(function () {
+        msg.className = "msg err";
+        msg.textContent = "Network error. The endpoint is live; try once more.";
+        btn.disabled = false;
+      });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
