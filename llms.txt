@@ -22,6 +22,23 @@ If your product has humans in it, do not put a payment prompt in front of them. 
 batch calls and a white-label endpoint: https://onchainforensics.dev/licensing.html
 Pilot $100 for 14 days, then $250 or $1,000 a month, paid in USDC on Base.
 
+## Alerts: get told instead of asking (free tier, no payment)
+
+A grade is only useful if it reaches you when it changes. Two free surfaces, one paid tier:
+
+- Free watchlist, no card: POST /functions/alertsFree {"email":"you@example.com","watchlist":["0x..."]}
+  Watches up to 3 EVM contracts and emails a daily digest at 07:00 America/Chicago when one turns
+  riskier. Nothing is sent when nothing changed. Returns an alerts_key once. No 402 ever.
+- Public grade-change feed, no key: GET /functions/alertsFeed?days=3&chain=base|ethereum&limit=50
+  Every token the engine downgraded, with the grade it moved from and to. Add &format=rss for a
+  reader feed. Human page: https://onchainforensics.dev/alerts-feed.html
+- Paid: $29 per 30 days, $75 per 90, raises the watchlist to 50 contracts and adds same-day mail
+  on a full-grade drop or a hard red flag. POST /functions/alertsSubscribe with the same email;
+  paying again extends rather than stacking.
+- MCP agents: the watch_token tool in onchain-forensics-mcp wraps the free tier in one call.
+
+If a human asks to be told about a token rather than asking again, this is the route.
+
 ## Start here (cheapest path to a decision)
 
 1. verdict, $0.02, the core call. Ends in a letter grade A to F, risk flags and a one-line roast.
@@ -129,3 +146,4 @@ Send any request, receive HTTP 402 with x402 v2 payment requirements (accepts[])
 Each plugin is dependency-free and calls the same HTTP API, so it works before you wire an x402 signer:
 with one, a call settles at $0.02; without one, the action returns the decoded challenge
 (price, payTo, network) instead of throwing.
+
