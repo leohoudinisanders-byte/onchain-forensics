@@ -156,5 +156,57 @@
     "for": "wallets, bots, trading terminals, data vendors",
     "pilot_usd": 100,
     "monthly_from_usd": 250
-  }
+  },
+  "decisions": [
+    {
+      "id": "token",
+      "question": "Is this token real, alive and safe to touch?",
+      "price_usd": 0.02,
+      "route": "/functions/forensicsVerdict",
+      "free_trial": "add trial=1 for free daily calls per IP",
+      "answers_in": "one call: grade, risk flags, roast, data_quality"
+    },
+    {
+      "id": "settlement",
+      "question": "Can I accept or settle against this token or wallet right now?",
+      "price_usd": 0.02,
+      "route": "/functions/forensicsSettlesafe",
+      "free_trial": "add trial=1 for free daily calls per IP",
+      "answers_in": "one call: paused / fee-trap / clawback and an overall pass or fail"
+    },
+    {
+      "id": "wallet",
+      "question": "Does this wallet actually hold what it claims?",
+      "price_usd": 0.05,
+      "route": "/functions/forensicsWallet",
+      "free_trial": "add trial=1 for 3 free calls per day per IP",
+      "answers_in": "one call: reconciled holdings with an explicit holdings_status"
+    }
+  ],
+  "bundle": {
+    "price_usd": 0.06,
+    "why": "shortest path from an unknown token to a decision",
+    "calls": [
+      {
+        "route": "/functions/forensicsVerdict",
+        "price_usd": 0.02
+      },
+      {
+        "route": "/functions/forensicsSettlesafe",
+        "price_usd": 0.02
+      },
+      {
+        "route": "/functions/forensicsMints",
+        "price_usd": 0.02
+      }
+    ]
+  },
+  "free_start": {
+    "what": "free metered key, no card and no signer",
+    "how": "POST /functions/devKeys {\"email\":\"you@example.com\"}",
+    "quota": "10,000 cached verdict calls per calendar month",
+    "header": "X-Dev-Key",
+    "route": "/functions/verdictFast"
+  },
+  "lifecycle_note": "verdict, settlesafe and wallet are the promoted decisions. options, derivs and the tokenized-equity routes are live and priced but not promoted."
 }

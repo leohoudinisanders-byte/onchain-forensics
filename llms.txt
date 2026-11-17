@@ -2,6 +2,30 @@
 
 > Decision-grade on-chain forensics for AI agents. Ask the question you are actually asking: should I touch this token or wallet? Pay per call in USDC on Base via x402, no API keys, no signup. Verdict returns a letter grade and a one-line roast, so a caller gets a call to make, not a dashboard to read.
 
+## Three decisions. Pick one, pay one, stop.
+
+Almost every question about an on-chain asset collapses into one of three:
+
+1. Is this token real, alive and safe to touch? -> verdict, $0.02
+   GET /functions/forensicsVerdict?address=0x<token>&chain=base|ethereum
+   A letter grade A to F, risk flags, a one-line roast and an explicit data_quality verdict.
+2. Can I accept or settle against this token or wallet right now? -> settlesafe, $0.02
+   GET /functions/forensicsSettlesafe?address=0x<token>&chain=base|ethereum
+   Catches paused, fee-trapped and clawback-capable assets before value moves.
+3. Does this wallet actually hold what it claims? -> wallet, $0.05
+   GET /functions/forensicsWallet?address=0x<wallet>&chain=base|ethereum
+
+Ask the one you actually have. Every payload carries the next call you would want, with a
+ready-to-fire URL, so an agent never has to guess what to buy next.
+
+Shortest path from an unknown token to a decision is the $0.06 bundle: verdict ($0.02), then
+settlesafe ($0.02), then mints ($0.02). Three calls, then stop.
+
+No wallet, no signer, no card? POST /functions/devKeys {"email":"you@example.com"} returns an fxk_
+key once, good for 10,000 cached verdict calls a calendar month, sent back as X-Dev-Key on
+/functions/verdictFast. That is the zero-friction path for an agent that just wants to try this.
+Every route also accepts trial=1 for free daily calls per IP, no header and no signup.
+
 ## Published grades, one page per token (free to read)
 
 500 tokens on Ethereum and Base are graded in public: score 0-100 on transfer activity across the
@@ -38,17 +62,6 @@ A grade is only useful if it reaches you when it changes. Two free surfaces, one
 - MCP agents: the watch_token tool in onchain-forensics-mcp wraps the free tier in one call.
 
 If a human asks to be told about a token rather than asking again, this is the route.
-
-## Start here (cheapest path to a decision)
-
-1. verdict, $0.02, the core call. Ends in a letter grade A to F, risk flags and a one-line roast.
-   GET /functions/forensicsApi?endpoint=verdict&address=0x<token>&chain=base|ethereum
-2. settlesafe, $0.02, adds the settle question: is this token safe to accept right now, or is it paused, fee-trapped or clawback-capable.
-   GET /functions/forensicsApi?endpoint=settlesafe&address=0x<token>&chain=base|ethereum
-3. mints, $0.02, answers who is adding supply and how much in the window.
-   GET /functions/forensicsMints?token=0x<token>&chain=base|ethereum
-
-Three calls, $0.06, and you can decide whether to trade, settle against it, or walk away. Every verdict payload already returns the next two calls with ready-to-fire URLs, so an agent never has to guess what to buy next.
 
 ## The cheap tier: $0.001 cached verdicts
 
@@ -88,6 +101,13 @@ AgentKit (Coinbase): `npm install agentkit-provider-onchain-forensics` — the s
 action provider methods on any EVM wallet provider; never signs, free samples need no signer, and a
 spent free sample returns the priced x402 challenge as data instead of throwing.
 Repo: https://github.com/leohoudinisanders-byte/agentkit-provider-onchain-forensics
+
+## Live but not promoted
+
+options, derivs and the tokenized-equity routes (equity, equityverdict, equitysettlesafe) stay live
+and priced at their listed amounts. They are deliberately not promoted: their traffic has not turned
+into buyers, so they are not one of the three decisions and they are not in the bundle. Call them if
+you already need them, but do not start there.
 
 ## Routes and prices (all x402 v2, exact scheme, eip155:8453)
 
