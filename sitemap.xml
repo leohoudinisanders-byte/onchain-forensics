@@ -2,7 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://onchainforensics.dev/</loc><lastmod>2026-11-07</lastmod></url>
 <url><loc>https://onchainforensics.dev/samples.html</loc><lastmod>2026-11-07</lastmod></url>
-<url><loc>https://onchainforensics.dev/alerts.html</loc><lastmod>2026-11-07</lastmod></url>
+<url><loc>https://onchainforensics.dev/alerts-feed.html</loc><lastmod>2026-11-17</lastmod></url>
+<url><loc>https://onchainforensics.dev/alerts.html</loc><lastmod>2026-11-17</lastmod></url>
 <url><loc>https://onchainforensics.dev/status.html</loc><lastmod>2026-11-07</lastmod></url>
 <url><loc>https://onchainforensics.dev/licensing.html</loc><lastmod>2026-11-07</lastmod></url>
 <url><loc>https://onchainforensics.dev/t/ethereum/usdc-a0b86991.html</loc><lastmod>2026-11-07</lastmod></url>
