@@ -45,6 +45,7 @@ input{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--line
 <div class="cell"><div class="k">Chain</div><div class="v">Ethereum</div></div>
 <div class="cell"><div class="k">Last measured</div><div class="v">2026-11-07</div></div>
 </div>
+<div id="token-watch" data-address="0xec53bf9167f50cdeb3ae105f56099aaab9061f83" data-symbol="EIGEN"></div>
 <h2>Embed this badge</h2>
 <p><a href="https://onchainforensics.dev/t/ethereum/eigen-ec53bf91.html"><img src="https://solene-fa2010da.base44.app/functions/verdictBadge?address=0xec53bf9167f50cdeb3ae105f56099aaab9061f83&amp;chain=ethereum" alt="EIGEN activity grade C" width="186" height="30"></a></p>
 <p style="color:var(--mut);font-size:14px">Free, no key, no script, no rate limit that matters: one <code>img</code> tag, cached grades only, and it degrades to a neutral NOT GRADED badge instead of breaking your page. Card style: add <code>&amp;style=card</code>. <a href="https://onchainforensics.dev/badge.html">Badge docs</a></p>
@@ -58,7 +59,7 @@ input{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--line
 <div class="cta">
 <p><b>Verdict, $0.02.</b> The same measurement on demand for EIGEN or any contract, with the transfer count, wallet count, mint and burn activity, concentration, and a plain-English bottom line.</p>
 <pre>curl "https://onchainforensics.dev/functions/forensicsVerdict?address=0xec53bf9167f50cdeb3ae105f56099aaab9061f83&amp;chain=ethereum"</pre>
-<p><b>Alerts, $29/month.</b> A daily digest when EIGEN or anything on your watchlist changes grade, so you learn about a liquidity break from us instead of from the chart.</p>
+<p><b>Alerts.</b> The box above watches EIGEN free. $29 for 30 days raises that to fifty contracts plus same-day mail when one of them drops a full grade, so you learn about a liquidity break from us instead of from the chart. <a href="/alerts.html">Plans</a>.</p>
 <p><b>Agent install.</b> <code>npx -y onchain-forensics-mcp</code> puts the grade check in front of a trade, and a free developer key covers 10,000 cached calls a month.</p>
 </div>
 <h2>Contract</h2>
@@ -75,4 +76,5 @@ input{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--line
 <p><a href="https://onchainforensics.dev/t/ethereum/">More Ethereum grades</a> · <a href="https://onchainforensics.dev/t/">All 500 graded tokens</a></p>
 
 <footer>Measured, not modelled. Grades come from on-chain reads over a private node with public fallback; an unreadable chain is reported as unreadable, never as a zero. Scores refresh roughly every six hours. nothing here is investment advice.</footer>
-</div></body></html>
+</div><script src="/t/watch.js" defer></script>
+</body></html>
