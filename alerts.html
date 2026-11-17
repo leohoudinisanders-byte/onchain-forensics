@@ -3,24 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Risk alerts for tokens you actually hold · On-chain Forensics</title>
-<meta name="description" content="Get an email when a token you hold or are about to buy gets riskier. $29 for 30 days, paid in USDC over x402. Same deterministic engine as the verdict API, delivered instead of queried.">
+<title>Get pinged when a token you hold gets downgraded · On-chain Forensics</title>
+<meta name="description" content="Free: watch three contracts, one email a day when one gets riskier. $29 for 30 days: fifty contracts plus same-day alerts on grade drops and red flags. Paid in USDC over x402, no account.">
 <style>
-  :root{--ink:#1a1815;--muted:#6b6660;--line:#e6e2dc;--bg:#faf9f7}
+  :root{--ink:#1a1815;--muted:#6b6660;--line:#e6e2dc;--bg:#faf9f7;--good:#1a7f4b;--bad:#a3321f}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   .wrap{max-width:760px;margin:0 auto;padding:56px 24px 72px}
   .kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;margin:14px 0 12px}
   .sub{font-size:18px;color:#3d3a36;margin:0 0 28px}
-  .price{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 30px}
+  .price{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 22px}
   .card{flex:1 1 220px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card.free{border-color:var(--ink)}
   .card b{font-size:26px;letter-spacing:-.02em}
   .card span{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-bottom:10px}
   h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:34px 0 12px;font-weight:600}
   ul{margin:0;padding-left:20px;color:#3d3a36} li{margin:7px 0}
   pre{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
   .cta{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;padding:13px 22px;border-radius:8px;font-weight:600;margin:8px 10px 8px 0}
+  .ghost{display:inline-block;background:#fff;color:var(--ink);border:1px solid var(--line);text-decoration:none;padding:13px 22px;border-radius:8px;font-weight:600;margin:8px 10px 8px 0}
   .note{background:#fff;border-left:3px solid var(--ink);padding:14px 18px;border-radius:0 8px 8px 0;color:#3d3a36;font-size:15px;margin:22px 0}
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 5px}
+  input[type=email],input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+  .row > div{flex:1 1 220px}
+  button.cta{border:none;cursor:pointer;font:inherit;font-weight:600;background:var(--ink);color:#fff;border-radius:8px;padding:12px 20px}
+  button.cta:disabled{opacity:.6;cursor:default}
+  .msg{margin:14px 0 0;font-size:14px}
+  .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
   footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
   a{color:var(--ink)}
 </style>
@@ -28,40 +39,118 @@
 <body>
 <div class="wrap">
   <div class="kicker">On-chain Forensics · alerts</div>
-  <h1>Know the moment a token you hold gets riskier.</h1>
-  <p class="sub">One email when a watchlist token's grade drops, or a red flag appears: readable supply lost, liquidity drained, holder concentration spiking. Plus a daily digest of what turned risky across Base and Ethereum. Same deterministic grading engine the verdict API runs, delivered instead of queried.</p>
+  <h1>Get pinged the moment a token you actually hold gets downgraded.</h1>
+  <p class="sub">Not a chart, not a price alert. A grade. The engine re-reads readable supply, mint and freeze authority, holder spread, liquidity and transfer activity every few minutes, and mails you when your token gets worse. <a href="alerts-feed.html">You can watch it working in public first.</a></p>
+
   <div class="price">
-    <div class="card"><b>$29</b> / 30 days<span>Daily digest plus same-day red flags, up to 50 tokens on your watchlist.</span></div>
-    <div class="card"><b>$75</b> / 90 days<span>Same, three months, 14 percent off.</span></div>
+    <div class="card free">
+      <span class="tag">Free · no card</span>
+      <b>$0</b><span>Three contracts. One email a day when one of them turns riskier. Nothing to cancel, no account.</span>
+    </div>
+    <div class="card">
+      <span class="tag">Paid · USDC on Base</span>
+      <b>$29</b> / 30 days<span>Fifty contracts, plus same-day mail when a watched token drops a full grade or a hard red flag appears. $75 for 90 days.</span>
+    </div>
   </div>
-  <a class="cta" href="#subscribe">Subscribe in one request</a>
-  <a class="cta" href="samples.html" style="background:#fff;color:#1a1815;border:1px solid var(--line)">See real verdict data</a>
+
+  <h2>Start free</h2>
+  <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px">
+    <form id="free-form">
+      <div class="row">
+        <div><label for="email">Email</label><input id="email" type="email" placeholder="you@example.com" required autocomplete="email"></div>
+      </div>
+      <div class="row">
+        <div><label for="a1">Contract you hold</label><input id="a1" type="text" placeholder="0x…" required></div>
+        <div><label for="a2">Another (optional)</label><input id="a2" type="text" placeholder="0x…"></div>
+        <div><label for="a3">Another (optional)</label><input id="a3" type="text" placeholder="0x…"></div>
+      </div>
+      <button class="cta" id="free-submit" type="submit">Watch three tokens free</button>
+      <p class="msg" id="free-msg" role="status"></p>
+    </form>
+    <div id="free-done" hidden>
+      <p style="margin:0 0 8px"><b>You are on the list.</b> Keep this key, it is the only handle to your watch.</p>
+      <pre id="free-key"></pre>
+      <p style="margin:12px 0 0;color:var(--muted);font-size:14px">First digest 07:00 America/Chicago. Upgrade any time by paying with the same email.</p>
+    </div>
+  </div>
+
   <h2>What lands in your inbox</h2>
   <ul>
-    <li><b>Same day:</b> a watched token drops a full grade. The subject line names it and says how far.</li>
-    <li><b>Daily 07:00 CT:</b> everything on your list that got worse, plus the wider feed's new F grades.</li>
-    <li><b>Quiet by default:</b> no email when nothing changed. No newsletter, no upsell spam.</li>
+    <li><b>Daily 07:00 CT:</b> everything on your list that got worse, with the grade it moved from and to. No email when nothing changed.</li>
+    <li><b>Same day (paid):</b> a watched token drops a full grade, or a hard red flag appears: supply no longer readable, mint authority back on, liquidity drained, holder concentration spiking. The subject names the token.</li>
+    <li><b>Quiet by default:</b> no newsletter, no upsell drip. The only other mail you get is a renewal note a few days before you lapse.</li>
   </ul>
-  <h2 id="subscribe">How to subscribe</h2>
-  <p class="sub" style="font-size:15px;margin-bottom:10px">Payment is USDC on Base over x402, the same rail the rest of this API settles on. The email is required before payment, so you cannot pay for alerts we cannot deliver.</p>
-<pre>curl -X POST "https://api.onchainforensics.dev/functions/alertsSubscribe" \
+
+  <h2 id="subscribe">Pay for fifty contracts and same-day mail</h2>
+  <p class="sub" style="font-size:15px;margin-bottom:10px">Payment is USDC on Base over x402, the same rail the rest of this API settles on. The email is required before payment, so you cannot pay for alerts we cannot deliver. Paying with an email that is already subscribed extends it rather than stacking a second one.</p>
+<pre>curl -X POST "https://solene-fa2010da.base44.app/functions/alertsSubscribe" \
   -H "Content-Type: application/json" \
   -d '{"email":"you@example.com","plan":"month","watchlist":["0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"]}'</pre>
   <p class="sub" style="font-size:15px">That returns a 402 challenge for $29.00. Pay it with any x402 client and you get back an <code>alerts_key</code> and an <code>expires_at</code>. Check status any time:</p>
-<pre>curl -X POST "https://api.onchainforensics.dev/functions/alertsSubscribe" \
+<pre>curl -X POST "https://solene-fa2010da.base44.app/functions/alertsSubscribe" \
   -H "Content-Type: application/json" -H "X-Alerts-Key: fxa_..." \
   -d '{"action":"status"}'</pre>
-  <div class="note">No custodial account, no card on file. USDC in, thirty days of alerts out. Renew by paying again with the same email; the subscription extends rather than stacking.</div>
+  <div class="note">No custodial account, no card on file. USDC in, thirty days of alerts out. If you already started on the free tier, the same email upgrades it in place and keeps the watchlist you built.</div>
+
   <h2>Why trust the grade</h2>
   <ul>
-    <li>Deterministic rules over live chain reads: readable supply, transfer activity, holder spread, mint and freeze authority.</li>
-    <li>No LLM in the loop, so the same token grades the same way twice.</li>
-    <li>Grades A to F with a 0 to 100 activity score, refreshed every five minutes for 400+ tokens.</li>
+    <li>Deterministic rules over live chain reads, no LLM in the loop: the same token grades the same way twice.</li>
+    <li>Grades A to F with a 0 to 100 activity score, refreshed every five minutes across Base and Ethereum.</li>
+    <li>Every downgrade is also published in public on <a href="alerts-feed.html">the feed</a>, so you can check the engine's calls against what happened without paying anything.</li>
+    <li>When a chain read fails, the API says so instead of scoring it zero. That rule is why a quiet day does not fake a downgrade.</li>
   </ul>
+  <a class="ghost" href="samples.html">See real verdict data</a>
+  <a class="ghost" href="t/">Browse graded tokens</a>
+
   <footer>
-    On-chain Forensics · <a href="https://onchainforensics.dev">onchainforensics.dev</a> · <a href=".well-known/x402">x402 manifest</a> · <a href="openapi.json">OpenAPI</a><br>
-    The verdict API stays pay-per-call at $0.001. This page is the subscription version of the same data.
+    On-chain Forensics · <a href="https://onchainforensics.dev">onchainforensics.dev</a> · <a href="alerts-feed.html">public feed</a> · <a href=".well-known/x402">x402 manifest</a> · <a href="openapi.json">OpenAPI</a><br>
+    The verdict API stays pay-per-call at $0.001. This page is the delivered version of the same data.
   </footer>
 </div>
+
+<script>
+(function () {
+  var FREE = "https://solene-fa2010da.base44.app/functions/alertsFree";
+  var form = document.getElementById("free-form");
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var msg = document.getElementById("free-msg");
+    var btn = document.getElementById("free-submit");
+    var list = ["a1", "a2", "a3"].map(function (id) {
+      return document.getElementById(id).value.trim();
+    }).filter(Boolean);
+    var bad = list.filter(function (a) { return !/^0x[0-9a-fA-F]{40}$/.test(a); });
+    if (bad.length) {
+      msg.className = "msg err";
+      msg.textContent = "That does not look like a contract address: " + bad[0];
+      return;
+    }
+    btn.disabled = true;
+    msg.className = "msg";
+    msg.textContent = "Adding you…";
+    fetch(FREE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: document.getElementById("email").value.trim(), watchlist: list })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok || !res.j.alerts_key) {
+          msg.className = "msg err";
+          msg.textContent = (res.j && (res.j.detail || res.j.error)) || "Signup failed. Try again in a moment.";
+          btn.disabled = false;
+          return;
+        }
+        document.getElementById("free-key").textContent = "alerts_key: " + res.j.alerts_key;
+        form.hidden = true;
+        document.getElementById("free-done").hidden = false;
+      })
+      .catch(function () {
+        msg.className = "msg err";
+        msg.textContent = "Network error. The endpoint is live; try once more.";
+        btn.disabled = false;
+      });
+  });
+})();
+</script>
 </body>
 </html>
