@@ -3,6 +3,17 @@
    The page supplies the contract and symbol; this file renders the form, styles it to
    match the dark token pages, and posts to the free alerts route. No dependencies. */
 (function () {
+  // View counter (Nov 17, 2026): fire-and-forget, once per tab session, never blocks the form.
+  try {
+    if (!sessionStorage.getItem("ofv1")) {
+      sessionStorage.setItem("ofv1", "1");
+      var bq = "https://solene-fa2010da.base44.app/functions/pageBeacon?k=token&p=" +
+        encodeURIComponent(location.pathname) + "&r=" +
+        encodeURIComponent(document.referrer ? (document.referrer.split("/")[2] || "") : "");
+      fetch(bq, { method: "GET", keepalive: true, mode: "cors" }).catch(function () {});
+    }
+  } catch (e) {}
+
   var API = "https://solene-fa2010da.base44.app/functions/alertsFree";
   var mount = document.getElementById("token-watch");
   if (!mount) return;

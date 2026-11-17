@@ -320,6 +320,18 @@
 </footer>
 
 </div>
+<script>
+  // View counter (Nov 17, 2026): fire-and-forget, once per tab session, never blocks the form.
+  try {
+    if (!sessionStorage.getItem("ofv1")) {
+      sessionStorage.setItem("ofv1", "1");
+      var bq = "https://solene-fa2010da.base44.app/functions/pageBeacon?k=index&p=" +
+        encodeURIComponent(location.pathname) + "&r=" +
+        encodeURIComponent(document.referrer ? (document.referrer.split("/")[2] || "") : "");
+      fetch(bq, { method: "GET", keepalive: true, mode: "cors" }).catch(function () {});
+    }
+  } catch (e) {}
+</script>
 </body>
 </html>
 
